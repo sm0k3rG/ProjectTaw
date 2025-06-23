@@ -10,6 +10,14 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mysql"
   url      = env("DATABASE_URL")
+}
+
+model Borrower {
+  id          Int      @id @default(autoincrement())
+  state       Boolean  @default(true)
+  rut         String   @unique
+  name        String
+  mail        String?
 }
