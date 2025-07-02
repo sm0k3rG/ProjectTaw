@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateProductoSucursalDto } from './dto/create-producto-sucursal.dto';
 import { UpdateProductoSucursalDto } from './dto/update-producto-sucursal.dto';
-import { ProductoSucursal } from 'generated/prisma';
+import { ProductoSucursal } from 'prisma/generated/prisma';
 
 @Injectable()
 export class ProductoSucursalService {

@@ -17,6 +17,7 @@ export class CreateProductoDto {
   @IsOptional()
   @IsNumber()
   ofertaId?: number;
+  
   @IsOptional()
   imagenUrl?: string;
 }
