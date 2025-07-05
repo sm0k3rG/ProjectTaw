@@ -1,0 +1,98 @@
+<div class="login-container">
+  <div class="login-card">
+    <!-- Header con logo -->
+    <div class="login-header">
+      <div class="walmart-logo">
+        <div class="logo-spark">✦</div>
+        <h1>Walmart</h1>
+      </div>
+      <p class="welcome-text">Bienvenido de vuelta</p>
+    </div>
+
+    <!-- Formulario -->
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+      <!-- Campo Email -->
+      <div class="form-group">
+        <label for="email" class="form-label">Correo electrónico</label>
+        <div class="input-wrapper">
+          <input
+            type="email"
+            id="email"
+            formControlName="email"
+            class="form-input"
+            [class.error]="email?.invalid && email?.touched"
+            placeholder="tu@email.com"
+          />
+          <span class="input-icon">📧</span>
+        </div>
+        <div *ngIf="email?.invalid && email?.touched" class="error-message">
+          <span *ngIf="email?.errors?.['required']">El correo es requerido</span>
+          <span *ngIf="email?.errors?.['email']">Ingresa un correo válido</span>
+        </div>
+      </div>
+
+      <!-- Campo Contraseña -->
+      <div class="form-group">
+        <label for="password" class="form-label">Contraseña</label>
+        <div class="input-wrapper">
+          <input
+            [type]="showPassword ? 'text' : 'password'"
+            id="password"
+            formControlName="password"
+            class="form-input"
+            [class.error]="password?.invalid && password?.touched"
+            placeholder="••••••••"
+          />
+          <button
+            type="button"
+            class="password-toggle"
+            (click)="togglePasswordVisibility()"
+          >
+            {{ showPassword ? '👁️' : '👁️‍🗨️' }}
+          </button>
+        </div>
+        <div *ngIf="password?.invalid && password?.touched" class="error-message">
+          <span *ngIf="password?.errors?.['required']">La contraseña es requerida</span>
+          <span *ngIf="password?.errors?.['minlength']">Mínimo 6 caracteres</span>
+        </div>
+      </div>
+
+      <!-- Recordar usuario -->
+      <div class="form-options">
+        <a href="#" class="forgot-password">¿Olvidaste tu contraseña?</a>
+      </div>
+
+      <!-- Botón de login -->
+      <button
+        type="submit"
+        class="login-button"
+        [disabled]="isLoading"
+        [class.loading]="isLoading"
+      >
+        <span *ngIf="!isLoading">Iniciar Sesión</span>
+        <span *ngIf="isLoading" class="loading-spinner">
+          <div class="spinner"></div>
+          Iniciando...
+        </span>
+      </button>
+    </form>
+
+    <!-- Footer -->
+    <div class="login-footer">
+      <p>¿No tienes cuenta? <a href="#" class="register-link">Regístrate aquí</a></p>
+      <div class="divider">
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Información adicional -->
+  <div class="info-section">
+    <h3>Accede a tu cuenta Walmart</h3>
+    <ul>
+      <li>✓ Gestiona tus pedidos</li>
+      <li>✓ Accede a ofertas exclusivas</li>
+      <li>✓ Historial de compras</li>
+    </ul>
+  </div>
+</div>
