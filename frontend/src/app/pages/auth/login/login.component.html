@@ -3,8 +3,11 @@
     <!-- Header con logo -->
     <div class="login-header">
       <div class="walmart-logo">
-        <div class="logo-spark">✦</div>
-        <h1>Walmart</h1>
+        <img
+          src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/Walmart_logo.svg/1024px-Walmart_logo.svg.png"
+          alt="Walmart Logo"
+          class="walmart-logo-img"
+        />
       </div>
       <p class="welcome-text">Bienvenido de vuelta</p>
     </div>
@@ -26,8 +29,10 @@
           <span class="input-icon">📧</span>
         </div>
         <div *ngIf="email?.invalid && email?.touched" class="error-message">
-          <span *ngIf="email?.errors?.['required']">El correo es requerido</span>
-          <span *ngIf="email?.errors?.['email']">Ingresa un correo válido</span>
+          <span *ngIf="email?.errors?.['required']">El correo es obligatorio</span>
+          <span *ngIf="email?.errors?.['invalidEmail']">Ingresa un correo válido</span>
+          <span *ngIf="email?.errors?.['emailTooLong']">El correo es demasiado largo</span>
+          <span *ngIf="email?.errors?.['localPartTooLong']">La parte local del correo es demasiado larga</span>
         </div>
       </div>
 
@@ -52,12 +57,14 @@
           </button>
         </div>
         <div *ngIf="password?.invalid && password?.touched" class="error-message">
-          <span *ngIf="password?.errors?.['required']">La contraseña es requerida</span>
-          <span *ngIf="password?.errors?.['minlength']">Mínimo 6 caracteres</span>
+          <span *ngIf="password?.errors?.['required']">La contraseña es obligatoria</span>
+          <span *ngIf="password?.errors?.['minLength']">Mínimo 6 caracteres</span>
+          <span *ngIf="password?.errors?.['noLetter']">Debe contener al menos una letra</span>
+          <span *ngIf="password?.errors?.['noNumber']">Debe contener al menos un número</span>
         </div>
       </div>
 
-      <!-- Recordar usuario -->
+      <!-- Olvidaste contraseña -->
       <div class="form-options">
         <a href="#" class="forgot-password">¿Olvidaste tu contraseña?</a>
       </div>

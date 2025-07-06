@@ -38,22 +38,14 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
   margin-bottom: 16px;
 }
 
-.logo-spark {
-  font-size: 32px;
-  color: #ffc220;
-  font-weight: bold;
-}
-
-.walmart-logo h1 {
-  color: #004c91;
-  font-size: 28px;
-  font-weight: 700;
-  margin: 0;
-  letter-spacing: -0.5px;
+.walmart-logo-img {
+  height: 60px;
+  width: auto;
+  max-width: 200px;
+  object-fit: contain;
 }
 
 .welcome-text {
@@ -138,9 +130,37 @@
 
 .form-options {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   margin: 8px 0;
+}
+
+.form-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+}
+
+.form-check-input {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  accent-color: #0071ce;
+  border-color: #0071ce;
+}
+
+.form-check-input:checked {
+  background-color: #0071ce;
+  border-color: #0071ce;
+}
+
+.form-check-label {
+  font-size: 14px;
+  color: #666;
+  font-weight: 500;
+  cursor: pointer;
+  margin: 0;
 }
 
 .checkbox-wrapper {
@@ -330,9 +350,9 @@
 }
 
 @media (max-width: 480px) {
-  .walmart-logo {
-    flex-direction: column;
-    gap: 8px;
+  .walmart-logo-img {
+    height: 50px;
+    max-width: 160px;
   }
 
   .form-options {
