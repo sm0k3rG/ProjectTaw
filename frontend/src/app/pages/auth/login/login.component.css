@@ -252,6 +252,9 @@
   color: #0071ce;
   text-decoration: none;
   font-weight: 500;
+  pointer-events: auto !important;
+  z-index: 10 !important;
+  position: relative;
 }
 
 .register-link:hover {

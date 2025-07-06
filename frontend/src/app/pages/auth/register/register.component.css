@@ -1,0 +1,237 @@
+.register-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #004c91 0%, #0071ce 100%);
+  padding: 20px;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.register-card {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 20px 40px rgba(0, 76, 145, 0.2);
+  padding: 40px;
+  width: 100%;
+  max-width: 700px;
+  position: relative;
+  overflow: hidden;
+}
+
+.register-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #ffc220 0%, #ffb000 100%);
+}
+
+.register-header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.walmart-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.walmart-logo-img {
+  height: 60px;
+  width: auto;
+  max-width: 200px;
+  object-fit: contain;
+}
+
+.welcome-text {
+  color: #666;
+  font-size: 16px;
+  margin: 0;
+}
+
+.register-form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-input {
+  width: 100%;
+  padding: 16px 16px;
+  border: 2px solid #e1e5e9;
+  border-radius: 8px;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  background: #fafbfc;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #0071ce;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(0, 113, 206, 0.1);
+}
+
+.form-input.error {
+  border-color: #e53e3e;
+  background: #fef5f5;
+}
+
+.error-message {
+  color: #e53e3e;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+.direccion-card {
+  background: #f7fafd;
+  border: 1.5px solid #e1e5e9;
+  border-radius: 12px;
+  margin-bottom: 18px;
+  padding: 18px 18px 12px 18px;
+  box-shadow: 0 2px 8px rgba(0,76,145,0.06);
+  position: relative;
+}
+
+.direccion-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  font-weight: 600;
+  color: #004c91;
+  font-size: 15px;
+}
+
+.direccion-fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto auto;
+  gap: 12px;
+}
+
+.direccion-fields select,
+.direccion-fields input {
+  width: 100%;
+}
+
+.direccion-fields select:nth-child(1),
+.direccion-fields select:nth-child(2) {
+  grid-row: 1;
+}
+
+.direccion-fields input:nth-child(3),
+.direccion-fields input:nth-child(4) {
+  grid-row: 2;
+}
+
+.remove-direccion {
+  background: transparent;
+  color: #e53e3e;
+  border: none;
+  font-size: 22px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-left: 8px;
+  transition: color 0.2s, background 0.2s;
+  padding: 0 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.remove-direccion:hover {
+  color: #b71c1c;
+  background: #ffeaea;
+  border-radius: 50%;
+}
+
+.add-direccion {
+  background: #0071ce;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: background 0.2s;
+  box-shadow: 0 2px 8px rgba(0,76,145,0.08);
+}
+
+.add-direccion:hover {
+  background: #004c91;
+}
+
+.register-button {
+  background: linear-gradient(135deg, #0071ce 0%, #004c91 100%);
+  color: white;
+  border: none;
+  padding: 16px 24px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.register-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 113, 206, 0.3);
+}
+
+.register-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+  .register-container {
+    flex-direction: column;
+    padding: 16px;
+  }
+  .register-card {
+    padding: 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .walmart-logo-img {
+    height: 50px;
+    max-width: 160px;
+  }
+}
+
+@media (max-width: 900px) {
+  .register-card {
+    max-width: 98vw;
+  }
+  .direccion-fields {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+}
+
+@media (max-width: 600px) {
+  .direccion-fields {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  .direccion-card {
+    padding: 12px 6px 8px 6px;
+  }
+}

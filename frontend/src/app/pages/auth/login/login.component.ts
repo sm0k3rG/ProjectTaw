@@ -6,6 +6,7 @@ import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
 import { AuthService } from '../../../core/services/auth.service';
 import { validateEmail, validatePassword } from '../../../core/validators/auth.validators';
+import { RouterLink } from '@angular/router';
 
 
 @Component({
@@ -16,6 +17,7 @@ import { validateEmail, validatePassword } from '../../../core/validators/auth.v
   imports: [
     CommonModule,
     ReactiveFormsModule,
+    RouterLink,
   ]
 })
 export class LoginComponent implements OnInit {

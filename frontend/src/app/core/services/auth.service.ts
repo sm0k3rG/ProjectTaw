@@ -91,4 +91,8 @@ export class AuthService {
   isClient(): boolean {
     return this.hasRole('Client');
   }
+
+  register(data: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/auth/register`, data);
+  }
 }
