@@ -60,6 +60,23 @@ export type Sucursal = $Result.DefaultSelection<Prisma.$SucursalPayload>
 export type ProductoSucursal = $Result.DefaultSelection<Prisma.$ProductoSucursalPayload>
 
 /**
+ * Enums
+ */
+export namespace $Enums {
+  export const Rol: {
+  Admin: 'Admin',
+  Cliente: 'Cliente'
+};
+
+export type Rol = (typeof Rol)[keyof typeof Rol]
+
+}
+
+export type Rol = $Enums.Rol
+
+export const Rol: typeof $Enums.Rol
+
+/**
  * ##  Prisma Client ʲˢ
  *
  * Type-safe database client for TypeScript & Node.js
@@ -1755,6 +1772,7 @@ export namespace Prisma {
     contrasena: string | null
     telefono: string | null
     tarjetas: string | null
+    rol: $Enums.Rol | null
   }
 
   export type UsuarioMaxAggregateOutputType = {
@@ -1764,6 +1782,7 @@ export namespace Prisma {
     contrasena: string | null
     telefono: string | null
     tarjetas: string | null
+    rol: $Enums.Rol | null
   }
 
   export type UsuarioCountAggregateOutputType = {
@@ -1773,6 +1792,7 @@ export namespace Prisma {
     contrasena: number
     telefono: number
     tarjetas: number
+    rol: number
     _all: number
   }
 
@@ -1792,6 +1812,7 @@ export namespace Prisma {
     contrasena?: true
     telefono?: true
     tarjetas?: true
+    rol?: true
   }
 
   export type UsuarioMaxAggregateInputType = {
@@ -1801,6 +1822,7 @@ export namespace Prisma {
     contrasena?: true
     telefono?: true
     tarjetas?: true
+    rol?: true
   }
 
   export type UsuarioCountAggregateInputType = {
@@ -1810,6 +1832,7 @@ export namespace Prisma {
     contrasena?: true
     telefono?: true
     tarjetas?: true
+    rol?: true
     _all?: true
   }
 
@@ -1906,6 +1929,7 @@ export namespace Prisma {
     contrasena: string
     telefono: string
     tarjetas: string
+    rol: $Enums.Rol
     _count: UsuarioCountAggregateOutputType | null
     _avg: UsuarioAvgAggregateOutputType | null
     _sum: UsuarioSumAggregateOutputType | null
@@ -1934,6 +1958,7 @@ export namespace Prisma {
     contrasena?: boolean
     telefono?: boolean
     tarjetas?: boolean
+    rol?: boolean
     direccion?: boolean | Usuario$direccionArgs<ExtArgs>
     pedidos?: boolean | Usuario$pedidosArgs<ExtArgs>
     _count?: boolean | UsuarioCountOutputTypeDefaultArgs<ExtArgs>
@@ -1948,9 +1973,10 @@ export namespace Prisma {
     contrasena?: boolean
     telefono?: boolean
     tarjetas?: boolean
+    rol?: boolean
   }
 
-  export type UsuarioOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "nombre" | "email" | "contrasena" | "telefono" | "tarjetas", ExtArgs["result"]["usuario"]>
+  export type UsuarioOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "nombre" | "email" | "contrasena" | "telefono" | "tarjetas" | "rol", ExtArgs["result"]["usuario"]>
   export type UsuarioInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     direccion?: boolean | Usuario$direccionArgs<ExtArgs>
     pedidos?: boolean | Usuario$pedidosArgs<ExtArgs>
@@ -1970,6 +1996,7 @@ export namespace Prisma {
       contrasena: string
       telefono: string
       tarjetas: string
+      rol: $Enums.Rol
     }, ExtArgs["result"]["usuario"]>
     composites: {}
   }
@@ -2347,6 +2374,7 @@ export namespace Prisma {
     readonly contrasena: FieldRef<"Usuario", 'String'>
     readonly telefono: FieldRef<"Usuario", 'String'>
     readonly tarjetas: FieldRef<"Usuario", 'String'>
+    readonly rol: FieldRef<"Usuario", 'Rol'>
   }
     
 
@@ -10771,7 +10799,8 @@ export namespace Prisma {
     email: 'email',
     contrasena: 'contrasena',
     telefono: 'telefono',
-    tarjetas: 'tarjetas'
+    tarjetas: 'tarjetas',
+    rol: 'rol'
   };
 
   export type UsuarioScalarFieldEnum = (typeof UsuarioScalarFieldEnum)[keyof typeof UsuarioScalarFieldEnum]
@@ -10965,6 +10994,13 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'Rol'
+   */
+  export type EnumRolFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Rol'>
+    
+
+
+  /**
    * Reference to a field of type 'DateTime'
    */
   export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime'>
@@ -10991,6 +11027,7 @@ export namespace Prisma {
     contrasena?: StringFilter<"Usuario"> | string
     telefono?: StringFilter<"Usuario"> | string
     tarjetas?: StringFilter<"Usuario"> | string
+    rol?: EnumRolFilter<"Usuario"> | $Enums.Rol
     direccion?: DireccionListRelationFilter
     pedidos?: PedidoListRelationFilter
   }
@@ -11002,6 +11039,7 @@ export namespace Prisma {
     contrasena?: SortOrder
     telefono?: SortOrder
     tarjetas?: SortOrder
+    rol?: SortOrder
     direccion?: DireccionOrderByRelationAggregateInput
     pedidos?: PedidoOrderByRelationAggregateInput
     _relevance?: UsuarioOrderByRelevanceInput
@@ -11017,6 +11055,7 @@ export namespace Prisma {
     contrasena?: StringFilter<"Usuario"> | string
     telefono?: StringFilter<"Usuario"> | string
     tarjetas?: StringFilter<"Usuario"> | string
+    rol?: EnumRolFilter<"Usuario"> | $Enums.Rol
     direccion?: DireccionListRelationFilter
     pedidos?: PedidoListRelationFilter
   }, "id" | "email">
@@ -11028,6 +11067,7 @@ export namespace Prisma {
     contrasena?: SortOrder
     telefono?: SortOrder
     tarjetas?: SortOrder
+    rol?: SortOrder
     _count?: UsuarioCountOrderByAggregateInput
     _avg?: UsuarioAvgOrderByAggregateInput
     _max?: UsuarioMaxOrderByAggregateInput
@@ -11045,6 +11085,7 @@ export namespace Prisma {
     contrasena?: StringWithAggregatesFilter<"Usuario"> | string
     telefono?: StringWithAggregatesFilter<"Usuario"> | string
     tarjetas?: StringWithAggregatesFilter<"Usuario"> | string
+    rol?: EnumRolWithAggregatesFilter<"Usuario"> | $Enums.Rol
   }
 
   export type DireccionWhereInput = {
@@ -11550,6 +11591,7 @@ export namespace Prisma {
     contrasena: string
     telefono: string
     tarjetas: string
+    rol: $Enums.Rol
     direccion?: DireccionCreateNestedManyWithoutUsuarioInput
     pedidos?: PedidoCreateNestedManyWithoutUsuarioInput
   }
@@ -11561,6 +11603,7 @@ export namespace Prisma {
     contrasena: string
     telefono: string
     tarjetas: string
+    rol: $Enums.Rol
     direccion?: DireccionUncheckedCreateNestedManyWithoutUsuarioInput
     pedidos?: PedidoUncheckedCreateNestedManyWithoutUsuarioInput
   }
@@ -11571,6 +11614,7 @@ export namespace Prisma {
     contrasena?: StringFieldUpdateOperationsInput | string
     telefono?: StringFieldUpdateOperationsInput | string
     tarjetas?: StringFieldUpdateOperationsInput | string
+    rol?: EnumRolFieldUpdateOperationsInput | $Enums.Rol
     direccion?: DireccionUpdateManyWithoutUsuarioNestedInput
     pedidos?: PedidoUpdateManyWithoutUsuarioNestedInput
   }
@@ -11582,6 +11626,7 @@ export namespace Prisma {
     contrasena?: StringFieldUpdateOperationsInput | string
     telefono?: StringFieldUpdateOperationsInput | string
     tarjetas?: StringFieldUpdateOperationsInput | string
+    rol?: EnumRolFieldUpdateOperationsInput | $Enums.Rol
     direccion?: DireccionUncheckedUpdateManyWithoutUsuarioNestedInput
     pedidos?: PedidoUncheckedUpdateManyWithoutUsuarioNestedInput
   }
@@ -11593,6 +11638,7 @@ export namespace Prisma {
     contrasena: string
     telefono: string
     tarjetas: string
+    rol: $Enums.Rol
   }
 
   export type UsuarioUpdateManyMutationInput = {
@@ -11601,6 +11647,7 @@ export namespace Prisma {
     contrasena?: StringFieldUpdateOperationsInput | string
     telefono?: StringFieldUpdateOperationsInput | string
     tarjetas?: StringFieldUpdateOperationsInput | string
+    rol?: EnumRolFieldUpdateOperationsInput | $Enums.Rol
   }
 
   export type UsuarioUncheckedUpdateManyInput = {
@@ -11610,6 +11657,7 @@ export namespace Prisma {
     contrasena?: StringFieldUpdateOperationsInput | string
     telefono?: StringFieldUpdateOperationsInput | string
     tarjetas?: StringFieldUpdateOperationsInput | string
+    rol?: EnumRolFieldUpdateOperationsInput | $Enums.Rol
   }
 
   export type DireccionCreateInput = {
@@ -12098,6 +12146,13 @@ export namespace Prisma {
     not?: NestedStringFilter<$PrismaModel> | string
   }
 
+  export type EnumRolFilter<$PrismaModel = never> = {
+    equals?: $Enums.Rol | EnumRolFieldRefInput<$PrismaModel>
+    in?: $Enums.Rol[]
+    notIn?: $Enums.Rol[]
+    not?: NestedEnumRolFilter<$PrismaModel> | $Enums.Rol
+  }
+
   export type DireccionListRelationFilter = {
     every?: DireccionWhereInput
     some?: DireccionWhereInput
@@ -12131,6 +12186,7 @@ export namespace Prisma {
     contrasena?: SortOrder
     telefono?: SortOrder
     tarjetas?: SortOrder
+    rol?: SortOrder
   }
 
   export type UsuarioAvgOrderByAggregateInput = {
@@ -12144,6 +12200,7 @@ export namespace Prisma {
     contrasena?: SortOrder
     telefono?: SortOrder
     tarjetas?: SortOrder
+    rol?: SortOrder
   }
 
   export type UsuarioMinOrderByAggregateInput = {
@@ -12153,6 +12210,7 @@ export namespace Prisma {
     contrasena?: SortOrder
     telefono?: SortOrder
     tarjetas?: SortOrder
+    rol?: SortOrder
   }
 
   export type UsuarioSumOrderByAggregateInput = {
@@ -12191,6 +12249,16 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedStringFilter<$PrismaModel>
     _max?: NestedStringFilter<$PrismaModel>
+  }
+
+  export type EnumRolWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.Rol | EnumRolFieldRefInput<$PrismaModel>
+    in?: $Enums.Rol[]
+    notIn?: $Enums.Rol[]
+    not?: NestedEnumRolWithAggregatesFilter<$PrismaModel> | $Enums.Rol
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumRolFilter<$PrismaModel>
+    _max?: NestedEnumRolFilter<$PrismaModel>
   }
 
   export type UsuarioScalarRelationFilter = {
@@ -12742,6 +12810,10 @@ export namespace Prisma {
     set?: string
   }
 
+  export type EnumRolFieldUpdateOperationsInput = {
+    set?: $Enums.Rol
+  }
+
   export type DireccionUpdateManyWithoutUsuarioNestedInput = {
     create?: XOR<DireccionCreateWithoutUsuarioInput, DireccionUncheckedCreateWithoutUsuarioInput> | DireccionCreateWithoutUsuarioInput[] | DireccionUncheckedCreateWithoutUsuarioInput[]
     connectOrCreate?: DireccionCreateOrConnectWithoutUsuarioInput | DireccionCreateOrConnectWithoutUsuarioInput[]
@@ -13266,6 +13338,13 @@ export namespace Prisma {
     not?: NestedStringFilter<$PrismaModel> | string
   }
 
+  export type NestedEnumRolFilter<$PrismaModel = never> = {
+    equals?: $Enums.Rol | EnumRolFieldRefInput<$PrismaModel>
+    in?: $Enums.Rol[]
+    notIn?: $Enums.Rol[]
+    not?: NestedEnumRolFilter<$PrismaModel> | $Enums.Rol
+  }
+
   export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
     in?: number[]
@@ -13309,6 +13388,16 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedStringFilter<$PrismaModel>
     _max?: NestedStringFilter<$PrismaModel>
+  }
+
+  export type NestedEnumRolWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.Rol | EnumRolFieldRefInput<$PrismaModel>
+    in?: $Enums.Rol[]
+    notIn?: $Enums.Rol[]
+    not?: NestedEnumRolWithAggregatesFilter<$PrismaModel> | $Enums.Rol
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumRolFilter<$PrismaModel>
+    _max?: NestedEnumRolFilter<$PrismaModel>
   }
 
   export type NestedDateTimeFilter<$PrismaModel = never> = {
@@ -13536,6 +13625,7 @@ export namespace Prisma {
     contrasena: string
     telefono: string
     tarjetas: string
+    rol: $Enums.Rol
     pedidos?: PedidoCreateNestedManyWithoutUsuarioInput
   }
 
@@ -13546,6 +13636,7 @@ export namespace Prisma {
     contrasena: string
     telefono: string
     tarjetas: string
+    rol: $Enums.Rol
     pedidos?: PedidoUncheckedCreateNestedManyWithoutUsuarioInput
   }
 
@@ -13596,6 +13687,7 @@ export namespace Prisma {
     contrasena?: StringFieldUpdateOperationsInput | string
     telefono?: StringFieldUpdateOperationsInput | string
     tarjetas?: StringFieldUpdateOperationsInput | string
+    rol?: EnumRolFieldUpdateOperationsInput | $Enums.Rol
     pedidos?: PedidoUpdateManyWithoutUsuarioNestedInput
   }
 
@@ -13606,6 +13698,7 @@ export namespace Prisma {
     contrasena?: StringFieldUpdateOperationsInput | string
     telefono?: StringFieldUpdateOperationsInput | string
     tarjetas?: StringFieldUpdateOperationsInput | string
+    rol?: EnumRolFieldUpdateOperationsInput | $Enums.Rol
     pedidos?: PedidoUncheckedUpdateManyWithoutUsuarioNestedInput
   }
 
@@ -13631,6 +13724,7 @@ export namespace Prisma {
     contrasena: string
     telefono: string
     tarjetas: string
+    rol: $Enums.Rol
     direccion?: DireccionCreateNestedManyWithoutUsuarioInput
   }
 
@@ -13641,6 +13735,7 @@ export namespace Prisma {
     contrasena: string
     telefono: string
     tarjetas: string
+    rol: $Enums.Rol
     direccion?: DireccionUncheckedCreateNestedManyWithoutUsuarioInput
   }
 
@@ -13713,6 +13808,7 @@ export namespace Prisma {
     contrasena?: StringFieldUpdateOperationsInput | string
     telefono?: StringFieldUpdateOperationsInput | string
     tarjetas?: StringFieldUpdateOperationsInput | string
+    rol?: EnumRolFieldUpdateOperationsInput | $Enums.Rol
     direccion?: DireccionUpdateManyWithoutUsuarioNestedInput
   }
 
@@ -13723,6 +13819,7 @@ export namespace Prisma {
     contrasena?: StringFieldUpdateOperationsInput | string
     telefono?: StringFieldUpdateOperationsInput | string
     tarjetas?: StringFieldUpdateOperationsInput | string
+    rol?: EnumRolFieldUpdateOperationsInput | $Enums.Rol
     direccion?: DireccionUncheckedUpdateManyWithoutUsuarioNestedInput
   }
 

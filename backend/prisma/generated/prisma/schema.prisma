@@ -14,6 +14,11 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Rol {
+  Admin
+  Cliente
+}
+
 model Usuario {
   id         Int         @id @default(autoincrement())
   nombre     String
@@ -23,6 +28,7 @@ model Usuario {
   tarjetas   String
   direccion  Direccion[] // Relación 1:N con Direccion
   pedidos    Pedido[] // Relación 1:N con Pedido
+  rol        Rol // Atributo 'rol' con tipo enum
 }
 
 model Direccion {

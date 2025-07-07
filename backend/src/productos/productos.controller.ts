@@ -2,6 +2,7 @@ import { Controller, Get, Post, Body, Param, Put, Delete } from '@nestjs/common'
 import { CreateProductoDto } from './dto/create-producto.dto';
 import { UpdateProductoDto } from './dto/update-producto.dto';
 import { ProductoService } from './productos.service';
+import { Producto } from 'prisma/generated/prisma';
 
 @Controller('producto')
 export class ProductoController {
@@ -15,6 +16,11 @@ export class ProductoController {
   @Get()
   findAll() {
     return this.productoService.findAll();
+  }
+
+  @Get('detalles')
+  async obtenerProductosConDetalles(): Promise<Producto[]> {
+    return this.productoService.obtenerProductosConDetalles();
   }
 
   @Get(':id')

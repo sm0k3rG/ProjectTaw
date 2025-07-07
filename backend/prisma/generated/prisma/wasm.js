@@ -126,7 +126,8 @@ exports.Prisma.UsuarioScalarFieldEnum = {
   email: 'email',
   contrasena: 'contrasena',
   telefono: 'telefono',
-  tarjetas: 'tarjetas'
+  tarjetas: 'tarjetas',
+  rol: 'rol'
 };
 
 exports.Prisma.DireccionScalarFieldEnum = {
@@ -245,7 +246,10 @@ exports.Prisma.SucursalOrderByRelevanceFieldEnum = {
   ciudad: 'ciudad',
   region: 'region'
 };
-
+exports.Rol = exports.$Enums.Rol = {
+  Admin: 'Admin',
+  Cliente: 'Cliente'
+};
 
 exports.Prisma.ModelName = {
   Usuario: 'Usuario',
