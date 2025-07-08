@@ -1,0 +1,134 @@
+.stores-list {
+  max-height: 600px;
+  overflow-y: auto;
+}
+
+.store-item {
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 1px solid #dee2e6 !important;
+}
+
+.store-item:hover {
+  background-color: #f8f9fa;
+  border-color: #0d6efd !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.store-item.selected {
+  background-color: #e3f2fd;
+  border-color: #0d6efd !important;
+  box-shadow: 0 4px 8px rgba(13, 110, 253, 0.2);
+}
+
+.map-container {
+  position: relative;
+  background-color: #f8f9fa;
+}
+
+.google-map {
+  border-radius: 0 0 0.375rem 0.375rem;
+  overflow: hidden;
+}
+
+
+
+.map-info {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  background-color: rgba(255, 255, 255, 0.9);
+  padding: 8px 12px;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.map-legend {
+  display: flex;
+  gap: 15px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  color: #6c757d;
+}
+
+.legend-item i {
+  font-size: 14px;
+}
+
+/* Estilos para dispositivos móviles */
+@media (max-width: 768px) {
+  .container-fluid {
+    padding: 0;
+  }
+
+  .card {
+    border-radius: 0;
+    margin-bottom: 0;
+  }
+
+  .map-container {
+    height: 300px !important;
+  }
+
+  .stores-list {
+    max-height: 400px;
+  }
+}
+
+/* Animaciones */
+.store-item {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Estilos para los badges de distancia */
+.badge {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+}
+
+/* Estilos para los botones de acción */
+.btn-sm {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+}
+
+/* Estilos para la información de la sucursal seleccionada */
+.bg-light {
+  background-color: #f8f9fa !important;
+}
+
+/* Estilos para el scrollbar personalizado */
+.stores-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.stores-list::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.stores-list::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+.stores-list::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}

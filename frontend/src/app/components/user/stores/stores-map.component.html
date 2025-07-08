@@ -1,0 +1,144 @@
+<div class="container-fluid mt-4">
+  <div class="row">
+    <!-- Panel de búsqueda y lista de sucursales -->
+    <div class="col-md-5">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="mb-0">
+            <i class="bi bi-geo-alt me-2"></i>
+            Nuestras Sucursales
+          </h5>
+        </div>
+        <div class="card-body">
+          <!-- Búsqueda por dirección -->
+          <div class="mb-3">
+            <label for="searchAddress" class="form-label">Buscar por dirección:</label>
+            <div class="input-group">
+              <input type="text"
+                     id="searchAddress"
+                     class="form-control"
+                     placeholder="Ingresa una dirección..."
+                     [(ngModel)]="searchAddress"
+                     (keyup.enter)="searchByAddress()">
+              <button class="btn btn-primary"
+                      type="button"
+                      (click)="searchByAddress()">
+                <i class="bi bi-search"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Botón para obtener ubicación actual -->
+          <div class="mb-3">
+            <button class="btn btn-outline-info w-100"
+                    (click)="getUserLocation()">
+              <i class="bi bi-geo-alt me-2"></i>
+              Usar mi ubicación
+            </button>
+          </div>
+
+          <!-- Lista de sucursales -->
+          <div class="stores-list">
+            <div *ngFor="let store of filteredStores"
+                 class="store-item mb-3 p-3 border rounded"
+                 [class.selected]="selectedStore?.id === store.id"
+                 (click)="selectStore(store)">
+              <div class="d-flex justify-content-between align-items-start">
+                <div class="flex-grow-1">
+                  <h6 class="mb-1 fw-bold">{{ store.name }}</h6>
+                  <p class="mb-1 text-muted small">
+                    <i class="bi bi-geo-alt me-1"></i>
+                    {{ store.address }}
+                  </p>
+                  <p class="mb-1 text-muted small">
+                    <i class="bi bi-telephone me-1"></i>
+                    {{ store.phone }}
+                  </p>
+                  <p class="mb-1 text-muted small">
+                    <i class="bi bi-clock me-1"></i>
+                    {{ store.hours }}
+                  </p>
+                  <span *ngIf="store.distance" class="badge bg-primary">
+                    {{ getDistanceText(store.distance) }}
+                  </span>
+                </div>
+                <div class="ms-2">
+                  <button class="btn btn-sm btn-outline-primary"
+                          (click)="selectStore(store); $event.stopPropagation()">
+                    <i class="bi bi-map"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Mensaje si no hay sucursales -->
+          <div *ngIf="filteredStores.length === 0" class="text-center py-4">
+            <i class="bi bi-exclamation-triangle text-warning display-4"></i>
+            <p class="text-muted mt-2">No se encontraron sucursales</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mapa -->
+    <div class="col-md-7">
+      <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h5 class="mb-0">
+            <i class="bi bi-map me-2"></i>
+            Mapa de Sucursales
+          </h5>
+          <button *ngIf="selectedStore"
+                  class="btn btn-sm btn-outline-secondary"
+                  (click)="clearSelection()">
+            <i class="bi bi-x-circle me-1"></i>
+            Limpiar selección
+          </button>
+        </div>
+        <div class="card-body p-0">
+          <!-- Información de la sucursal seleccionada -->
+          <div *ngIf="selectedStore" class="p-3 bg-light border-bottom">
+            <div class="row">
+              <div class="col-md-8">
+                <h6 class="fw-bold">{{ selectedStore.name }}</h6>
+                <p class="mb-1">
+                  <i class="bi bi-geo-alt me-2"></i>
+                  {{ selectedStore.address }}
+                </p>
+                <p class="mb-1">
+                  <i class="bi bi-telephone me-2"></i>
+                  {{ selectedStore.phone }}
+                </p>
+                <p class="mb-0">
+                  <i class="bi bi-clock me-2"></i>
+                  {{ selectedStore.hours }}
+                </p>
+              </div>
+              <div class="col-md-4 text-end">
+                <span *ngIf="selectedStore.distance" class="badge bg-success fs-6">
+                  {{ getDistanceText(selectedStore.distance) }}
+                </span>
+                <div class="mt-2">
+                  <button class="btn btn-success btn-sm me-2">
+                    <i class="bi bi-telephone me-1"></i>
+                    Llamar
+                  </button>
+                  <button class="btn btn-primary btn-sm">
+                    <i class="bi bi-navigation me-1"></i>
+                    Cómo llegar
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+                              <!-- Google Maps -->
+          <div class="map-container" style="height: 500px;">
+            <div #mapContainer class="google-map" style="width: 100%; height: 100%;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
