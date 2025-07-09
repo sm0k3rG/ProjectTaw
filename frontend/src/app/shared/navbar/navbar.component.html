@@ -1,0 +1,53 @@
+<nav class="navbar navbar-expand-lg navbar-primary bg-primary shadow-sm mb-4">
+  <div class="container-fluid">
+    <a class="navbar-brand d-flex align-items-center" href="#">
+      <img src="https://i5.walmartimages.com/dfw/63fd9f59-14e2/9d304ce6-96de-4331-b8ec-c5191226d378/v1/spark-icon.svg" alt="Walmart Logo" style="height: 38px; width: 38px;" class="me-2" />
+    </a>
+    <div class="w-100 d-flex justify-content-center">
+      <div class="d-flex justify-content-center align-items-center" style="gap: 1.2rem;">
+        <a class="d-flex align-items-center px-2 py-0 rounded-3 fw-semibold text-decoration-none nav-link-navbar"
+           routerLink="/dashboard" routerLinkActive="active-tab"
+           [routerLinkActiveOptions]="{ exact: true }"
+           style="font-size: 1rem; min-height: 32px;">
+          <i class="bi bi-house-door me-2" style="font-size: 1.2rem;"></i> Dashboard
+    </a>
+        <a class="d-flex align-items-center px-2 py-0 rounded-3 fw-semibold text-decoration-none nav-link-navbar"
+           routerLink="/admin/products" routerLinkActive="active-tab"
+           style="font-size: 1rem; min-height: 32px;">
+          <i class="bi bi-box me-2" style="font-size: 1.2rem;"></i> Productos
+        </a>
+        <a class="d-flex align-items-center px-2 py-0 rounded-3 fw-semibold text-decoration-none nav-link-navbar"
+           routerLink="/admin/offers" routerLinkActive="active-tab"
+           style="font-size: 1rem; min-height: 32px;">
+          <i class="bi bi-percent me-2" style="font-size: 1.2rem;"></i> Ofertas
+        </a>
+        <a class="d-flex align-items-center px-2 py-0 rounded-3 fw-semibold text-decoration-none nav-link-navbar"
+           routerLink="/admin/branches" routerLinkActive="active-tab"
+           style="font-size: 1rem; min-height: 32px;">
+          <i class="bi bi-building me-2" style="font-size: 1.2rem;"></i> Sucursales
+        </a>
+        <a class="d-flex align-items-center px-2 py-0 rounded-3 fw-semibold text-decoration-none nav-link-navbar"
+           routerLink="/admin/users" routerLinkActive="active-tab"
+           style="font-size: 1rem; min-height: 32px;">
+          <i class="bi bi-people me-2" style="font-size: 1.2rem;"></i> Usuarios
+        </a>
+      </div>
+    </div>
+    <div class="d-flex align-items-center ms-auto">
+      <span class="rounded-circle bg-info text-white d-flex justify-content-center align-items-center" style="width: 40px; height: 40px; font-size: 1.2rem;">A</span>
+    </div>
+  </div>
+</nav>
+
+<style>
+.nav-link-navbar {
+  color: #fff !important;
+}
+.active-tab {
+  color: #fff !important;
+  background: #343a40 !important;
+  border-radius: 0.5rem;
+  font-weight: bold;
+  box-shadow: 0 2px 8px 0 rgba(0,0,0,0.03);
+}
+</style>

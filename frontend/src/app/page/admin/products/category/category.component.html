@@ -1,0 +1,45 @@
+<!-- Modal para gestionar categorías -->
+<div class="modal fade" id="modalCategorias" tabindex="-1" aria-labelledby="modalCategoriasLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalCategoriasLabel">Gestionar Categorías</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <label class="form-label fw-bold">Agregar Nueva Categoría</label>
+          <div class="input-group">
+            <input type="text" class="form-control" [(ngModel)] ="nuevaCategoria" name="nuevaCategoria">
+            <button class="btn btn-secondary" type="button" >
+              <i class="bi bi-plus"></i> Agregar
+            </button>
+          </div>
+        </div>
+        <div class="mb-2 fw-bold">Categorías Existentes</div>
+        <table class="table table-bordered table-hover">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (categoria of categorias; track categoria.categoriaId) {
+            <tr>
+              <td>{{ categoria.nombre }}</td>
+              <td><span>{{ categoria.estado }}</span></td>
+              <td>
+                <button class="btn btn-link text-danger p-0 ms-2" title="Eliminar"><i class="bi bi-trash"></i></button>
+              </td>
+            </tr>
+          }
+          </tbody>
+        </table>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>
