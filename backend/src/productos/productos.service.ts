@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UpdateProductoDto } from './dto/update-producto.dto';
 import { CreateProductDto } from './dto/create-producto.dto';
@@ -9,6 +9,25 @@ export class ProductoService {
   
 async create(createProductDto: CreateProductDto) {
     const { nombre, descripcion, precio, categoriaId, ofertaId, imagenUrl, sucursales } = createProductDto;
+
+    // Validación de que el stock de cada sucursal sea mayor a 0
+    for (const sucursal of sucursales) {
+      if (sucursal.stock <= 0) {
+        throw new BadRequestException('El stock debe ser mayor a 0');
+      }
+    }
+
+    // Validación de que no exista un producto con el mismo nombre
+    const existingProduct = await this.prisma.producto.findFirst({ 
+      where: {
+        nombre: nombre,  // Busca el primer producto con ese nombre
+        },
+      });
+
+
+    if (existingProduct) {
+      throw new BadRequestException('Ya existe un producto con el mismo nombre');
+    }
 
     // Crear el producto
     const product = await this.prisma.producto.create({
