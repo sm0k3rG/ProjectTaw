@@ -1,11 +1,11 @@
 import { Controller, Get, Post, Body, Param, Put, Delete, UseGuards, Query } from '@nestjs/common';
-import { CreateProductoDto } from './dto/create-producto.dto';
 import { UpdateProductoDto } from './dto/update-producto.dto';
 import { ProductoService } from './productos.service';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { Producto, Rol } from '@prisma/client';
 import { RolesGuard } from 'src/auth/roles.guard';
 import { Roles } from 'src/auth/roles.decorator';
+import { CreateProductDto } from './dto/create-producto.dto';
 
 @Controller('producto')
 @UseGuards(JwtAuthGuard)
@@ -13,7 +13,7 @@ export class ProductoController {
   constructor(private readonly productoService: ProductoService) {}
 
   @Post()
-  create(@Body() createProductoDto: CreateProductoDto) {
+  create(@Body() createProductoDto: CreateProductDto) {
     return this.productoService.create(createProductoDto);
   }
 
@@ -22,7 +22,7 @@ export class ProductoController {
     return this.productoService.findAll();
   }
 
-  @Get('Registrados')
+  @Get('registrados')
   @Roles(Rol.Admin)  // Usamos el enum Rol para definir los roles permitidos
   @UseGuards(JwtAuthGuard, RolesGuard)  // Usamos ambos guards
   async obtenerProductosConDetalles(

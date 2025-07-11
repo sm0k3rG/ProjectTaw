@@ -1,28 +1,41 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { CreateProductoDto } from './dto/create-producto.dto';
 import { UpdateProductoDto } from './dto/update-producto.dto';
-import { Producto } from '@prisma/client';
+import { CreateProductDto } from './dto/create-producto.dto';
 
 @Injectable()
 export class ProductoService {
   constructor(private readonly prisma: PrismaService) {}
   
-async create(createProductoDto: CreateProductoDto) {
-  // Verificar si el producto ya existe en la base de datos
-  const existingProduct = await this.prisma.producto.findFirst({
-    where: { nombre: createProductoDto.nombre }, // Cambia 'nombre' por el campo único que defines para tu producto
-  });
+async create(createProductDto: CreateProductDto) {
+    const { nombre, descripcion, precio, categoriaId, ofertaId, imagenUrl, sucursales } = createProductDto;
 
-  if (existingProduct) {
-    throw new Error('El producto ya existe en la base de datos');
+    // Crear el producto
+    const product = await this.prisma.producto.create({
+      data: {
+        nombre,
+        descripcion,
+        precio,
+        categoriaId,
+        ofertaId,
+        imagenUrl,
+      },
+    });
+
+    // Crear las relaciones con las sucursales y asignar el stock
+    const sucursalesData = sucursales.map((sucursal) => ({
+      productoId: product.id,
+      sucursalId: sucursal.id,
+      stock: sucursal.stock,
+    }));
+
+    await this.prisma.productoSucursal.createMany({
+      data: sucursalesData,
+    });
+
+    return product;
   }
 
-  // Si no existe, se crea el nuevo producto
-  return await this.prisma.producto.create({
-    data: createProductoDto,
-  });
-}
 
 async obtenerProductosConDetalles(
     page: number = 1,  // Página por defecto
