@@ -24,33 +24,22 @@ async create(createProductoDto: CreateProductoDto) {
   });
 }
 
-async obtenerProductosConDetalles(): Promise<Producto[]> {
+async obtenerProductosConDetalles(
+    page: number = 1,  // Página por defecto
+    limit: number = 10,  // Límite por defecto
+  ) {
+    const skip = (page - 1) * limit;  // Calcular el offset para la paginación
+
     return this.prisma.producto.findMany({
+      skip,
+      take: limit,  // Paginación
       include: {
-        categoria: {
-        select: {
-          id: true,
-          nombre: true,
-          estado: true, // Incluye el campo estado de la categoría
-        },
-      }, // Incluye la categoría asociada al producto
-        sucursales: {
-          select: {
-            stock: true, // Solo incluye el stock
-            sucursal: {
-              select: {
-                id: true,
-                nombre: true,
-                direccion: true,
-                ciudad: true,
-                region: true,
-              },
-            },
-          },
-        },
+        categoria: true,  // Incluir la categoría asociada
+        sucursales: true, // Incluir las sucursales asociadas
       },
     });
   }
+
 
 
   async findAll() {

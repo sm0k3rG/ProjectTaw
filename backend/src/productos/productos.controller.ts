@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Put, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Put, Delete, UseGuards, Query } from '@nestjs/common';
 import { CreateProductoDto } from './dto/create-producto.dto';
 import { UpdateProductoDto } from './dto/update-producto.dto';
 import { ProductoService } from './productos.service';
@@ -22,11 +22,13 @@ export class ProductoController {
     return this.productoService.findAll();
   }
 
-  @Get('detalles')
+  @Get('Registrados')
   @Roles(Rol.Admin)  // Usamos el enum Rol para definir los roles permitidos
   @UseGuards(JwtAuthGuard, RolesGuard)  // Usamos ambos guards
-  async obtenerProductosConDetalles(): Promise<Producto[]> {
-    return this.productoService.obtenerProductosConDetalles();
+  async obtenerProductosConDetalles(
+    @Query('page') page: number = 1,  // Página por defecto
+    @Query('limit') limit: number = 10): Promise<Producto[]> {
+    return this.productoService.obtenerProductosConDetalles(page, limit);
   }
 
   @Get(':id')
