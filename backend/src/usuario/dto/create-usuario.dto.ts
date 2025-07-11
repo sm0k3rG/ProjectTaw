@@ -1,6 +1,6 @@
 // src/usuarios/dto/create-usuario.dto.ts
+import { Rol } from '@prisma/client';
 import { IsString, IsEmail, IsEnum, IsNotEmpty, MinLength, MaxLength } from 'class-validator';
-import { Rol } from 'prisma/generated/prisma';
 
 export class CreateUsuarioDto {
   @IsString()

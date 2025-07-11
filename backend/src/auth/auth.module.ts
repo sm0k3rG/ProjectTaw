@@ -3,17 +3,19 @@ import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
-import { UsuarioModule } from 'src/usuario/usuario.module';
+import { PrismaService } from '../prisma/prisma.service';  // PrismaService para interactuar con la base de datos
+import { RolesGuard } from './roles.guard';
+import { JwtStrategy } from './jwt.strategy';
+
 
 @Module({
   imports: [
     JwtModule.register({
-      secret: 'secretKey', // Cambiar esto por un secreto más seguro
-      signOptions: { expiresIn: '60s' }, // Token expira en 1 minuto
+      secret: 'clave',  // Cargar el secreto desde la variable de entorno
+      signOptions: { expiresIn: '1h' }, // Configurar un tiempo de expiración más adecuado (1 hora)
     }),
-    UsuarioModule, // Dependiendo de cómo gestionas los usuarios
   ],
-  providers: [AuthService],
+  providers: [AuthService, PrismaService,RolesGuard,JwtStrategy], // Usamos PrismaService directamente en AuthService
   controllers: [AuthController],
 })
 export class AuthModule {}

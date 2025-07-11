@@ -6,7 +6,6 @@
 
 generator client {
   provider = "prisma-client-js"
-  output = "./generated/prisma"
 }
 
 datasource db {
@@ -20,16 +19,17 @@ enum Rol {
 }
 
 model Usuario {
-  id                Int          @id @default(autoincrement())
-  nombre            String
-  email             String       @unique
-  contrasena        String
-  telefono          String
-  tarjetas          String
-  direccion         Direccion[]  // Relación 1:N con Direccion
-  pedidos           Pedido[]     // Relación 1:N con Pedido
-  rol               Rol          // Atributo 'rol' con tipo enum
+  id         Int         @id @default(autoincrement())
+  nombre     String
+  email      String      @unique
+  contrasena String
+  telefono   String
+  tarjetas   String
+  direccion  Direccion[] // Relación 1:N con Direccion
+  pedidos    Pedido[]    // Relación 1:N con Pedido
+  rol        Rol         // Atributo 'rol' con tipo enum
 }
+
 
 
 model Direccion {

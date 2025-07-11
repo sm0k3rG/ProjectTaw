@@ -16,6 +16,9 @@
     "forceConsistentCasingInFileNames": true,
     "noImplicitAny": false,
     "strictBindCallApply": false,
-    "noFallthroughCasesInSwitch": false
+    "noFallthroughCasesInSwitch": false,
+    "types": [
+      "@prisma/client"  // Prisma genera los tipos dentro de este paquete
+    ]
   }
 }

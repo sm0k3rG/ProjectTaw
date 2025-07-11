@@ -1,6 +1,6 @@
 // src/usuarios/dto/usuario.response.dto.ts
 
-import { Rol } from "prisma/generated/prisma";
+import { Rol } from "@prisma/client";
 
 
 export class UsuarioResponseDto {
