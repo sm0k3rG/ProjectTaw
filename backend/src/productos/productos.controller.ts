@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Put, Delete, UseGuards, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Put, Delete, UseGuards, Query, UsePipes, ValidationPipe } from '@nestjs/common';
 import { UpdateProductoDto } from './dto/update-producto.dto';
 import { ProductoService } from './productos.service';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
@@ -6,9 +6,9 @@ import { Producto, Rol } from '@prisma/client';
 import { RolesGuard } from 'src/auth/roles.guard';
 import { Roles } from 'src/auth/roles.decorator';
 import { CreateProductDto } from './dto/create-producto.dto';
+import { GetProductosDto } from './dto/get-productos.dto';
 
 @Controller('producto')
-@UseGuards(JwtAuthGuard)
 export class ProductoController {
   constructor(private readonly productoService: ProductoService) {}
 
@@ -17,9 +17,10 @@ export class ProductoController {
     return this.productoService.create(createProductoDto);
   }
 
-  @Get()
-  findAll() {
-    return this.productoService.findAll();
+  @Get("Catalago")
+  @UsePipes(new ValidationPipe({ transform: true }))
+  async listar(@Query() params: GetProductosDto) {
+    return this.productoService.findAll(params);
   }
 
   @Get('registrados')

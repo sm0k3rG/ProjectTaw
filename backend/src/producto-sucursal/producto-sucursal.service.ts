@@ -1,5 +1,5 @@
 // src/producto-sucursal/producto-sucursal.service.ts
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateProductoSucursalDto } from './dto/create-producto-sucursal.dto';
 import { UpdateProductoSucursalDto } from './dto/update-producto-sucursal.dto';
@@ -39,11 +39,30 @@ export class ProductoSucursalService {
   }
 
   // Actualizar el stock de un ProductoSucursal
-  async update(
+   async update(
     productoId: number,
     sucursalId: number,
     updateDto: UpdateProductoSucursalDto,
   ): Promise<ProductoSucursal> {
+    // Verificar si el producto existe
+    const producto = await this.prisma.producto.findUnique({
+      where: { id: productoId },
+    });
+
+    if (!producto) {
+      throw new NotFoundException(`Producto con ID ${productoId} no encontrado.`);
+    }
+
+    // Verificar si la sucursal existe
+    const sucursal = await this.prisma.sucursal.findUnique({
+      where: { id: sucursalId },
+    });
+
+    if (!sucursal) {
+      throw new NotFoundException(`Sucursal con ID ${sucursalId} no encontrada.`);
+    }
+
+    // Si ambos existen, realizar la actualización
     return this.prisma.productoSucursal.update({
       where: {
         productoId_sucursalId: {
