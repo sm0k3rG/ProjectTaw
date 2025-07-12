@@ -4,6 +4,18 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Category } from '../../../../core/models/category.interface';
 
+/**
+ * Componente para la gestión de categorías de productos.
+ * Permite agregar, eliminar y cambiar el estado de las categorías.
+ * 
+ * @description
+ * Este componente proporciona una interfaz completa para administrar categorías:
+ * - Agregar nuevas categorías con validación de solo letras
+ * - Eliminar categorías existentes
+ * - Cambiar el estado de categorías (Activa/Inactiva)
+ * - Visualización de todas las categorías en una tabla
+ * 
+ */
 @Component({
   selector: 'app-category',
   standalone: true,
@@ -12,16 +24,25 @@ import { Category } from '../../../../core/models/category.interface';
   styleUrl: './category.component.css'
 })
 export class CategoryComponent implements OnInit {
+  
   categorias: Category[] = [];
   categoriaForm: FormGroup;
   loading = false;
   mensajeExito: string = '';
   mensajeError: string = '';
 
+  /**
+   * Constructor del componente.
+   * Inicializa el formulario reactivo con las validaciones necesarias.
+   * 
+   * @param {CategoryService} categoryService - Servicio para operaciones CRUD de categorías
+   * @param {FormBuilder} fb - Constructor de formularios reactivos
+   */
   constructor(
     private categoryService: CategoryService,
     private fb: FormBuilder
   ) {
+    // Inicializar el formulario con validaciones
     this.categoriaForm = this.fb.group({
       nuevaCategoria: ['', [
         Validators.required,
@@ -30,10 +51,18 @@ export class CategoryComponent implements OnInit {
     });
   }
 
+  /**
+   * Método del ciclo de vida que se ejecuta al inicializar el componente.
+   * Carga la lista inicial de categorías desde el backend.
+   */
   ngOnInit(): void {
     this.obtenerCategorias();
   }
 
+  /**
+   * Obtiene todas las categorías desde el backend y las asigna a la variable local.
+   * Se ejecuta al inicializar el componente y después de cada operación CRUD.
+   */
   obtenerCategorias(): void {
     this.categoryService.obtenerCategorias().subscribe({
       next: (categoria: Category[]) => {
@@ -43,6 +72,10 @@ export class CategoryComponent implements OnInit {
     })
   }
 
+  /**
+   * Agrega una nueva categoría al sistema.
+   * Valida el formulario antes de enviar la petición al backend. 
+   */
   agregarCategoria(): void {
     this.mensajeExito = '';
     this.mensajeError = '';
@@ -73,19 +106,28 @@ export class CategoryComponent implements OnInit {
     });
   }
 
-  // Getter para facilitar el acceso al campo en el template
+  /**
+   * Getter para facilitar el acceso al campo 'nuevaCategoria' en el template.
+   * Proporciona una forma más limpia de acceder al control del formulario.
+   */
   get nuevaCategoriaField() {
     return this.categoriaForm.get('nuevaCategoria');
   }
 
-  // Método para verificar si el campo tiene errores
+  /**
+   * Verifica si un campo específico del formulario tiene un error particular.
+   * Se usa para mostrar mensajes de validación en el template.
+   */
   hasError(fieldName: string, errorType: string): boolean {
     const field = this.categoriaForm.get(fieldName);
     return field ? field.hasError(errorType) && field.touched : false;
   }
 
-
-   eliminarCategoria(id: number): void {
+  /**
+   * Elimina una categoría del sistema.
+   * Muestra una confirmación antes de proceder con la eliminación.
+   */
+  eliminarCategoria(id: number): void {
     this.mensajeExito = '';
     this.mensajeError = '';
     if (!confirm('¿Estás seguro de que deseas eliminar esta categoría?')) {
@@ -105,6 +147,10 @@ export class CategoryComponent implements OnInit {
     });
   }
 
+  /**
+   * Cambia el estado de una categoría entre 'Activa' e 'Inactiva'.
+   * Muestra una confirmación antes de proceder con el cambio.
+   */
   cambiarEstado(categoria: Category): void {
     this.mensajeExito = '';
     this.mensajeError = '';

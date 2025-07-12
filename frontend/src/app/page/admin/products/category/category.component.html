@@ -32,20 +32,28 @@
             </div>
             
             <!-- Mensajes de validación -->
-            <div *ngIf="hasError('nuevaCategoria', 'required')" class="invalid-feedback d-block">
-              El nombre de la categoría es requerido.
-            </div>
-            <div *ngIf="hasError('nuevaCategoria', 'pattern')" class="invalid-feedback d-block">
-              Solo se permiten letras y espacios. No se permiten números ni caracteres especiales.
-            </div>
+            @if (hasError('nuevaCategoria', 'required')) {
+              <div class="invalid-feedback d-block">
+                El nombre de la categoría es requerido.
+              </div>
+            }
+            @if (hasError('nuevaCategoria', 'pattern')) {
+              <div class="invalid-feedback d-block">
+                Solo se permiten letras y espacios. No se permiten números ni caracteres especiales.
+              </div>
+            }
             
             <!-- Mensajes de éxito y error -->
-            <div *ngIf="mensajeExito" class="alert alert-success py-2 mt-2 mb-0" role="alert">
-              {{ mensajeExito }}
-            </div>
-            <div *ngIf="mensajeError" class="alert alert-danger py-2 mt-2 mb-0" role="alert">
-              {{ mensajeError }}
-            </div>
+            @if (mensajeExito) {
+              <div class="alert alert-success py-2 mt-2 mb-0" role="alert">
+                {{ mensajeExito }}
+              </div>
+            }
+            @if (mensajeError) {
+              <div class="alert alert-danger py-2 mt-2 mb-0" role="alert">
+                {{ mensajeError }}
+              </div>
+            }
           </div>
         </form>
         
