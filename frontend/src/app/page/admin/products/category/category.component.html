@@ -7,15 +7,48 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
       </div>
       <div class="modal-body">
-        <div class="mb-3">
-          <label class="form-label fw-bold">Agregar Nueva Categoría</label>
-          <div class="input-group">
-            <input type="text" class="form-control" [(ngModel)] ="nuevaCategoria" name="nuevaCategoria">
-            <button class="btn btn-secondary" type="button" >
-              <i class="bi bi-plus"></i> Agregar
-            </button>
+        <form [formGroup]="categoriaForm">
+          <div class="mb-3">
+            <label class="form-label fw-bold">Agregar Nueva Categoría</label>
+            <div class="input-group">
+              <input 
+                type="text" 
+                class="form-control" 
+                formControlName="nuevaCategoria"
+                placeholder="Ingresa solo letras y espacios"
+                [ngClass]="{
+                  'is-invalid': hasError('nuevaCategoria', 'pattern') || hasError('nuevaCategoria', 'required'),
+                  'is-valid': nuevaCategoriaField?.valid && nuevaCategoriaField?.touched
+                }"
+              >
+              <button 
+                class="btn btn-secondary" 
+                type="button" 
+                (click)="agregarCategoria()" 
+                [disabled]="loading || categoriaForm.invalid"
+              >
+                <i class="bi bi-plus"></i> Agregar
+              </button>
+            </div>
+            
+            <!-- Mensajes de validación -->
+            <div *ngIf="hasError('nuevaCategoria', 'required')" class="invalid-feedback d-block">
+              El nombre de la categoría es requerido.
+            </div>
+            <div *ngIf="hasError('nuevaCategoria', 'pattern')" class="invalid-feedback d-block">
+              Solo se permiten letras y espacios. No se permiten números ni caracteres especiales.
+            </div>
+            
+            <!-- Mensajes de éxito y error -->
+            <div *ngIf="mensajeExito" class="alert alert-success py-2 mt-2 mb-0" role="alert">
+              {{ mensajeExito }}
+            </div>
+            <div *ngIf="mensajeError" class="alert alert-danger py-2 mt-2 mb-0" role="alert">
+              {{ mensajeError }}
+            </div>
           </div>
-        </div>
+        </form>
+        
         <div class="mb-2 fw-bold">Categorías Existentes</div>
         <table class="table table-bordered table-hover">
           <thead>
@@ -26,17 +59,32 @@
             </tr>
           </thead>
           <tbody>
-            @for (categoria of categorias; track categoria.categoriaId) {
+            @for (categoria of categorias; track categoria.id) {
             <tr>
               <td>{{ categoria.nombre }}</td>
-              <td><span>{{ categoria.estado }}</span></td>
               <td>
-                <button class="btn btn-link text-danger p-0 ms-2" title="Eliminar"><i class="bi bi-trash"></i></button>
+                <span
+                  class="badge d-inline-flex align-items-center gap-1"
+                  [ngClass]="categoria.estado === 'Activa' ? 'bg-success' : 'bg-secondary'"
+                  style="cursor:pointer"
+                  (click)="cambiarEstado(categoria)"
+                  title="Haz clic para cambiar el estado"
+                  [class.opacity-50]="loading"
+                >
+                  {{ categoria.estado }}
+                  <i class="bi bi-pencil-square" style="font-size: 0.75rem;"></i>
+                </span>
+              </td>
+              <td>
+                <button class="btn btn-link text-danger p-0 ms-2" title="Eliminar" (click)="eliminarCategoria(categoria.id)" [disabled]="loading">
+                  <i class="bi bi-trash"></i>
+                </button>
               </td>
             </tr>
           }
           </tbody>
         </table>
+      </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Cerrar</button>
       </div>

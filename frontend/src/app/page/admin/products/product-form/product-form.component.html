@@ -1,33 +1,184 @@
-<div class="container p-3">
-  <div class="card shadow-sm">
-    <div class="card-body">
-      <form [formGroup]="productForm" (ngSubmit)="onSubmit()">
-        <div class="row mb-3">
-          <div class="col-md-12">
-            <label for="nombre" class="form-label fw-bold">Nombre del Producto</label>
-            <input type="text" class="form-control" id="nombre" placeholder="Nombre del producto" formControlName="nombre">
-          </div>
+<div class="container mt-4">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card">
+        <div class="card-header">
+          <h3 class="mb-0">Agregar Nuevo Producto</h3>
         </div>
-        <div class="mb-3">
-          <label for="descripcion" class="form-label fw-bold">Descripción</label>
-          <textarea class="form-control" id="descripcion" rows="2" placeholder="Descripción del producto" formControlName="descripcion"></textarea>
+        <div class="card-body">
+          <form [formGroup]="productForm" (ngSubmit)="onSubmit()">
+
+            <!-- Información básica del producto -->
+            <div class="row">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="nombre" class="form-label">Nombre del Producto *</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="nombre"
+                    formControlName="nombre"
+                    [class.is-invalid]="productForm.get('nombre')?.invalid && productForm.get('nombre')?.touched">
+                  <div *ngIf="productForm.get('nombre')?.invalid && productForm.get('nombre')?.touched" class="invalid-feedback">
+                    El nombre es requerido
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="precio" class="form-label">Precio *</label>
+                  <div class="input-group">
+                    <span class="input-group-text">$</span>
+                    <input
+                      type="number"
+                      class="form-control"
+                      id="precio"
+                      formControlName="precio"
+                      step="0.01"
+                      min="0"
+                      [class.is-invalid]="productForm.get('precio')?.invalid && productForm.get('precio')?.touched">
+                  </div>
+                  <div *ngIf="productForm.get('precio')?.invalid && productForm.get('precio')?.touched" class="invalid-feedback">
+                    <span *ngIf="productForm.get('precio')?.errors?.['required']">El precio es requerido</span>
+                    <span *ngIf="productForm.get('precio')?.errors?.['min']">El precio debe ser mayor a 0</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="categoria" class="form-label">Categoría *</label>
+                  <select
+                    class="form-select"
+                    id="categoria"
+                    formControlName="categoriaId"
+                    [class.is-invalid]="productForm.get('categoriaId')?.invalid && productForm.get('categoriaId')?.touched">
+                    <option value="">Selecciona una categoría</option>
+                    <option *ngFor="let categoria of categorias" [value]="categoria.categoriaId">
+                      {{ categoria.nombre }}
+                    </option>
+                  </select>
+                  <div *ngIf="productForm.get('categoriaId')?.invalid && productForm.get('categoriaId')?.touched" class="invalid-feedback">
+                    La categoría es requerida
+                  </div>
+                </div>
+              </div>
+
+         
+            <div class="mb-3">
+              <label for="descripcion" class="form-label">Descripción *</label>
+              <textarea
+                class="form-control"
+                id="descripcion"
+                rows="3"
+                formControlName="descripcion"
+                [class.is-invalid]="productForm.get('descripcion')?.invalid && productForm.get('descripcion')?.touched"></textarea>
+              <div *ngIf="productForm.get('descripcion')?.invalid && productForm.get('descripcion')?.touched" class="invalid-feedback">
+                La descripción es requerida
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="imagenUrl" class="form-label">URL de la Imagen</label>
+              <input
+                type="url"
+                class="form-control"
+                id="imagenUrl"
+                formControlName="imagenUrl"
+                placeholder="https://ejemplo.com/imagen.jpg">
+            </div>
+
+            <!-- Sección de sucursales -->
+            <div class="card mt-4">
+              <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Sucursales y Stock</h5>
+                <button
+                  type="button"
+                  class="btn btn-primary btn-sm"
+                  (click)="agregarSucursal()"
+                  [disabled]="sucursalesSeleccionadas.length >= sucursales.length">
+                  <i class="bi bi-plus"></i> Agregar Sucursal
+                </button>
+              </div>
+              <div class="card-body">
+                <div *ngIf="sucursalesSeleccionadas.length === 0" class="text-center text-muted py-3">
+                  <p>No hay sucursales seleccionadas</p>
+                  <p class="small">Haz clic en "Agregar Sucursal" para comenzar</p>
+                </div>
+
+                <div formArrayName="sucursalesSeleccionadas">
+                  <div *ngFor="let sucursalForm of sucursalesSeleccionadas.controls; let i = index"
+                       [formGroupName]="i"
+                       class="row mb-3 p-3 border rounded">
+
+                    <div class="col-md-6">
+                      <label class="form-label">Sucursal *</label>
+                      <select
+                        class="form-select"
+                        formControlName="sucursalId"
+                        [class.is-invalid]="sucursalForm.get('sucursalId')?.invalid && sucursalForm.get('sucursalId')?.touched">
+                        <option value="">Selecciona una sucursal</option>
+                        <option *ngFor="let sucursal of sucursales"
+                                [value]="sucursal.sucursalId"
+                                [disabled]="sucursalYaSeleccionada(sucursal.sucursalId, i)">
+                          {{ sucursal.nombre }} - {{ sucursal.ciudad }}
+                        </option>
+                      </select>
+                      <div *ngIf="sucursalForm.get('sucursalId')?.invalid && sucursalForm.get('sucursalId')?.touched" class="invalid-feedback">
+                        La sucursal es requerida
+                      </div>
+                    </div>
+
+                    <div class="col-md-4">
+                      <label class="form-label">Stock *</label>
+                      <input
+                        type="number"
+                        class="form-control"
+                        formControlName="stock"
+                        min="0"
+                        [class.is-invalid]="sucursalForm.get('stock')?.invalid && sucursalForm.get('stock')?.touched">
+                      <div *ngIf="sucursalForm.get('stock')?.invalid && sucursalForm.get('stock')?.touched" class="invalid-feedback">
+                        <span *ngIf="sucursalForm.get('stock')?.errors?.['required']">El stock es requerido</span>
+                        <span *ngIf="sucursalForm.get('stock')?.errors?.['min']">El stock debe ser mayor o igual a 0</span>
+                      </div>
+                    </div>
+
+                    <div class="col-md-2 d-flex align-items-end">
+                      <button
+                        type="button"
+                        class="btn btn-danger btn-sm w-100"
+                        (click)="removerSucursal(i)">
+                        <i class="bi bi-trash"></i> Eliminar
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Botones de acción -->
+            <div class="d-flex justify-content-between mt-4">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                (click)="productForm.reset(); sucursalesSeleccionadas.clear(); ">
+                Limpiar Formulario
+              </button>
+
+              <button
+                type="submit"
+                class="btn btn-primary"
+                [disabled]="loading || productForm.invalid || sucursalesSeleccionadas.length === 0">
+                <span *ngIf="loading" class="spinner-border spinner-border-sm me-2" role="status"></span>
+                {{ loading ? 'Agregando...' : 'Agregar Producto' }}
+              </button>
+            </div>
+          </form>
         </div>
-        <div class="row mb-3">
-          <div class="col-md-6">
-            <label for="precio" class="form-label fw-bold">Precio</label>
-            <input type="number" class="form-control" id="precio" placeholder="Ej: 4000" formControlName="precio">
-          </div>
-          <div class="col-md-6">
-            <label for="imagen" class="form-label fw-bold">Imagen (URL)</label>
-            <input type="url" class="form-control" id="imagen" placeholder="https://..." formControlName="imagenUrl">
-          </div>
-        </div>
-        <div class="d-flex justify-content-end">
-          <button type="submit" class="btn btn-success fw-bold" [disabled]="loading">
-            <i class="bi bi-plus-circle me-2"></i>Agregar Producto
-          </button>
-        </div>
-      </form>
+      </div>
     </div>
   </div>
 </div>

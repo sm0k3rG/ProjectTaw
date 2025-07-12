@@ -18,5 +18,17 @@ export class CategoryService {
     return this.http.get<Category[]>(`${this.apiUrl}/${this.controller}`);
   }
 
+  agregarCategoria(categoria: Partial<Category>): Observable<Category> {
+    return this.http.post<Category>(`${this.apiUrl}/${this.controller}`, categoria);
+  }
+
+  eliminarCategoria(id: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/${this.controller}/${id}`);
+  }
+  
+  actualizarCategoria(id: number, categoria: Partial<Category>): Observable<Category> {
+    return this.http.patch<Category>(`${this.apiUrl}/${this.controller}/${id}`, categoria);
+  }
+  
 
 }

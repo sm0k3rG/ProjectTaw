@@ -4,6 +4,8 @@ import { CategoryComponent } from '../category/category.component';
 import { Product } from '../../../../core/models/product.interface';
 import { ProductService } from '../../../../core/services/product.service';
 import { CategoryService } from '../../../../core/services/category.service';
+import { NgbPaginationConfig, NgbPaginationModule } from '@ng-bootstrap/ng-bootstrap';
+
 
 /**
  * Componente para la gestión y visualización de productos.
@@ -12,21 +14,44 @@ import { CategoryService } from '../../../../core/services/category.service';
 @Component({
   selector: 'app-product-list',
   standalone: true,
-  imports: [CommonModule, CategoryComponent],
-  providers: [ProductService, CategoryService],
+  imports: [CommonModule, CategoryComponent, NgbPaginationModule],
+  providers: [ProductService, CategoryService, NgbPaginationConfig],
   templateUrl: './product-list.component.html',
   styleUrl: './product-list.component.css'
 })
 export class ProductListComponent implements OnInit {
+  page = 1;
+  pageSize = 10; // Productos por página
+  totalItems = 0; // Total de productos (se actualizará desde el backend)
 
   constructor(
     private productService: ProductService,
-  ) {}
+    config: NgbPaginationConfig
+  ) {
+    config.size = 'md';
+		config.boundaryLinks = true;
+  }
 
   /**
-   * Lista  obtenidos del backend.
+   * Lista de productos obtenidos del backend.
    */
   productos: Product[] = [];
+
+  /**
+   * Indica si se están cargando los productos.
+   */
+  cargando: boolean = false;
+
+  // Mapeo de colores para cada sucursal
+  sucursalColorMap: { [key: string]: string } = {
+    'Sucursal Central': 'bg-warning bg-opacity-25 text-dark', // naranja claro con texto oscuro
+    'Sucursal Norte': 'bg-primary bg-opacity-25 text-primary', // azul mucho más claro
+    // Puedes agregar más sucursales y colores aquí
+  };
+
+  getSucursalColor(sucursalNombre: string): string {
+    return this.sucursalColorMap[sucursalNombre] || 'bg-dark text-white';
+  }
 
   /**
    * Método de ciclo de vida que se ejecuta al inicializar el componente.
@@ -34,21 +59,32 @@ export class ProductListComponent implements OnInit {
    */
   ngOnInit(): void {
     this.obtenerProductos();
-
   }
 
   /**
    * Obtiene la lista de productos desde el backend y la asigna a la variable local.
    */
   obtenerProductos(): void {
-    this.productService.obtenerProductos().subscribe({
+    this.cargando = true;
+    this.productService.obtenerProductos(this.page, this.pageSize).subscribe({
       next: (productos: Product[]) => {
         this.productos = productos;
-        console.log(productos);
-      }
+        this.cargando = false;
+
+        console.log('Cantidad de productos:', productos.length);
+        // Nota: El totalItems debería venir en la respuesta del backend
+        this.totalItems = productos.length * this.page; // Esto es temporal
+      },
     });
   }
 
+  /**
+   * Maneja el cambio de página en la paginación
+   */
+  onPageChange(page: number): void {
+    this.page = page;
+    this.obtenerProductos();
+  }
 
 
 }

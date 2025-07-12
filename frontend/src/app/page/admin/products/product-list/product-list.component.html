@@ -48,37 +48,86 @@
           </tr>
         </thead>
         <tbody>
-          @for (producto of productos; track producto.id) {
+          @if (cargando) {
             <tr>
-              <td class="align-middle">
-                <img *ngIf="producto.imagenUrl" [src]="producto.imagenUrl" alt="Imagen producto" style="width: 48px; height: 48px; object-fit: cover; border-radius: 0.5rem;" />
-              </td>
-              <td>
-                <span class="fw-bold" style="font-size: 1.1rem;">{{ producto.nombre }}</span><br>
-                <span class="text-muted" style="font-size: 0.98rem;">{{ producto.descripcion }}</span>
-              </td>
-              <td class="align-middle">{{ producto.categoria.nombre}}</td>
-              <td class="align-middle">${{ producto.precio }}</td>
-              <td class="align-middle fw-semibold"> 
-                @for (stock of producto.sucursales; track stock) {
-                ( {{ stock.stock }} )
-                }
-              </td>
-              <td class="align-middle">            
-                @for (sucursal of producto.sucursales; track sucursal) {
-                ( {{ sucursal.sucursal.nombre }} )
-              }
-            </td>
-              <td class="align-middle">
-                <button class="btn btn-outline-dark btn-sm rounded-2 me-1" title="Editar"><i class="bi bi-pencil"></i></button>
-                <button class="btn btn-outline-danger btn-sm rounded-2" title="Eliminar" ><i class="bi bi-trash"></i></button>
+              <td colspan="7" class="text-center py-4">
+                <div class="text-muted">
+                  <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Cargando...</span>
+                  </div>
+                  <p class="mt-2 mb-0">Cargando productos...</p>
+                </div>
               </td>
             </tr>
+          } @else if (productos.length === 0) {
+            <tr>
+              <td colspan="7" class="text-center py-4">
+                <div class="text-muted">
+                  <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+                  <p class="mb-0">No hay productos registrados</p>
+                  <small>Los productos aparecerán aquí una vez que sean agregados</small>
+                </div>
+              </td>
+            </tr>
+          } @else {
+            @for (producto of productos; track producto.id) {
+              <tr>
+                <td class="align-middle">
+                  @if (producto.imagenUrl) {
+                    <img [src]="producto.imagenUrl" alt="Imagen producto" style="width: 48px; height: 48px; object-fit: cover; border-radius: 0.5rem;" />
+                  } @else {
+                    <div class="bg-light d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; border-radius: 0.5rem;">
+                      <i class="bi bi-image text-muted"></i>
+                    </div>
+                  }
+                </td>
+                <td>
+                  <span class="fw-bold" style="font-size: 1.1rem;">{{ producto.nombre }}</span><br>
+                  <span class="text-muted" style="font-size: 0.98rem;">{{ producto.descripcion }}</span>
+                </td>
+                <td class="align-middle">
+                  <span class="badge bg-info">{{ producto.categoria.nombre }}</span>
+                </td>
+                <td class="align-middle fw-bold text-success">${{ producto.precio | number:'1.0-0' }}</td>
+                <td class="align-middle fw-semibold">
+                  @for (productoSucursal of producto.sucursales; track productoSucursal) {
+                    <span class="badge me-1" [ngClass]="getSucursalColor(productoSucursal.sucursal.nombre)">
+                      {{ productoSucursal.stock }}
+                    </span>
+                  }
+                </td>
+                <td class="align-middle">
+                  @for (productoSucursal of producto.sucursales; track productoSucursal) {
+                    <span class="badge me-1" [ngClass]="getSucursalColor(productoSucursal.sucursal.nombre)">
+                      {{ productoSucursal.sucursal.nombre }}
+                    </span>
+                  }
+                </td>
+                <td class="align-middle">
+                  <button class="btn btn-outline-dark btn-sm rounded-2 me-1" title="Editar"><i class="bi bi-pencil"></i></button>
+                  <button class="btn btn-outline-danger btn-sm rounded-2" title="Eliminar" ><i class="bi bi-trash"></i></button>
+                </td>
+              </tr>
+            }
           }
         </tbody>
       </table>
+      <div class="d-flex justify-content-center mt-4">
+        <ngb-pagination
+          [collectionSize]="totalItems"
+          [(page)]="page"
+          [pageSize]="pageSize"
+          [maxSize]="5"
+          [rotate]="true"
+          [ellipses]="false"
+          [boundaryLinks]="true"
+          (pageChange)="onPageChange($event)"
+        />
+      </div>
     </div>
   </div>
+
+  
 
   <!-- Modal para agregar producto -->
   <div class="modal fade" id="modalAgregarProducto" tabindex="-1" aria-labelledby="modalAgregarProductoLabel" aria-hidden="true">

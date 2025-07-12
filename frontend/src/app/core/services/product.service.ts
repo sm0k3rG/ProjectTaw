@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Product } from '../models/product.interface';
 import { environment } from '../../../environments/environment';
@@ -13,10 +13,29 @@ export class ProductService {
 
   constructor(private http: HttpClient) { }
 
-  obtenerProductos(): Observable<Product[]> {
-    return this.http.get<Product[]>(`${this.apiUrl}/${this.controller}/detalles`);
+  obtenerProductos(pagina: number = 1, tamanoPagina: number = 10): Observable<Product[]> {
+    let params = new HttpParams()
+      .set('pagina', pagina.toString())
+      .set('tamanoPagina', tamanoPagina.toString());
+    
+    return this.http.get<Product[]>(`${this.apiUrl}/${this.controller}/registrados`, { params });
   }
 
-  
+  eliminarProducto(id: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/${this.controller}/${id}`);
+  }
+
+  agregarProducto(producto: Product): Observable<Product> {
+    return this.http.post<Product>(`${this.apiUrl}/${this.controller}`, producto);
+  }
+
+  agregarStockSucursal(stockData: {
+    productoId: number;
+    sucursalId: number;
+    stock: number;
+  }): Observable<any> {
+    return this.http.post(`${this.apiUrl}/producto-sucursal`, stockData);
+  }
+
 
 }

@@ -1,0 +1,40 @@
+/* Estilos para el badge editable */
+.badge {
+  transition: all 0.2s ease-in-out;
+  user-select: none;
+}
+
+.badge:hover {
+  transform: scale(1.05);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.badge:active {
+  transform: scale(0.95);
+}
+
+/* Estilos específicos para el ícono de editar */
+.badge .bi-pencil-square {
+  opacity: 0.8;
+  transition: opacity 0.2s ease-in-out;
+}
+
+.badge:hover .bi-pencil-square {
+  opacity: 1;
+}
+
+/* Efecto de carga */
+.badge.opacity-50 {
+  pointer-events: none;
+}
+
+/* Animación de pulso para indicar que está cargando */
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.5; }
+  100% { opacity: 1; }
+}
+
+.badge.opacity-50 {
+  animation: pulse 1.5s infinite;
+}
