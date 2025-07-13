@@ -4,7 +4,7 @@ import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormArray, Abs
 import { AuthService } from '../../../core/services/auth.service';
 import Swal from 'sweetalert2';
 
-function validateRut(control: AbstractControl): ValidationErrors | null {
+function validarRut(control: AbstractControl): ValidationErrors | null {
   const rut = control.value;
   if (!rut) return null;
   // Validación básica de RUT chileno
@@ -23,7 +23,7 @@ function validateRut(control: AbstractControl): ValidationErrors | null {
   return null;
 }
 
-function passwordMatchValidator(group: AbstractControl): ValidationErrors | null {
+function validarCoincidenciaContraseña(group: AbstractControl): ValidationErrors | null {
   const password = group.get('password')?.value;
   const confirm = group.get('confirmPassword')?.value;
   return password === confirm ? null : { passwordMismatch: true };
@@ -149,7 +149,7 @@ export class RegisterComponent {
   constructor(private fb: FormBuilder, private authService: AuthService) {
     this.registerForm = this.fb.group({
       nombre: ['', Validators.required],
-      rut: ['', [Validators.required, validateRut]],
+      rut: ['', [Validators.required, validarRut]],
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]],
       confirmPassword: ['', Validators.required],
@@ -163,14 +163,14 @@ export class RegisterComponent {
           region: ['', Validators.required],
         })
       ])
-    }, { validators: passwordMatchValidator });
+    }, { validators: validarCoincidenciaContraseña });
   }
 
   get direcciones() {
     return this.registerForm.get('direcciones') as FormArray;
   }
 
-  addDireccion() {
+  agregarDireccion() {
     this.direcciones.push(this.fb.group({
       calle: ['', Validators.required],
       numero: ['', Validators.required],
@@ -180,14 +180,14 @@ export class RegisterComponent {
     this.comunasPorDireccion.push([]);
   }
 
-  removeDireccion(index: number) {
+  eliminarDireccion(index: number) {
     if (this.direcciones.length > 1) {
       this.direcciones.removeAt(index);
       this.comunasPorDireccion.splice(index, 1);
     }
   }
 
-  onRegionChange(index: number) {
+  alCambiarRegion(index: number) {
     const region = this.direcciones.at(index).get('region')?.value;
     const regionObj = this.regiones.find(r => r.nombre === region);
     this.comunasPorDireccion[index] = regionObj ? regionObj.comunas : [];
@@ -195,7 +195,7 @@ export class RegisterComponent {
     this.direcciones.at(index).get('comuna')?.setValue('');
   }
 
-  onSubmit() {
+  enviarFormulario() {
     if (this.registerForm.invalid) {
       this.registerForm.markAllAsTouched();
       Swal.fire({ icon: 'error', title: 'Error', text: 'Completa todos los campos correctamente.' });

@@ -38,7 +38,7 @@ export class LoginComponent implements OnInit {
     });
   }
 
-    onSubmit() {
+    enviarFormulario() {
     if (this.loginForm.valid) {
       this.isLoading = true;
       const { email, password } = this.loginForm.value;
@@ -91,7 +91,7 @@ export class LoginComponent implements OnInit {
         }
       });
     } else {
-      this.markFormGroupTouched();
+      this.marcarFormularioComoTocado();
 
       Swal.fire({
         icon: 'error',
@@ -103,11 +103,11 @@ export class LoginComponent implements OnInit {
     }
   }
 
-  togglePasswordVisibility() {
+  alternarVisibilidadContraseña() {
     this.showPassword = !this.showPassword
   }
 
-  private markFormGroupTouched() {
+  private marcarFormularioComoTocado() {
     Object.keys(this.loginForm.controls).forEach((key) => {
       const control = this.loginForm.get(key)
       control?.markAsTouched()
