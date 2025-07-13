@@ -1,4 +1,13 @@
 <div class="container-fluid px-2 px-md-4 py-3">
+  @if (mostrarMensaje) {
+    <div class="alert alert-{{ tipoMensaje === 'success' ? 'success' : 'danger' }} alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3" 
+         role="alert" 
+         style="z-index: 1050; min-width: 300px;">
+      <i class="bi bi-{{ tipoMensaje === 'success' ? 'check-circle' : 'exclamation-triangle' }} me-2"></i>
+      {{ mensaje }}
+      <button type="button" class="btn-close" (click)="mostrarMensaje = false"></button>
+    </div>
+  }
   <div class="card shadow-sm rounded-4 p-4" style="background: #fafbfc;">
     <div class="d-flex justify-content-between align-items-center mb-3">
       <div>
@@ -105,7 +114,16 @@
                 </td>
                 <td class="align-middle">
                   <button class="btn btn-outline-dark btn-sm rounded-2 me-1" title="Editar"><i class="bi bi-pencil"></i></button>
-                  <button class="btn btn-outline-danger btn-sm rounded-2" title="Eliminar" ><i class="bi bi-trash"></i></button>
+                  <button 
+                    class="btn btn-outline-danger btn-sm rounded-2" 
+                    title="Eliminar" 
+                    (click)="eliminarProducto(producto.id)"
+                    [disabled]="eliminando">
+                    @if (eliminando) {
+                      <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                    }
+                    <i class="bi bi-trash"></i>
+                  </button>
                 </td>
               </tr>
             }
@@ -131,13 +149,14 @@
 
   <!-- Modal para agregar producto -->
   <div class="modal fade" id="modalAgregarProducto" tabindex="-1" aria-labelledby="modalAgregarProductoLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-xl">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="modalAgregarProductoLabel">Agregar Nuevo Producto</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
         </div>
         <div class="modal-body">
+          <app-product-form (productoAgregado)="onProductoAgregado()"></app-product-form>
         </div>
       </div>
     </div>

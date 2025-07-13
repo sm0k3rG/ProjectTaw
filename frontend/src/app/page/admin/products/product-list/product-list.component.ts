@@ -1,6 +1,7 @@
 import { Component, OnInit, Provider } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CategoryComponent } from '../category/category.component';
+import { ProductFormComponent } from '../product-form/product-form.component';
 import { Product } from '../../../../core/models/product.interface';
 import { ProductService } from '../../../../core/services/product.service';
 import { CategoryService } from '../../../../core/services/category.service';
@@ -14,7 +15,7 @@ import { NgbPaginationConfig, NgbPaginationModule } from '@ng-bootstrap/ng-boots
 @Component({
   selector: 'app-product-list',
   standalone: true,
-  imports: [CommonModule, CategoryComponent, NgbPaginationModule],
+  imports: [CommonModule, CategoryComponent, ProductFormComponent, NgbPaginationModule],
   providers: [ProductService, CategoryService, NgbPaginationConfig],
   templateUrl: './product-list.component.html',
   styleUrl: './product-list.component.css'
@@ -41,6 +42,17 @@ export class ProductListComponent implements OnInit {
    * Indica si se están cargando los productos.
    */
   cargando: boolean = false;
+
+  /**
+ * Indica si se está eliminando un producto.
+ */
+  eliminando: boolean = false;
+  /**
+   * Mensaje de estado para mostrar al usuario.
+   */
+  mensaje: string = '';
+  mostrarMensaje: boolean = false;
+  tipoMensaje: 'success' | 'error' = 'success';
 
   // Mapeo de colores para cada sucursal
   sucursalColorMap: { [key: string]: string } = {
@@ -86,5 +98,57 @@ export class ProductListComponent implements OnInit {
     this.obtenerProductos();
   }
 
+  /**
+   * Maneja el evento cuando se agrega un producto exitosamente.
+   * Recarga la lista de productos y cierra el modal.
+   */
+  onProductoAgregado(): void {
+    this.obtenerProductos();
+    // Cerrar el modal usando Bootstrap
+    const modal = document.getElementById('modalAgregarProducto');
+    if (modal) {
+      const bootstrapModal = (window as any).bootstrap?.Modal.getInstance(modal);
+      if (bootstrapModal) {
+        bootstrapModal.hide();
+      }
+    }
+  }
+
+  mostrarMensajeUsuario(mensaje: string, tipo: 'success' | 'error'): void {
+    this.mensaje = mensaje;
+    this.tipoMensaje = tipo;
+    this.mostrarMensaje = true;
+    
+    // Ocultar el mensaje después de 5 segundos
+    setTimeout(() => {
+      this.mostrarMensaje = false;
+    }, 5000);
+  }
+
+  /**
+   * Elimina un producto por su ID.
+   * @param id - ID del producto a eliminar
+   */
+  eliminarProducto(id: number): void {
+    if (confirm('¿Estás seguro de que deseas eliminar este producto? Esta acción no se puede deshacer.')) {
+      this.eliminando = true;
+      console.log('Eliminando producto con ID:', id);
+      
+      this.productService.eliminarProducto(id).subscribe({
+        next: () => {
+          console.log('Producto eliminado exitosamente');
+          this.eliminando = false;
+          this.mostrarMensajeUsuario('Producto eliminado exitosamente', 'success');
+          // Recargar la lista de productos después de eliminar
+          this.obtenerProductos();
+        },
+        error: (error) => {
+          this.eliminando = false;
+          console.error('Error al eliminar producto:', error);
+          this.mostrarMensajeUsuario('Error al eliminar el producto. Inténtalo de nuevo.', 'error');
+        }
+      });
+    }
+  }
 
 }

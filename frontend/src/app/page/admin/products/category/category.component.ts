@@ -157,7 +157,6 @@ export class CategoryComponent implements OnInit {
     
     const nuevoEstado = categoria.estado === 'Activa' ? 'Inactiva' : 'Activa';
     const mensajeConfirmacion = `¿Estás seguro de que deseas cambiar el estado de "${categoria.nombre}" a ${nuevoEstado}?`;
-    console.log('ID recibido para actualizar:', categoria.id);
 
     if (!confirm(mensajeConfirmacion)) {
       return;
