@@ -7,6 +7,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
       </div>
       <div class="modal-body">
+        <!-- Formulario para agregar nueva categoría -->
         <form [formGroup]="categoriaForm">
           <div class="mb-3">
             <label class="form-label fw-bold">Agregar Nueva Categoría</label>
@@ -57,6 +58,7 @@
           </div>
         </form>
         
+        <!-- Tabla de categorías existentes -->
         <div class="mb-2 fw-bold">Categorías Existentes</div>
         <table class="table table-bordered table-hover">
           <thead>
@@ -67,10 +69,12 @@
             </tr>
           </thead>
           <tbody>
+            <!-- Itera sobre las categorías existentes -->
             @for (categoria of categorias; track categoria.id) {
             <tr>
               <td>{{ categoria.nombre }}</td>
               <td>
+                <!-- Badge editable para cambiar el estado de la categoría -->
                 <span
                   class="badge d-inline-flex align-items-center gap-1"
                   [ngClass]="categoria.estado === 'Activa' ? 'bg-success' : 'bg-secondary'"
@@ -84,6 +88,7 @@
                 </span>
               </td>
               <td>
+                <!-- Botón para eliminar la categoría -->
                 <button class="btn btn-link text-danger p-0 ms-2" title="Eliminar" (click)="eliminarCategoria(categoria.id)" [disabled]="loading">
                   <i class="bi bi-trash"></i>
                 </button>

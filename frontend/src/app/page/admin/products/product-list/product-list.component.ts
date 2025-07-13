@@ -100,7 +100,7 @@ export class ProductListComponent implements OnInit {
 
   /**
    * Maneja el evento cuando se agrega un producto exitosamente.
-   * Recarga la lista de productos y cierra el modal.
+   * Recarga la lista de productos, cierra el modal y muestra mensaje de éxito.
    */
   onProductoAgregado(): void {
     this.obtenerProductos();
@@ -112,6 +112,8 @@ export class ProductListComponent implements OnInit {
         bootstrapModal.hide();
       }
     }
+    // Mostrar mensaje de éxito al usuario
+    this.mostrarMensajeUsuario('Producto agregado exitosamente', 'success');
   }
 
   mostrarMensajeUsuario(mensaje: string, tipo: 'success' | 'error'): void {
@@ -132,11 +134,9 @@ export class ProductListComponent implements OnInit {
   eliminarProducto(id: number): void {
     if (confirm('¿Estás seguro de que deseas eliminar este producto? Esta acción no se puede deshacer.')) {
       this.eliminando = true;
-      console.log('Eliminando producto con ID:', id);
       
       this.productService.eliminarProducto(id).subscribe({
         next: () => {
-          console.log('Producto eliminado exitosamente');
           this.eliminando = false;
           this.mostrarMensajeUsuario('Producto eliminado exitosamente', 'success');
           // Recargar la lista de productos después de eliminar
@@ -144,7 +144,6 @@ export class ProductListComponent implements OnInit {
         },
         error: (error) => {
           this.eliminando = false;
-          console.error('Error al eliminar producto:', error);
           this.mostrarMensajeUsuario('Error al eliminar el producto. Inténtalo de nuevo.', 'error');
         }
       });

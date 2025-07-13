@@ -67,7 +67,6 @@ export class CategoryComponent implements OnInit {
     this.categoryService.obtenerCategorias().subscribe({
       next: (categoria: Category[]) => {
         this.categorias = categoria;
-        console.log(this.categorias);
       }
     })
   }

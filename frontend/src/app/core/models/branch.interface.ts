@@ -1,6 +1,6 @@
 
 export interface Branch {
-    sucursalId: number;
+    id: number;
     nombre: string;
     ciudad: string;
     region: string;
