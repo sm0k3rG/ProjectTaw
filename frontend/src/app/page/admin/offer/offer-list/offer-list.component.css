@@ -1,0 +1,30 @@
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border: 2px solid #222;
+  border-radius: 12px;
+  background: transparent;
+  color: #222;
+  font-size: 1.7rem;
+  transition: border-color 0.2s, color 0.2s;
+  cursor: pointer;
+  padding: 0;
+}
+
+.icon-btn:hover, .icon-btn:focus {
+  border-color: #444;
+  color: #000;
+}
+
+.icon-btn-danger {
+  border-color: #d32f2f;
+  color: #d32f2f;
+}
+
+.icon-btn-danger:hover, .icon-btn-danger:focus {
+  border-color: #b71c1c;
+  color: #b71c1c;
+}

@@ -1,55 +1,43 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { OfferService } from '../../../../core/services/offer.service';
+import { Offer } from '../../../../core/models/offer.interface';
 import { OfferFormComponent } from '../offer-form/offer-form.component';
-
-interface Oferta {
-  id: number;
-  nombre: string;
-  descripcion: string;
-  sucursal: string;
-  descuento: string;
-  periodoInicio: string;
-  periodoFin: string;
-  estado: 'Activa' | 'Expirada';
-}
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-offer-list',
   standalone: true,
-  imports: [OfferFormComponent],
+  imports: [OfferFormComponent, DatePipe],
   templateUrl: './offer-list.component.html',
   styleUrl: './offer-list.component.css'
 })
-export class OfferListComponent {
-  ofertas: Oferta[] = [
-    {
-      id: 1,
-      nombre: 'Black Friday Electrónicos',
-      descripcion: 'Descuento especial en todos los productos electrónicos',
-      sucursal: 'Sucursal 1',
-      descuento: '25% OFF',
-      periodoInicio: '2024-11-25',
-      periodoFin: '2024-11-30',
-      estado: 'Activa'
-    },
-    {
-      id: 2,
-      nombre: 'Oferta Bebidas',
-      descripcion: '2x1 en bebidas seleccionadas',
-      sucursal: 'Sucursal 2',
-      descuento: '50% OFF',
-      periodoInicio: '2024-01-01',
-      periodoFin: '2024-01-31',
-      estado: 'Expirada'
-    },
-    {
-      id: 3,
-      nombre: 'Descuento Calzado',
-      descripcion: '$20 de descuento en calzado deportivo',
-      sucursal: 'Sucursal 1',
-      descuento: '20$ OFF',
-      periodoInicio: '2024-12-01',
-      periodoFin: '2024-12-31',
-      estado: 'Activa'
-    }
-  ];
+export class OfferListComponent implements OnInit {
+  ofertas: Offer[] = [];
+
+  constructor(private offerService: OfferService) {}
+
+  ngOnInit(): void {
+    this.obtenerOfertas();
+  }
+
+  obtenerOfertas(): void {
+    this.offerService.obtenerOfertas().subscribe({
+      next: (ofertas: Offer[]) => {
+        this.ofertas = ofertas;
+      },
+      error: (err) => {
+        console.error('Error al obtener ofertas', err);
+      }
+    });
+  }
+
+  editarOferta(oferta: Offer): void {
+    // Lógica para editar la oferta
+    console.log('Editar');
+  }
+
+  eliminarOferta(oferta: Offer): void {
+    // Lógica para eliminar la oferta
+    console.log('Eliminar');
+  }
 }
