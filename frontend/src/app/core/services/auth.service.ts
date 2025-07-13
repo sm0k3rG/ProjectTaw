@@ -95,4 +95,25 @@ export class AuthService {
   register(data: any): Observable<any> {
     return this.http.post(`${this.apiUrl}/auth/register`, data);
   }
+
+  solicitarRecuperacionContraseña(email: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/auth/forgot-password`, { email }).pipe(
+      catchError(error => {
+        console.error('Error en solicitud de recuperación:', error);
+        throw error;
+      })
+    );
+  }
+
+  restablecerContraseña(token: string, nuevaContraseña: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/auth/reset-password`, {
+      token,
+      password: nuevaContraseña
+    }).pipe(
+      catchError(error => {
+        console.error('Error en restablecimiento de contraseña:', error);
+        throw error;
+      })
+    );
+  }
 }
