@@ -43,14 +43,21 @@ model Direccion {
   pedidos           Pedido[]    // Relación 1:N con Pedido
 }
 
+enum PedidoEstado {
+  PENDIENTE
+  ACTIVO
+  COMPLETADO
+  CANCELADO
+}
+
 model Pedido {
-  id                Int          @id @default(autoincrement())
+  id                Int            @id @default(autoincrement())
   fechaPedido       DateTime
-  estado            String
+  estado            PedidoEstado   // ← Usar enum para el estado del pedido
   usuarioId         Int
   direccionId       Int
-  usuario           Usuario     @relation(fields: [usuarioId], references: [id])  // Relación N:1 con Usuario
-  direccion         Direccion   @relation(fields: [direccionId], references: [id]) // Relación N:1 con Direccion
+  usuario           Usuario       @relation(fields: [usuarioId], references: [id])  // Relación N:1 con Usuario
+  direccion         Direccion     @relation(fields: [direccionId], references: [id]) // Relación N:1 con Direccion
   lineasDePedido    LineaDePedido[]  // Relación 1:N con LineaDePedido
 }
 
@@ -65,6 +72,12 @@ model LineaDePedido {
   pedido            Pedido      @relation(fields: [pedidoId], references: [id])    // Relación N:1 con Pedido
 }
 
+enum ProductoEstado {
+  ACTIVO
+  ELIMINADO
+  INACTIVO
+}
+
 model Producto {
   id                Int              @id @default(autoincrement())
   nombre            String
@@ -72,12 +85,14 @@ model Producto {
   precio            Float
   categoriaId       Int
   ofertaId          Int?
-  imagenUrl      String?    // ← nueva columna
+  imagenUrl         String?    // ← nueva columna
+  estado            ProductoEstado // ← usar enum para el estado
   categoria         Categoria       @relation(fields: [categoriaId], references: [id])  // Relación N:1 con Categoria
   oferta            Oferta?         // Relación 1:1 (opcional) con Oferta, pero no se necesita especificar @relation aquí
   sucursales        ProductoSucursal[] // Relación 1:N con ProductoSucursal
   lineasDePedido    LineaDePedido[]  // Relación 1:N con LineaDePedido
 }
+
 
 model Categoria {
   id                Int          @id @default(autoincrement())

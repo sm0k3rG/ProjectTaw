@@ -28,7 +28,7 @@ CREATE TABLE `Direccion` (
 CREATE TABLE `Pedido` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `fechaPedido` DATETIME(3) NOT NULL,
-    `estado` VARCHAR(191) NOT NULL,
+    `estado` ENUM('PENDIENTE', 'ACTIVO', 'COMPLETADO', 'CANCELADO') NOT NULL,
     `usuarioId` INTEGER NOT NULL,
     `direccionId` INTEGER NOT NULL,
 
@@ -56,6 +56,7 @@ CREATE TABLE `Producto` (
     `categoriaId` INTEGER NOT NULL,
     `ofertaId` INTEGER NULL,
     `imagenUrl` VARCHAR(191) NULL,
+    `estado` ENUM('ACTIVO', 'ELIMINADO', 'INACTIVO') NOT NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;

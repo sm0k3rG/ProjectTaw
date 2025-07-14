@@ -23,13 +23,18 @@ export class ProductoController {
     return this.productoService.findAll(params);
   }
 
-  @Get('registrados')
-  @Roles(Rol.Admin)  // Usamos el enum Rol para definir los roles permitidos
-  @UseGuards(JwtAuthGuard, RolesGuard)  // Usamos ambos guards
+    @Get('registrados')
+  // @Roles(Rol.Admin)  // Usamos el enum Rol para definir los roles permitidos
+  // @UseGuards(JwtAuthGuard, RolesGuard)  // Usamos ambos guards
   async obtenerProductosConDetalles(
     @Query('page') page: number = 1,  // Página por defecto
-    @Query('limit') limit: number = 10): Promise<Producto[]> {
-    return this.productoService.obtenerProductosConDetalles(page, limit);
+    @Query('limit') limit: number = 10,
+    @Query('categoriaId') categoriaId?: number,
+    @Query('orden') orden?: string, // 'asc' o 'desc'
+
+
+  ): Promise<Producto[]> {
+    return this.productoService.obtenerProductosConDetalles(page, limit, categoriaId, orden);
   }
 
   @Get(':id')
@@ -42,8 +47,10 @@ export class ProductoController {
     return this.productoService.update(+id, updateProductoDto);
   }
 
+// @Roles(Rol.Admin)  // Usamos el enum Rol para definir los roles permitidos
+// @UseGuards(JwtAuthGuard, RolesGuard)  // Usamos ambos guards
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.productoService.remove(+id);
+  async eliminarProducto(@Param('id') id: number) {
+    return this.productoService.eliminarProducto(id);
   }
 }

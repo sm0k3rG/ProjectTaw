@@ -1,8 +1,9 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UpdateProductoDto } from './dto/update-producto.dto';
 import { CreateProductDto } from './dto/create-producto.dto';
 import { GetProductosDto } from './dto/get-productos.dto';
+import { Producto, ProductoEstado } from '@prisma/client';
 
 @Injectable()
 export class ProductoService {
@@ -34,6 +35,7 @@ async create(createProductDto: CreateProductDto) {
         categoriaId,
         ofertaId,
         imagenUrl,
+        estado: ProductoEstado.ACTIVO
       },
     });
     // Crear las relaciones con las sucursales y asignar el stock
@@ -50,20 +52,45 @@ async create(createProductDto: CreateProductDto) {
 
 
 async obtenerProductosConDetalles(
-    page: number = 1,  // Página por defecto
-    limit: number = 10,  // Límite por defecto
-  ) {
-    const skip = (page - 1) * limit;  // Calcular el offset para la paginación
+  page: number = 1,  // Página por defecto
+  limit: number = 10,  // Límite por defecto
 
-    return this.prisma.producto.findMany({
-      skip,
-      take: limit,  // Paginación
-      include: {
-        categoria: true,  // Incluir la categoría asociada
-        sucursales: true, // Incluir las sucursales asociadas
-      },
-    });
+// Parámetros opcionales para filtrado y ordenamiento (añadir bajo del limit)
+  categoriaId?: number,
+  orden?: string,
+) {
+  const skip = (page - 1) * limit;  // Calcular el offset para la paginación
+
+  // Construir el objeto de filtros dinámicamente
+  const where: any = {};
+  if (categoriaId) where.categoriaId = Number(categoriaId);
+
+
+  // Ordenar por nombre o precio
+  let orderBy: any = undefined;
+  if (orden === 'asc' || orden === 'desc') {
+    orderBy = { nombre: orden };
+  } else if (orden === 'precioAsc') {
+    orderBy = { precio: 'asc' };
+  } else if (orden === 'precioDesc') {
+    orderBy = { precio: 'desc' };
   }
+
+  return this.prisma.producto.findMany({
+    skip,
+    take: limit,  // Paginación
+    where,
+    orderBy,
+    include: {
+      categoria: true,  // Incluir la categoría asociada
+      sucursales: {
+        include: {
+          sucursal: true,  // Incluir los detalles de la sucursal
+        },
+      }, // Incluir las sucursales asociadas
+    },
+  });
+}
 
 
 
@@ -126,9 +153,54 @@ async obtenerProductosConDetalles(
     });
   }
 
-  async remove(id: number) {
-    return await this.prisma.producto.delete({
-      where: { id },
-    });
+ async eliminarProducto(id: number): Promise<Producto> {
+  // 1. Validar si el producto existe
+  const producto = await this.prisma.producto.findUnique({
+    where: { id },
+    include: { 
+      sucursales: {  // Incluir las sucursales asociadas
+        include: {
+          sucursal: true  // Incluir la información de la sucursal
+        }
+      }
+    },
+  });
+
+  if (!producto) {
+    throw new NotFoundException('Producto no encontrado');
   }
+
+  // 2. Validar que el producto no esté asignado a un pedido activo
+  const pedidosActivos = await this.prisma.pedido.findMany({
+    where: {
+      estado: 'ACTIVO',
+      lineasDePedido: {
+        some: {
+          productoId: id,
+        },
+      },
+    },
+  });
+  if (pedidosActivos.length > 0) {
+    throw new BadRequestException('El producto está asociado a un pedido activo');
+  }
+
+  // 3. Validar que el producto no tenga stock
+  if (producto.sucursales.some((sucursal) => sucursal.stock > 0)) {
+    throw new BadRequestException('El producto tiene stock disponible');
+  }
+
+  // 4. Actualizar el nombre del producto con un texto único antes de marcarlo como eliminado
+  const nombreConTextoUnico = `${producto.nombre}_eliminado_${new Date().getTime()}`;
+
+  // 5. Marcar el producto como eliminado (sin eliminarlo físicamente)
+  return this.prisma.producto.update({
+    where: { id },
+    data: {
+      nombre: nombreConTextoUnico, // Añadir texto único al nombre
+      estado: 'ELIMINADO', // Cambiar el estado a "eliminado"
+    },
+  });
+}
+
 }
