@@ -206,7 +206,7 @@ export class RegisterComponent {
     this.authService.register({ nombre, rut, email, password, telefono, tarjetas, direcciones }).subscribe({
       next: () => {
         this.isLoading = false;
-        Swal.fire({ icon: 'success', title: '¡Registro exitoso!', text: 'Ahora puedes iniciar sesión.' });
+        Swal.fire({ icon: 'success', title: '¡Registro exitoso!', text: 'Ahora puedes iniciar sesión.', timer: 1500, showConfirmButton: false });
         this.registerForm.reset();
       },
       error: (err) => {

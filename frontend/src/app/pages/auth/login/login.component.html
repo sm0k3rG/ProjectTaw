@@ -13,7 +13,7 @@
     </div>
 
     <!-- Formulario -->
-    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+    <form [formGroup]="loginForm" (ngSubmit)="enviarFormulario()" class="login-form">
       <!-- Campo Email -->
       <div class="form-group">
         <label for="email" class="form-label">Correo electrónico</label>
@@ -51,7 +51,7 @@
           <button
             type="button"
             class="password-toggle"
-            (click)="togglePasswordVisibility()"
+            (click)="alternarVisibilidadContrasena()"
           >
             {{ showPassword ? '👁️' : '👁️‍🗨️' }}
           </button>
@@ -66,7 +66,7 @@
 
       <!-- Olvidaste contraseña -->
       <div class="form-options">
-        <a href="#" class="forgot-password">¿Olvidaste tu contraseña?</a>
+        <a routerLink="/recover-password" class="forgot-password">¿Olvidaste tu contraseña?</a>
       </div>
 
       <!-- Botón de login -->

@@ -12,7 +12,7 @@
       <p class="welcome-text">Crea tu cuenta Walmart</p>
     </div>
 
-    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="register-form">
+    <form [formGroup]="registerForm" (ngSubmit)="enviarFormulario()" class="register-form">
       <div class="form-group">
         <label>Nombre</label>
         <input type="text" formControlName="nombre" class="form-input" />
@@ -77,12 +77,12 @@
         <div *ngFor="let dir of direcciones.controls; let i = index" [formGroupName]="i" class="direccion-card">
           <div class="direccion-header">
             <span>Dirección {{ i + 1 }}</span>
-            <button type="button" (click)="removeDireccion(i)" *ngIf="direcciones.length > 1" class="remove-direccion" title="Eliminar dirección">
+            <button type="button" (click)="eliminarDireccion(i)" *ngIf="direcciones.length > 1" class="remove-direccion" title="Eliminar dirección">
               <i class="bi bi-x-lg"></i>
             </button>
           </div>
           <div class="direccion-fields">
-            <select formControlName="region" class="form-input" (change)="onRegionChange(i)">
+            <select formControlName="region" class="form-input" (change)="alCambiarRegion(i)">
               <option value="">Selecciona región</option>
               <option *ngFor="let region of regiones" [value]="region.nombre">{{ region.nombre }}</option>
             </select>
@@ -94,7 +94,7 @@
             <input type="text" formControlName="numero" class="form-input" placeholder="Número" />
           </div>
         </div>
-        <button type="button" (click)="addDireccion()" class="add-direccion">+ Agregar dirección</button>
+        <button type="button" (click)="agregarDireccion()" class="add-direccion">+ Agregar dirección</button>
       </div>
 
       <button type="submit" [disabled]="isLoading" class="register-button">Registrarse</button>

@@ -65,7 +65,9 @@ export class LoginComponent implements OnInit {
               title: `¡Bienvenido ${decodedToken.name}!`,
               text: `Has iniciado sesión como ${decodedToken.role === 'Administrator' ? 'Administrador' : 'Cliente'}`,
               confirmButtonText: 'Continuar',
-              confirmButtonColor: '#0071ce'
+              confirmButtonColor: '#0071ce',
+              timer: 1500,
+              showConfirmButton: false
             }).then(() => {
               this.router.navigate([route]);
             });
@@ -103,7 +105,7 @@ export class LoginComponent implements OnInit {
     }
   }
 
-  alternarVisibilidadContraseña() {
+  alternarVisibilidadContrasena() {
     this.showPassword = !this.showPassword
   }
 
