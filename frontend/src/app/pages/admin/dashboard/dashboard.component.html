@@ -1,0 +1,11 @@
+<div *ngIf="esAdministrador">
+  <app-navbar></app-navbar>
+</div>
+<!-- Aquí se podrá mostrar un navbar diferente para usuarios en el futuro -->
+<div class="dashboard-container">
+  <h1 class="dashboard-title">Panel de Ventas</h1>
+  <div class="dashboard-card">
+    <h2 class="chart-title">Ventas por Mes</h2>
+    <canvas #ventasChart width="400" height="200"></canvas>
+  </div>
+</div>
