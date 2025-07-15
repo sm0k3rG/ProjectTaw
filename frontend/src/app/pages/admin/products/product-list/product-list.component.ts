@@ -94,10 +94,12 @@ export class ProductListComponent implements OnInit {
       this.categoriaSeleccionada !== '' ? Number(this.categoriaSeleccionada) : undefined,
       this.ordenSeleccionado || undefined
     ).subscribe({
-      next: (productos: Product[]) => {
-        this.productos = productos;
+      next: (respuesta) => {
+        this.productos = respuesta.productos;
         this.cargando = false;
-        this.totalItems = productos.length * this.page; // Esto es temporal
+        this.totalItems = respuesta.total;
+        // Si necesitas el total de páginas, puedes guardarlo aquí:
+        // this.totalPaginas = respuesta.totalPaginas;
       },
     });
   }
