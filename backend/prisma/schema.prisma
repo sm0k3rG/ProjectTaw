@@ -86,15 +86,14 @@ model Producto {
   descripcion       String
   precio            Float
   categoriaId       Int
-  ofertaId          Int?
+  ofertaId          Int?             // ← campo para almacenar la relación con Oferta
   imagenUrl         String?    // ← nueva columna
   estado            ProductoEstado // ← usar enum para el estado
   categoria         Categoria       @relation(fields: [categoriaId], references: [id])  // Relación N:1 con Categoria
-  oferta            Oferta?         // Relación 1:1 (opcional) con Oferta, pero no se necesita especificar @relation aquí
+  oferta            Oferta?         @relation(fields: [ofertaId], references: [id]) // Relación 1:N con Oferta
   sucursales        ProductoSucursal[] // Relación 1:N con ProductoSucursal
   lineasDePedido    LineaDePedido[]  // Relación 1:N con LineaDePedido
 }
-
 
 model Categoria {
   id                Int          @id @default(autoincrement())
@@ -103,6 +102,7 @@ model Categoria {
   productos         Producto[]   // Relación 1:N con Producto
 }
 
+
 model Oferta {
   id                Int          @id @default(autoincrement())
   porcentaje        Float
@@ -110,8 +110,7 @@ model Oferta {
   fechaInicio       DateTime
   fechaFin          DateTime
   estado            String
-  productoId        Int         @unique  // Relación 1:1 con Producto
-  producto          Producto    @relation(fields: [productoId], references: [id])  // Relación 1:1 con Producto
+  productos         Producto[]   // Relación 1:N con Producto
 }
 
 model Sucursal {
