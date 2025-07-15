@@ -54,12 +54,14 @@ model Pedido {
   id                Int            @id @default(autoincrement())
   fechaPedido       DateTime
   estado            PedidoEstado   // ← Usar enum para el estado del pedido
+  total             Float          // ← Nuevo campo para el total del pedido
   usuarioId         Int
   direccionId       Int
   usuario           Usuario       @relation(fields: [usuarioId], references: [id])  // Relación N:1 con Usuario
   direccion         Direccion     @relation(fields: [direccionId], references: [id]) // Relación N:1 con Direccion
   lineasDePedido    LineaDePedido[]  // Relación 1:N con LineaDePedido
 }
+
 
 model LineaDePedido {
   id                Int          @id @default(autoincrement())

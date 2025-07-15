@@ -55,7 +55,7 @@ async obtenerProductosConDetalles(
   page: number = 1,  // Página por defecto
   limit: number = 10,  // Límite por defecto
 
-// Parámetros opcionales para filtrado y ordenamiento (añadir bajo del limit)
+  // Parámetros opcionales para filtrado y ordenamiento (añadir bajo del limit)
   categoriaId?: number,
   orden?: string,
 ) {
@@ -64,7 +64,6 @@ async obtenerProductosConDetalles(
   // Construir el objeto de filtros dinámicamente
   const where: any = {};
   if (categoriaId) where.categoriaId = Number(categoriaId);
-
 
   // Ordenar por nombre o precio
   let orderBy: any = undefined;
@@ -76,7 +75,16 @@ async obtenerProductosConDetalles(
     orderBy = { precio: 'desc' };
   }
 
-  return this.prisma.producto.findMany({
+  // Obtener el total de productos que cumplen con los filtros
+  const totalProductos = await this.prisma.producto.count({
+    where,
+  });
+
+  // Calcular el número de la última página
+  const totalPaginas = Math.ceil(totalProductos / limit);
+
+  // Obtener los productos con los detalles
+  const productos = await this.prisma.producto.findMany({
     skip,
     take: limit,  // Paginación
     where,
@@ -90,7 +98,14 @@ async obtenerProductosConDetalles(
       }, // Incluir las sucursales asociadas
     },
   });
+
+  return {
+    total: totalProductos,
+    totalPaginas,  // Número total de páginas
+    productos,
+  };
 }
+
 
 
 
@@ -125,7 +140,7 @@ async obtenerProductosConDetalles(
         where,
         skip,
         take,
-        include: { categoria: true, oferta: true, sucursales: true },
+        include: { categoria: true, oferta: true, sucursales: {include:{sucursal: true}}},
       }),
       this.prisma.producto.count({ where }),
     ]);
@@ -140,18 +155,6 @@ async obtenerProductosConDetalles(
     };
   }
 
-  async findOne(id: number) {
-    return await this.prisma.producto.findUnique({
-      where: { id },
-    });
-  }
-
-  async update(id: number, updateProductoDto: UpdateProductoDto) {
-    return await this.prisma.producto.update({
-      where: { id },
-      data: updateProductoDto,
-    });
-  }
 
  async eliminarProducto(id: number): Promise<Producto> {
   // 1. Validar si el producto existe
@@ -173,7 +176,7 @@ async obtenerProductosConDetalles(
   // 2. Validar que el producto no esté asignado a un pedido activo
   const pedidosActivos = await this.prisma.pedido.findMany({
     where: {
-      estado: 'ACTIVO',
+      estado: 'ACTIVO' ,
       lineasDePedido: {
         some: {
           productoId: id,

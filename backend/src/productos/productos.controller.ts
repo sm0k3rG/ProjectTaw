@@ -11,7 +11,8 @@ import { GetProductosDto } from './dto/get-productos.dto';
 @Controller('producto')
 export class ProductoController {
   constructor(private readonly productoService: ProductoService) {}
-
+   // @Roles(Rol.Admin)  // Usamos el enum Rol para definir los roles permitidos
+  // @UseGuards(JwtAuthGuard, RolesGuard)  // Usamos ambos guards
   @Post()
   create(@Body() createProductoDto: CreateProductDto) {
     return this.productoService.create(createProductoDto);
@@ -27,25 +28,22 @@ export class ProductoController {
   // @Roles(Rol.Admin)  // Usamos el enum Rol para definir los roles permitidos
   // @UseGuards(JwtAuthGuard, RolesGuard)  // Usamos ambos guards
   async obtenerProductosConDetalles(
-    @Query('page') page: number = 1,  // Página por defecto
-    @Query('limit') limit: number = 10,
-    @Query('categoriaId') categoriaId?: number,
-    @Query('orden') orden?: string, // 'asc' o 'desc'
+  @Query('page') page: number = 1,  // Página por defecto
+  @Query('limit') limit: number = 10,  // Límite por defecto
+  @Query('categoriaId') categoriaId?: number,
+  @Query('orden') orden?: string,  // 'asc' o 'desc'
+): Promise<{ total: number; totalPaginas: number; productos: Producto[] }> {
+  // Llamamos a la función del servicio que ya tenemos
+  const { total, totalPaginas, productos } = await this.productoService.obtenerProductosConDetalles(page, limit, categoriaId, orden);
 
+  // Devolvemos el objeto con el total de productos, el total de páginas y los productos
+  return {
+    total,
+    totalPaginas,
+    productos,
+  };
+}
 
-  ): Promise<Producto[]> {
-    return this.productoService.obtenerProductosConDetalles(page, limit, categoriaId, orden);
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.productoService.findOne(+id);
-  }
-
-  @Put(':id')
-  update(@Param('id') id: string, @Body() updateProductoDto: UpdateProductoDto) {
-    return this.productoService.update(+id, updateProductoDto);
-  }
 
 // @Roles(Rol.Admin)  // Usamos el enum Rol para definir los roles permitidos
 // @UseGuards(JwtAuthGuard, RolesGuard)  // Usamos ambos guards
