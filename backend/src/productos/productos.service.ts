@@ -96,6 +96,7 @@ async obtenerProductosConDetalles(
           sucursal: true,  // Incluir los detalles de la sucursal
         },
       }, // Incluir las sucursales asociadas
+    oferta:true
     },
   });
 
