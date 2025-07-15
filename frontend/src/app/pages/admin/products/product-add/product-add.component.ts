@@ -9,13 +9,13 @@ import { Category } from '../../../../core/models/category.interface';
 import { Branch } from '../../../../core/models/branch.interface';
 
 @Component({
-  selector: 'app-product-form',
+  selector: 'app-product-add',
   standalone: true,
-  templateUrl: './product-form.component.html',
-  styleUrls: ['./product-form.component.css'],
-  imports: [ReactiveFormsModule, CommonModule, FormsModule]
+  imports: [ReactiveFormsModule, CommonModule, FormsModule],
+  templateUrl: './product-add.component.html',
+  styleUrl: './product-add.component.css'
 })
-export class ProductFormComponent {
+export class ProductAddComponent {
   /**
    * Evento emitido cuando se agrega un producto exitosamente.
    */
@@ -210,3 +210,4 @@ export class ProductFormComponent {
 
 
 }
+

@@ -1,11 +1,15 @@
+<!-- Contenedor principal con espaciado -->
 <div class="container-fluid px-2 px-md-4 py-3">
+  <!-- Tarjeta visual para la lista de sucursales -->
   <div class="card shadow-sm rounded-4 p-4" style="background: #fafbfc;">
+    <!-- Encabezado de la tarjeta con el título de la sección -->
     <div class="d-flex justify-content-between align-items-center mb-3">
       <div>
         <h2 class="fw-bold mb-0" style="font-size: 2rem;">Lista de Sucursales</h2>
       </div>
     </div>
    
+    <!-- Tabla responsiva que muestra la información de cada sucursal -->
     <div class="table-responsive">
       <table class="table align-middle mb-0">
         <thead>
@@ -16,9 +20,11 @@
           </tr>
         </thead>
         <tbody>
+          <!-- Itera sobre el arreglo de sucursales y muestra cada una en una fila -->
           @for (sucursal of sucursales; track sucursal.id) {
           <tr>
             <td>
+              <!-- Muestra el nombre y la dirección de la sucursal -->
               <span class="fw-bold"> {{ sucursal.nombre }}</span><br>
               <span class="text-muted">Dirección {{ sucursal.direccion }}</span>
             </td>

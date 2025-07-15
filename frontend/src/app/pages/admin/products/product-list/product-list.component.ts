@@ -1,12 +1,12 @@
 import { Component, OnInit, Provider } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CategoryComponent } from '../category/category.component';
-import { ProductFormComponent } from '../product-form/product-form.component';
 import { Product } from '../../../../core/models/product.interface';
 import { ProductService } from '../../../../core/services/product.service';
 import { CategoryService } from '../../../../core/services/category.service';
 import { NgbPaginationConfig, NgbPaginationModule } from '@ng-bootstrap/ng-bootstrap';
 import { FormsModule } from '@angular/forms';
+import { ProductAddComponent } from "../product-add/product-add.component";
 
 
 /**
@@ -16,7 +16,7 @@ import { FormsModule } from '@angular/forms';
 @Component({
   selector: 'app-product-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, CategoryComponent, ProductFormComponent, NgbPaginationModule],
+  imports: [CommonModule, FormsModule, CategoryComponent, ProductAddComponent, NgbPaginationModule, ProductAddComponent],
   providers: [ProductService, CategoryService, NgbPaginationConfig],
   templateUrl: './product-list.component.html',
   styleUrl: './product-list.component.css'
