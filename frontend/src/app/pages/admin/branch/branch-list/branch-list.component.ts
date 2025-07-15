@@ -1,4 +1,4 @@
-import { BranchService } from './../../../../core/services/branch.service';
+import { BranchService } from '../../../../core/services/branch.service';
 import { Component, OnInit } from '@angular/core';
 import { Branch } from '../../../../core/models/branch.interface';
 

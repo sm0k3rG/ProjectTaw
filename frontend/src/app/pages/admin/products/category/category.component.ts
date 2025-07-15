@@ -90,6 +90,13 @@ export class CategoryComponent implements OnInit {
       return;
     }
 
+    // Validación: no permitir nombres duplicados (ignorando mayúsculas/minúsculas y espacios)
+    const existe = this.categorias.some(cat => cat.nombre.trim().toLowerCase() === nombre.toLowerCase());
+    if (existe) {
+      this.mensajeError = 'Ya existe una categoría con ese nombre.';
+      return;
+    }
+
     this.loading = true;
     this.categoryService.agregarCategoria({ nombre, estado: 'Activa' }).subscribe({
       next: (categoria) => {
@@ -176,5 +183,9 @@ export class CategoryComponent implements OnInit {
         this.loading = false;
       }
     });
+  }
+
+  onEditarCategoria(categoria: Category): void {
+    console.log('Editar categoría:', categoria);
   }
 }

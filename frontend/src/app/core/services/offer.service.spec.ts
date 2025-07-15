@@ -1,16 +1,19 @@
-import { TestBed } from '@angular/core/testing';
+import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { environment } from '../../../environments/environment';
+import { Offer } from '../models/offer.interface';
+import { Observable } from 'rxjs';
 
-import { OfferService } from './offer.service';
+@Injectable({
+  providedIn: 'root'
+})
+export class OfferService {
+  private apiUrl = environment.apiUrl;
+  private controller = 'ofertas'; 
 
-describe('OfferService', () => {
-  let service: OfferService;
+  constructor(private http: HttpClient) { }
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({});
-    service = TestBed.inject(OfferService);
-  });
-
-  it('should be created', () => {
-    expect(service).toBeTruthy();
-  });
-});
+  obtenerOfertas(): Observable<Offer[]> {
+    return this.http.get<Offer[]>(`${this.apiUrl}/${this.controller}`);
+  }
+}

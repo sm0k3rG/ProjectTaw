@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Output } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { FormArray, FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractControl, ValidationErrors } from '@angular/forms';
 import { CategoryService } from '../../../../core/services/category.service';
 import { BranchService } from '../../../../core/services/branch.service';
 import { ProductService } from '../../../../core/services/product.service';
@@ -63,11 +63,11 @@ export class ProductFormComponent {
     this.productForm = this.fb.group({
       nombre: ['', Validators.required],
       descripcion: ['', Validators.required],
-      precio: [null, [Validators.required, Validators.min(1)]],
-      categoriaId: [null, Validators.required],
+      precio: ['', Validators.required],
+      categoriaId: ['', Validators.required],
       ofertaId: [null],
       oferta: [''], // Campo de oferta opcional
-      imagenUrl: [''],
+      imagenUrl: ['', this.validarUrlSiExiste],
       sucursalesSeleccionadas: this.fb.array([])
     });
 
@@ -122,7 +122,7 @@ export class ProductFormComponent {
   agregarSucursal() {
     const grupo = this.fb.group({
       id: [null, Validators.required],
-      stock: [0, [Validators.required, Validators.min(0)]]
+      stock: [0]
     });
     this.sucursalesSeleccionadas.push(grupo);
   }
@@ -139,49 +139,74 @@ export class ProductFormComponent {
    * Envía el formulario al backend para crear el producto.
    * Realiza validaciones y muestra mensajes de éxito o error.
    */
-  onSubmit() {
-    if (this.productForm.invalid) {
-      this.mensajeError = 'Por favor completa todos los campos obligatorios.';
-      return;
-    }
+
+  onSubmit() { 
     const formValue = this.productForm.value;
-    // Validar que todas las sucursales tengan id válido
-    const sucursalesValidas = formValue.sucursalesSeleccionadas.every(
-      (sucursales: any) => sucursales.id !== null && sucursales.id !== '' && !isNaN(Number(sucursales.id))
-    );
-    if (!sucursalesValidas) {
-      this.mensajeError = 'Debes seleccionar una sucursal válida en cada campo.';
-      return;
-    }
+  
     const productoData = {
       nombre: formValue.nombre,
       descripcion: formValue.descripcion,
       precio: formValue.precio,
       categoriaId: Number(formValue.categoriaId),
       ofertaId: formValue.ofertaId,
-      oferta: formValue.oferta ? formValue.oferta : undefined, // Solo enviar si se proporciona
+      oferta: formValue.oferta ? formValue.oferta : undefined,
       imagenUrl: formValue.imagenUrl,
-      sucursales: formValue.sucursalesSeleccionadas.map((sucursales: any) => ({
-        id: Number(sucursales.id),
-        stock: Number(sucursales.stock)
+      sucursales: formValue.sucursalesSeleccionadas.map((s: any) => ({
+        id: Number(s.id),
+        stock: Number(s.stock)
       }))
     };
+  
     this.loading = true;
+    this.mensajeError = null;
+  
     this.productService.agregarProducto(productoData).subscribe({
       next: () => {
         this.mensajeExito = 'Producto agregado con éxito';
-        setTimeout(() => {
-          this.mensajeExito = null;
-        }, 3000);
+        setTimeout(() => this.mensajeExito = null, 3000);
         this.productForm.reset();
         this.sucursalesSeleccionadas.clear();
         this.productoAgregado.emit();
         this.loading = false;
       },
-      error: () => {
-        this.mensajeError = 'Error al agregar el producto';
+      error: (error) => {
+        if (error.status === 400 && error.error?.message) {
+          const mensaje = error.error.message;
+  
+          if (mensaje.includes('mismo nombre')) {
+            this.productForm.get('nombre')?.setErrors({ nombreDuplicado: true });
+          }
+  
+          if (mensaje.includes('stock debe ser mayor a 0')) {
+            this.sucursalesSeleccionadas.controls.forEach((control) => {
+              const stock = control.get('stock')?.value;
+              if (stock <= 0) {
+                control.get('stock')?.setErrors({ stockInvalido: true });
+              }
+            });
+          }
+  
+          this.mensajeError = mensaje;
+        } 
+  
         this.loading = false;
       }
     });
   }
+
+
+  validarUrlSiExiste(control: AbstractControl): ValidationErrors | null {
+    const valor = control.value;
+
+    if (!valor || valor.trim() === '') return null; // Si está vacío, es válido
+
+    try {
+      new URL(valor); // Si falla, lanza excepción
+      return null;
+    } catch {
+      return { urlInvalida: true };
+    }
+  }
+
+
 }

@@ -1,8 +1,8 @@
 import { Routes } from '@angular/router';
-import { ProductListComponent } from './page/admin/products/product-list/product-list.component';
-import { OfferListComponent } from './page/admin/offer/offer-list/offer-list.component';
-import { CategoryComponent } from './page/admin/products/category/category.component';
-import { BranchListComponent } from './page/admin/branch/branch-list/branch-list.component';
+import { ProductListComponent } from './pages/admin/products/product-list/product-list.component';
+import { OfferListComponent } from './pages/admin/offer/offer-list/offer-list.component';
+import { CategoryComponent } from './pages/admin/products/category/category.component';
+import { BranchListComponent } from './pages/admin/branch/branch-list/branch-list.component';
 
 export const routes: Routes = [
   { path: 'admin/products', component: ProductListComponent },

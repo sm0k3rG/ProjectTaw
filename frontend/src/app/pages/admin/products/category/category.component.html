@@ -77,14 +77,14 @@
                 <!-- Badge editable para cambiar el estado de la categoría -->
                 <span
                   class="badge d-inline-flex align-items-center gap-1"
-                  [ngClass]="categoria.estado === 'Activa' ? 'bg-success' : 'bg-secondary'"
+                  [ngClass]="categoria.estado && categoria.estado.toLowerCase() === 'activa' ? 'bg-success' : 'bg-danger'"
                   style="cursor:pointer"
                   (click)="cambiarEstado(categoria)"
                   title="Haz clic para cambiar el estado"
                   [class.opacity-50]="loading"
                 >
-                  {{ categoria.estado }}
-                  <i class="bi bi-pencil-square" style="font-size: 0.75rem;"></i>
+                  {{ categoria.estado ? categoria.estado.toLowerCase() : '' }}
+                  <i class="bi bi-pencil-square" style="font-size: 0.75rem; cursor:pointer;" (click)="$event.stopPropagation(); onEditarCategoria(categoria)"></i>
                 </span>
               </td>
               <td>

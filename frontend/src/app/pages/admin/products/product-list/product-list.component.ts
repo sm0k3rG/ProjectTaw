@@ -6,6 +6,7 @@ import { Product } from '../../../../core/models/product.interface';
 import { ProductService } from '../../../../core/services/product.service';
 import { CategoryService } from '../../../../core/services/category.service';
 import { NgbPaginationConfig, NgbPaginationModule } from '@ng-bootstrap/ng-bootstrap';
+import { FormsModule } from '@angular/forms';
 
 
 /**
@@ -15,7 +16,7 @@ import { NgbPaginationConfig, NgbPaginationModule } from '@ng-bootstrap/ng-boots
 @Component({
   selector: 'app-product-list',
   standalone: true,
-  imports: [CommonModule, CategoryComponent, ProductFormComponent, NgbPaginationModule],
+  imports: [CommonModule, FormsModule, CategoryComponent, ProductFormComponent, NgbPaginationModule],
   providers: [ProductService, CategoryService, NgbPaginationConfig],
   templateUrl: './product-list.component.html',
   styleUrl: './product-list.component.css'
@@ -25,8 +26,13 @@ export class ProductListComponent implements OnInit {
   pageSize = 10; // Productos por página
   totalItems = 0; // Total de productos (se actualizará desde el backend)
 
+  categorias: any[] = [];
+  categoriaSeleccionada: string = '';
+  ordenSeleccionado: string = '';
+
   constructor(
     private productService: ProductService,
+    private categoryService: CategoryService,
     config: NgbPaginationConfig
   ) {
     config.size = 'md';
@@ -44,25 +50,20 @@ export class ProductListComponent implements OnInit {
   cargando: boolean = false;
 
   /**
- * Indica si se está eliminando un producto.
- */
-  eliminando: boolean = false;
-  /**
    * Mensaje de estado para mostrar al usuario.
    */
   mensaje: string = '';
   mostrarMensaje: boolean = false;
   tipoMensaje: 'success' | 'error' = 'success';
 
-  // Mapeo de colores para cada sucursal
-  sucursalColorMap: { [key: string]: string } = {
-    'Sucursal Central': 'bg-warning bg-opacity-25 text-dark', // naranja claro con texto oscuro
-    'Sucursal Norte': 'bg-primary bg-opacity-25 text-primary', // azul mucho más claro
-    // Puedes agregar más sucursales y colores aquí
+  // Mapeo de colores para cada sucursal (stock)
+  sucursalStockColorMap: { [key: string]: string } = {
+    'Sucursal Centro': 'bg-warning bg-opacity-25 text-dark', // naranjo claro
+    'Sucursal Norte': 'bg-primary bg-opacity-25 text-primary', // azul claro
   };
 
-  getSucursalColor(sucursalNombre: string): string {
-    return this.sucursalColorMap[sucursalNombre] || 'bg-dark text-white';
+  getSucursalStockColor(sucursalNombre: string): string {
+    return this.sucursalStockColorMap[sucursalNombre] || 'bg-secondary text-white';
   }
 
   /**
@@ -70,7 +71,16 @@ export class ProductListComponent implements OnInit {
    * Llama a la función para obtener los productosy productos-sucursal.
    */
   ngOnInit(): void {
+    this.cargarCategorias();
     this.obtenerProductos();
+  }
+
+  cargarCategorias(): void {
+    this.categoryService.obtenerCategorias().subscribe({
+      next: (categorias) => {
+        this.categorias = categorias;
+      }
+    });
   }
 
   /**
@@ -78,13 +88,15 @@ export class ProductListComponent implements OnInit {
    */
   obtenerProductos(): void {
     this.cargando = true;
-    this.productService.obtenerProductos(this.page, this.pageSize).subscribe({
+    this.productService.obtenerProductos(
+      this.page,
+      this.pageSize,
+      this.categoriaSeleccionada !== '' ? Number(this.categoriaSeleccionada) : undefined,
+      this.ordenSeleccionado || undefined
+    ).subscribe({
       next: (productos: Product[]) => {
         this.productos = productos;
         this.cargando = false;
-
-        console.log('Cantidad de productos:', productos.length);
-        // Nota: El totalItems debería venir en la respuesta del backend
         this.totalItems = productos.length * this.page; // Esto es temporal
       },
     });
@@ -93,8 +105,29 @@ export class ProductListComponent implements OnInit {
   /**
    * Maneja el cambio de página en la paginación
    */
-  onPageChange(page: number): void {
+  onCambiarPagina(page: number): void {
     this.page = page;
+    this.obtenerProductos();
+  }
+
+  onCambiarCategoria(event: any): void {
+    const value = event.target.value;
+    this.categoriaSeleccionada = value ? String(value) : '';
+    this.page = 1;
+    this.obtenerProductos();
+  }
+
+  onCambiarOrden(event: any): void {
+    const value = event.target.value;
+    this.ordenSeleccionado = value;
+    this.page = 1;
+    this.obtenerProductos();
+  }
+
+  limpiarFiltros(): void {
+    this.categoriaSeleccionada = '';
+    this.ordenSeleccionado = '';
+    this.page = 1;
     this.obtenerProductos();
   }
 
@@ -116,6 +149,10 @@ export class ProductListComponent implements OnInit {
     this.mostrarMensajeUsuario('Producto agregado exitosamente', 'success');
   }
 
+  onEditarProducto(producto: Product): void {
+    console.log('Editar producto:');
+  }
+
   mostrarMensajeUsuario(mensaje: string, tipo: 'success' | 'error'): void {
     this.mensaje = mensaje;
     this.tipoMensaje = tipo;
@@ -131,23 +168,4 @@ export class ProductListComponent implements OnInit {
    * Elimina un producto por su ID.
    * @param id - ID del producto a eliminar
    */
-  eliminarProducto(id: number): void {
-    if (confirm('¿Estás seguro de que deseas eliminar este producto? Esta acción no se puede deshacer.')) {
-      this.eliminando = true;
-      
-      this.productService.eliminarProducto(id).subscribe({
-        next: () => {
-          this.eliminando = false;
-          this.mostrarMensajeUsuario('Producto eliminado exitosamente', 'success');
-          // Recargar la lista de productos después de eliminar
-          this.obtenerProductos();
-        },
-        error: (error) => {
-          this.eliminando = false;
-          this.mostrarMensajeUsuario('Error al eliminar el producto. Inténtalo de nuevo.', 'error');
-        }
-      });
-    }
-  }
-
 }

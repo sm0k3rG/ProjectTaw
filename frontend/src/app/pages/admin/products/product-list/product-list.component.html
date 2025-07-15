@@ -32,28 +32,21 @@
     </div>
 
     <!-- Filtros de búsqueda y selectores -->
-    <div class="row g-3 align-items-center mb-3">
-      <div class="col-lg-5 col-md-6">
-        <!-- Input para buscar productos por nombre o descripción -->
-        <input type="text" class="form-control form-control-lg rounded-3" placeholder="Buscar productos...">
-      </div>
-      <div class="col-lg-2 col-md-3">
-        <!-- Selector de categoría (por implementar) -->
-        <select class="form-select rounded-3">
-          <option>Todas las categorias</option>
-        </select>
-      </div>
-      <div class="col-lg-2 col-md-3">
-        <!-- Selector de sucursal (por implementar) -->
-        <select class="form-select rounded-3">
-          <option>Sucursal 1</option>
-          <option>Sucursal 2</option>
-        </select>
-      </div>
-      <div class="col-lg-1 col-md-2 d-grid">
-        <!-- Botón para limpiar los filtros -->
-        <button class="btn btn-outline-secondary rounded-3">Limpiar</button>
-      </div>
+    <div class="d-flex align-items-center gap-3 mb-3 justify-content-start">
+      <select class="form-select rounded-3 w-auto" [(ngModel)]="categoriaSeleccionada" (change)="onCambiarCategoria($event)">
+        <option value="">Todas las categorías</option>
+        @for (cat of categorias; track cat.id) {
+          <option [value]="cat.id">{{ cat.nombre }}</option>
+        }
+      </select>
+      <select class="form-select rounded-3 w-auto" [(ngModel)]="ordenSeleccionado" (change)="onCambiarOrden($event)">
+        <option value="">Ordenar por</option>
+        <option value="asc">Nombre: A-Z</option>
+        <option value="desc">Nombre: Z-A</option>
+        <option value="precioAsc">Precio: menor a mayor</option>
+        <option value="precioDesc">Precio: mayor a menor</option>
+      </select>
+      <button class="btn btn-outline-secondary rounded-3" (click)="limpiarFiltros()">Limpiar</button>
     </div>
 
     <!-- Tabla de productos -->
@@ -67,6 +60,7 @@
             <th>Precio</th>
             <th>Stock</th>
             <th>Sucursal</th>
+            <th>Estado</th>
             <th>Acciones</th>
           </tr>
         </thead>
@@ -74,7 +68,7 @@
           <!-- Estado de carga: muestra spinner mientras se cargan los productos -->
           @if (cargando) {
             <tr>
-              <td colspan="7" class="text-center py-4">
+              <td colspan="8" class="text-center py-4">
                 <div class="text-muted">
                   <div class="spinner-border text-primary" role="status">
                     <span class="visually-hidden">Cargando...</span>
@@ -87,7 +81,7 @@
           <!-- Estado vacío: no hay productos registrados -->
           @else if (productos.length === 0) {
             <tr>
-              <td colspan="7" class="text-center py-4">
+              <td colspan="8" class="text-center py-4">
                 <div class="text-muted">
                   <i class="bi bi-inbox fs-1 d-block mb-2"></i>
                   <p class="mb-0">No hay productos registrados</p>
@@ -124,7 +118,7 @@
                 <!-- Stock por sucursal (badge por cada sucursal) -->
                 <td class="align-middle fw-semibold">
                   @for (productoSucursal of producto.sucursales; track productoSucursal) {
-                    <span class="badge me-1" [ngClass]="getSucursalColor(productoSucursal.sucursal.nombre)">
+                    <span class="badge me-1" [ngClass]="getSucursalStockColor(productoSucursal.sucursal.nombre)">
                       {{ productoSucursal.stock }}
                     </span>
                   }
@@ -132,23 +126,22 @@
                 <!-- Nombre de la sucursal (badge por cada una) -->
                 <td class="align-middle">
                   @for (productoSucursal of producto.sucursales; track productoSucursal) {
-                    <span class="badge me-1" [ngClass]="getSucursalColor(productoSucursal.sucursal.nombre)">
+                    <span class="badge me-1" [ngClass]="getSucursalStockColor(productoSucursal.sucursal.nombre)">
                       {{ productoSucursal.sucursal.nombre }}
                     </span>
                   }
                 </td>
+                <!-- Estado del producto -->
+                <td class="align-middle">
+                  <span class="badge bg-secondary">{{ producto.estado }}</span>
+                </td>
                 <!-- Acciones: editar y eliminar producto -->
                 <td class="align-middle">
-                  <button class="btn btn-outline-dark btn-sm rounded-2 me-1" title="Editar"><i class="bi bi-pencil"></i></button>
+                  <button class="btn btn-outline-dark btn-sm rounded-2 me-1" title="Editar" (click)="onEditarProducto(producto)"><i class="bi bi-pencil"></i></button>
                   <button 
-                    class="btn btn-outline-danger btn-sm rounded-2" 
-                    title="Eliminar" 
-                    (click)="eliminarProducto(producto.id)"
-                    [disabled]="eliminando">
-                    @if (eliminando) {
-                      <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
-                    }
-                    <i class="bi bi-trash"></i>
+                    class="btn btn-outline-secondary btn-sm rounded-2" 
+                    title="Cambiar estado" >
+                    <i class="bi bi-toggle-on"></i>
                   </button>
                 </td>
               </tr>
@@ -166,7 +159,7 @@
           [rotate]="true"
           [ellipses]="false"
           [boundaryLinks]="true"
-          (pageChange)="onPageChange($event)"
+          (pageChange)="onCambiarPagina($event)"
         />
       </div>
     </div>
@@ -174,9 +167,10 @@
 
   <!-- Modal para agregar producto -->
   <div class="modal fade" id="modalAgregarProducto" tabindex="-1" aria-labelledby="modalAgregarProductoLabel" aria-hidden="true">
-    <div class="modal-dialog modal-xl">
+    <div class="modal-dialog modal-lg">
       <div class="modal-content">
         <div class="modal-header">
+          <h2 class="modal-title fw-bold" style="font-size: 2.2rem;" id="modalAgregarProductoLabel">Agregar producto</h2>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
         </div>
         <div class="modal-body">
