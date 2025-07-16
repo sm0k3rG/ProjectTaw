@@ -147,7 +147,7 @@ export class CategoryComponent implements OnInit {
         this.loading = false;
       },
       error: (err) => {
-        this.mensajeError = 'Error al eliminar la categoría.';
+        this.mensajeError = 'La categoría está en uso.';
         this.loading = false;
       }
     });

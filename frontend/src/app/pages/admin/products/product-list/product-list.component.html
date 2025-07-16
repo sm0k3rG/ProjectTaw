@@ -58,6 +58,7 @@
             <th>Producto</th>
             <th>Categoría</th>
             <th>Precio</th>
+            <th>Oferta</th>
             <th>Stock</th>
             <th>Sucursal</th>
             <th>Estado</th>
@@ -115,6 +116,14 @@
                 </td>
                 <!-- Precio del producto -->
                 <td class="align-middle fw-bold text-success">${{ producto.precio | number:'1.0-0' }}</td>
+                <!-- Oferta del producto -->
+                <td class="align-middle">
+                  @if (producto.oferta) {
+                    <span class="badge bg-success" title="{{ producto.oferta.descripcion }}">{{ producto.oferta.porcentaje }}%</span>
+                  } @else {
+                    <!-- Celda vacía si no hay oferta -->
+                  }
+                </td>
                 <!-- Stock por sucursal (badge por cada sucursal) -->
                 <td class="align-middle fw-semibold">
                   @for (productoSucursal of producto.sucursales; track productoSucursal) {

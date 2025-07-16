@@ -1,1 +1,46 @@
-<p>offer-add works!</p>
+<form [formGroup]="offerForm" (ngSubmit)="onSubmit()">
+  <!-- Porcentaje -->
+  <div class="mb-3">
+    <label class="form-label">Porcentaje de descuento</label>
+    <input type="number" class="form-control" formControlName="porcentaje" placeholder="Ingrese el porcentaje de descuento" />
+    <div *ngIf="offerForm.get('porcentaje')?.invalid && offerForm.get('porcentaje')?.touched" class="text-danger mt-1">
+      El porcentaje debe ser un número entre 1 y 90.
+    </div>
+  </div>
+  <!-- Descripción -->
+  <div class="mb-3">
+    <label class="form-label">Descripción</label>
+    <textarea class="form-control" formControlName="descripcion" rows="3" placeholder="Ingrese la descripción de la oferta"></textarea>
+    <div *ngIf="offerForm.get('descripcion')?.invalid && offerForm.get('descripcion')?.touched" class="text-danger mt-1">
+      La descripción es obligatoria.
+    </div>
+  </div>
+  <!-- Fecha de inicio -->
+  <div class="mb-3">
+    <label class="form-label">Fecha de inicio</label>
+    <input type="date" class="form-control" formControlName="fechaInicio" [min]="hoy" [max]="offerForm.get('fechaFin')?.value || null" />
+    <div *ngIf="offerForm.get('fechaInicio')?.invalid && offerForm.get('fechaInicio')?.touched" class="text-danger mt-1">
+      La fecha de inicio es obligatoria.
+    </div>
+  </div>
+  <!-- Fecha de fin -->
+  <div class="mb-3">
+    <label class="form-label">Fecha de fin</label>
+    <input type="date" class="form-control" formControlName="fechaFin" [min]="offerForm.get('fechaInicio')?.value || hoy" />
+    <div *ngIf="offerForm.get('fechaFin')?.invalid && offerForm.get('fechaFin')?.touched" class="text-danger mt-1">
+      La fecha de fin es obligatoria.
+    </div>
+  </div>
+  <!-- Mensajes -->
+  <div *ngIf="mensajeError" class="alert alert-danger mt-3">{{ mensajeError }}</div>
+  <div *ngIf="mensajeExito" class="alert alert-success mt-3">{{ mensajeExito }}</div>
+  <!-- Acciones -->
+  <div class="mt-4 d-flex justify-content-between">
+    <button type="button" class="btn btn-secondary" (click)="offerForm.reset()">
+      Limpiar Formulario
+    </button>
+    <button type="submit" class="btn btn-primary" [disabled]="loading || offerForm.invalid">
+      {{ loading ? 'Agregando...' : 'Agregar Oferta' }}
+    </button>
+  </div>
+</form>

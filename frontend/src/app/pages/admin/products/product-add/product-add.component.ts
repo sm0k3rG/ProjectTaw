@@ -3,6 +3,8 @@ import { FormArray, FormBuilder, FormGroup, Validators, ReactiveFormsModule, Abs
 import { CategoryService } from '../../../../core/services/category.service';
 import { BranchService } from '../../../../core/services/branch.service';
 import { ProductService } from '../../../../core/services/product.service';
+import { OfferService } from '../../../../core/services/offer.service';
+import { Offer } from '../../../../core/models/offer.interface';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Category } from '../../../../core/models/category.interface';
@@ -37,6 +39,11 @@ export class ProductAddComponent {
   sucursales: Branch[] = [];
 
   /**
+   * Lista de ofertas disponibles para seleccionar.
+   */
+  ofertas: Offer[] = [];
+
+  /**
    * Indica si el formulario está en estado de carga (enviando datos).
    */
   loading = false;
@@ -58,7 +65,8 @@ export class ProductAddComponent {
     private fb: FormBuilder,
     private categoryService: CategoryService,
     private branchService: BranchService,
-    private productService: ProductService
+    private productService: ProductService,
+    private offerService: OfferService
   ) {
     this.productForm = this.fb.group({
       nombre: ['', Validators.required],
@@ -66,13 +74,13 @@ export class ProductAddComponent {
       precio: ['', Validators.required],
       categoriaId: ['', Validators.required],
       ofertaId: [null],
-      oferta: [''], // Campo de oferta opcional
       imagenUrl: ['', this.validarUrlSiExiste],
       sucursalesSeleccionadas: this.fb.array([])
     });
 
     this.cargarCategorias();
     this.cargarSucursales();
+    this.cargarOfertas();
   }
 
   /**
@@ -94,6 +102,16 @@ export class ProductAddComponent {
       this.sucursales = sucursales;
       },
       error: () => this.mensajeError = 'Error al cargar sucursales'
+    });
+  }
+
+  /**
+   * Carga las ofertas disponibles desde el servicio.
+   */
+  cargarOfertas() {
+    this.offerService.obtenerOfertas().subscribe({
+      next: (ofertas) => this.ofertas = ofertas,
+      error: () => this.mensajeError = 'Error al cargar ofertas'
     });
   }
 
@@ -148,8 +166,7 @@ export class ProductAddComponent {
       descripcion: formValue.descripcion,
       precio: formValue.precio,
       categoriaId: Number(formValue.categoriaId),
-      ofertaId: formValue.ofertaId,
-      oferta: formValue.oferta ? formValue.oferta : undefined,
+      ofertaId: formValue.ofertaId !== null && formValue.ofertaId !== '' ? Number(formValue.ofertaId) : null,
       imagenUrl: formValue.imagenUrl,
       sucursales: formValue.sucursalesSeleccionadas.map((s: any) => ({
         id: Number(s.id),

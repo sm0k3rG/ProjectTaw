@@ -1,5 +1,6 @@
 import { Category } from "./category.interface";
 import { ProductBranch } from "./product-branch.interface";
+import { Offer } from "./offer.interface";
 
 export interface Product {
   id: number;
@@ -11,5 +12,5 @@ export interface Product {
   precio: number;
   estado: string;
   imagenUrl: string;
-  ofertaId: number | null;
+  oferta?: Offer | null;
 }
