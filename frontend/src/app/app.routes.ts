@@ -21,5 +21,9 @@ export const routes: Routes = [
   {
     path: 'admin/dashboard',
     loadComponent: () => import('./pages/admin/dashboard/dashboard.component').then(m => m.DashboardComponent)
+  },
+  {
+    path: 'user/order-list',
+    loadComponent: () => import('./pages/user/orders/order-list/order-list.component').then(m => m.OrderListComponent)
   }
 ];

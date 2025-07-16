@@ -1,1 +1,102 @@
-<p>order-list works!</p>
+<div class="container mt-4">
+  <h2 class="mb-4">Mis Órdenes</h2>
+  <div class="table-responsive">
+    <table class="table table-hover align-middle">
+      <thead class="table-primary">
+        <tr>
+          <th>#</th>
+          <th>Fecha</th>
+          <th>Total</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let order of paginatedOrders">
+          <td>{{ order.id }}</td>
+          <td>{{ order.fecha }}</td>
+          <td>{{ formatCLP(order.total) }}</td>
+          <td>
+            <span class="badge"
+              [ngClass]="{
+                'bg-success': order.estado === 'Entregado',
+                'bg-warning text-dark': order.estado === 'En camino',
+                'bg-danger': order.estado === 'Cancelado'
+              }">
+              {{ order.estado }}
+            </span>
+          </td>
+          <td>
+            <button class="btn btn-outline-primary btn-sm" (click)="selectOrder(order)">
+              Ver Detalle
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Paginación -->
+  <nav *ngIf="totalPages > 1" aria-label="Paginación de órdenes" class="mt-3">
+    <ul class="pagination justify-content-center">
+      <li class="page-item" [class.disabled]="page === 1">
+        <button class="page-link" (click)="prevPage()" [disabled]="page === 1">Anterior</button>
+      </li>
+      <li class="page-item" *ngFor="let p of [].constructor(totalPages); let i = index" [class.active]="page === (i+1)">
+        <button class="page-link" (click)="goToPage(i+1)">{{ i+1 }}</button>
+      </li>
+      <li class="page-item" [class.disabled]="page === totalPages">
+        <button class="page-link" (click)="nextPage()" [disabled]="page === totalPages">Siguiente</button>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- Detalle de la orden -->
+  <div *ngIf="selectedOrder" class="modal fade show d-block" tabindex="-1" style="background: rgba(0,0,0,0.3);">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Detalle de Orden #{{ selectedOrder.id }}</h5>
+          <button type="button" class="btn-close" aria-label="Cerrar" (click)="closeDetail()"></button>
+        </div>
+        <div class="modal-body">
+          <p><strong>Fecha:</strong> {{ selectedOrder.fecha }}</p>
+          <p><strong>Estado:</strong> <span class="badge"
+            [ngClass]="{
+              'bg-success': selectedOrder.estado === 'Entregado',
+              'bg-warning text-dark': selectedOrder.estado === 'En camino',
+              'bg-danger': selectedOrder.estado === 'Cancelado'
+            }">
+            {{ selectedOrder.estado }}
+          </span></p>
+          <div class="table-responsive">
+            <table class="table table-bordered">
+              <thead class="table-light">
+                <tr>
+                  <th>Producto</th>
+                  <th>Cantidad</th>
+                  <th>Precio Unitario</th>
+                  <th>Subtotal</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let p of selectedOrder.productos">
+                  <td>{{ p.nombre }}</td>
+                  <td>{{ p.cantidad }}</td>
+                  <td>{{ formatCLP(p.precio) }}</td>
+                  <td>{{ formatCLP(p.precio * p.cantidad) }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="text-end">
+            <strong>Total: {{ formatCLP(selectedOrder.total) }}</strong>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="closeDetail()">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
