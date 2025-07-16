@@ -112,3 +112,30 @@ h2 {
     padding: 0.5rem;
   }
 }
+
+.pagination .page-link {
+  color: #0071ce;
+  font-weight: 600;
+  border-radius: 16px;
+  border: 2px solid #e3eaf5;
+  margin: 0 4px;
+  background: #fff;
+  padding: 0.5em 1.2em;
+  transition: background 0.2s, color 0.2s, border 0.2s;
+}
+.pagination .page-link:focus {
+  box-shadow: 0 0 0 2px #0071ce33;
+}
+.pagination .page-item.active .page-link {
+  background: #0071ce;
+  color: #fff;
+  border-color: #0071ce;
+}
+.pagination .page-item.disabled .page-link {
+  color: #aaa;
+  background: #f4f8fb;
+  border-color: #e3eaf5;
+}
+.pagination {
+  margin-bottom: 0;
+}

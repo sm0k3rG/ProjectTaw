@@ -1,0 +1,94 @@
+.container {
+  max-width: 900px;
+}
+
+h2 {
+  color: #0071ce;
+  font-weight: 700;
+  letter-spacing: 1px;
+  margin-bottom: 2rem;
+  text-shadow: 0 2px 8px rgba(0,113,206,0.08);
+}
+
+.table {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 24px rgba(0,113,206,0.08);
+  overflow: hidden;
+}
+
+.table-primary th {
+  background: #0071ce !important;
+  color: #fff !important;
+  border: none;
+  font-size: 1.1rem;
+  letter-spacing: 0.5px;
+}
+
+.table-hover tbody tr:hover {
+  background: #e3f0ff;
+}
+
+.badge.bg-success {
+  background: #ffc220 !important;
+  color: #333 !important;
+  font-weight: 600;
+  border-radius: 8px;
+  font-size: 1rem;
+  padding: 0.5em 1em;
+}
+.badge.bg-warning {
+  background: #ffe066 !important;
+  color: #333 !important;
+  font-weight: 600;
+  border-radius: 8px;
+  font-size: 1rem;
+  padding: 0.5em 1em;
+}
+.badge.bg-danger {
+  background: #ff4d4f !important;
+  color: #fff !important;
+  font-weight: 600;
+  border-radius: 8px;
+  font-size: 1rem;
+  padding: 0.5em 1em;
+}
+
+ul {
+  margin-bottom: 0;
+}
+
+.pagination .page-link {
+  color: #0071ce;
+  font-weight: 600;
+  border-radius: 16px;
+  border: 2px solid #e3eaf5;
+  margin: 0 4px;
+  background: #fff;
+  padding: 0.5em 1.2em;
+  transition: background 0.2s, color 0.2s, border 0.2s;
+}
+.pagination .page-link:focus {
+  box-shadow: 0 0 0 2px #0071ce33;
+}
+.pagination .page-item.active .page-link {
+  background: #0071ce;
+  color: #fff;
+  border-color: #0071ce;
+}
+.pagination .page-item.disabled .page-link {
+  color: #aaa;
+  background: #f4f8fb;
+  border-color: #e3eaf5;
+}
+.pagination {
+  margin-bottom: 0;
+}
+@media (max-width: 700px) {
+  .container {
+    padding: 0 0.5rem;
+  }
+  h2 {
+    font-size: 1.3rem;
+  }
+}
