@@ -1,11 +1,34 @@
 <div *ngIf="esAdministrador">
   <app-navbar></app-navbar>
 </div>
-<!-- Aquí se podrá mostrar un navbar diferente para usuarios en el futuro -->
 <div class="dashboard-container">
-  <h1 class="dashboard-title">Panel de Ventas</h1>
-  <div class="dashboard-card">
-    <h2 class="chart-title">Ventas por Mes</h2>
-    <canvas #ventasChart width="400" height="200"></canvas>
+  <h1 class="dashboard-title">Dashboard</h1>
+  <div class="dashboard-menu-row">
+    <label for="vista-select" class="dashboard-menu-label">Ver:</label>
+    <select id="vista-select" class="dashboard-menu-select" [(ngModel)]="vistaSeleccionada" (change)="onVistaChange()">
+      <option *ngFor="let vista of vistas" [value]="vista.key">{{ vista.label }}</option>
+    </select>
+  </div>
+  <div class="dashboard-cards">
+    <div class="dashboard-card resumen-card" *ngIf="vistaSeleccionada === 'ventasSucursal'">
+      <h2 class="chart-title">Ventas Totales</h2>
+      <div class="resumen-numero">{{ formatCLP(ventasTotales) }}</div>
+    </div>
+    <div class="dashboard-card" *ngIf="vistaSeleccionada === 'ventasSucursal'">
+      <h2 class="chart-title">Ventas por Sucursal</h2>
+      <canvas #ventasSucursalChart width="400" height="200"></canvas>
+    </div>
+    <div class="dashboard-card" *ngIf="vistaSeleccionada === 'usuariosRegion'">
+      <h2 class="chart-title">Usuarios Registrados por Región</h2>
+      <canvas #usuariosRegionChart width="400" height="200"></canvas>
+    </div>
+    <div class="dashboard-card" *ngIf="vistaSeleccionada === 'topProductos'">
+      <h2 class="chart-title">Top 10 Productos Más Vendidos</h2>
+      <canvas #topProductosChart width="400" height="200"></canvas>
+    </div>
+    <div class="dashboard-card" *ngIf="vistaSeleccionada === 'bottomProductos'">
+      <h2 class="chart-title">Top 10 Productos Menos Vendidos</h2>
+      <canvas #bottomProductosChart width="400" height="200"></canvas>
+    </div>
   </div>
 </div>
