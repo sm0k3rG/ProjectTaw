@@ -1,3 +1,4 @@
+import { PedidoUsuarioModule } from './pedido-usuario/pedido-usuario.module';
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -9,7 +10,15 @@ import { OfertaModule } from './oferta/oferta.module';
 import { SucursalModule } from './sucursal/sucursal.module';
 
 @Module({
-  imports: [PrismaModule, ProductosModule, CategoriasModule, ProductoSucursalModule, OfertaModule, SucursalModule],
+  imports: [
+    PedidoUsuarioModule,
+    PrismaModule,
+    ProductosModule,
+    CategoriasModule,
+    ProductoSucursalModule,
+    OfertaModule,
+    SucursalModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })

@@ -241,7 +241,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "C:\\Users\\Brayan\\OneDrive\\Escritorio\\ProjectTaw\\backend\\prisma\\generated\\prisma",
+      "value": "C:\\Users\\HVazq\\Documents\\GitHub\\ProjectTaw\\backend\\prisma\\generated\\prisma",
       "fromEnvVar": null
     },
     "config": {
@@ -255,7 +255,7 @@ const config = {
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "C:\\Users\\Brayan\\OneDrive\\Escritorio\\ProjectTaw\\backend\\prisma\\schema.prisma",
+    "sourceFilePath": "C:\\Users\\HVazq\\Documents\\GitHub\\ProjectTaw\\backend\\prisma\\schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
@@ -269,7 +269,6 @@ const config = {
     "db"
   ],
   "activeProvider": "mysql",
-  "postinstall": false,
   "inlineDatasources": {
     "db": {
       "url": {
