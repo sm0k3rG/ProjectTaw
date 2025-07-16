@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { NavbarComponent } from '../../../../shared/navbar/navbar.component';
 
-interface Order {
+interface Orden {
   id: number;
   fecha: string;
   total: number;
@@ -12,13 +13,12 @@ interface Order {
 @Component({
   selector: 'app-order-list',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, NavbarComponent],
   templateUrl: './order-list.component.html',
   styleUrl: './order-list.component.css'
 })
 export class OrderListComponent {
-  orders: Order[] = [
-    // ... (mock de órdenes, se puede duplicar para simular más de 10)
+  ordenes: Orden[] = [
     {
       id: 1,
       fecha: '2024-07-07',
@@ -50,7 +50,6 @@ export class OrderListComponent {
         { nombre: 'Salsa', cantidad: 2, precio: 1200 }
       ]
     },
-    // Duplicar para simular más de 10 órdenes
     { id: 4, fecha: '2024-06-28', total: 15990, estado: 'Entregado', productos: [ { nombre: 'Cereal', cantidad: 2, precio: 2500 } ] },
     { id: 5, fecha: '2024-06-25', total: 20990, estado: 'En camino', productos: [ { nombre: 'Jugo', cantidad: 5, precio: 900 } ] },
     { id: 6, fecha: '2024-06-20', total: 11990, estado: 'Entregado', productos: [ { nombre: 'Galletas', cantidad: 3, precio: 1200 } ] },
@@ -62,48 +61,46 @@ export class OrderListComponent {
     { id: 12, fecha: '2024-05-28', total: 20990, estado: 'En camino', productos: [ { nombre: 'Mantequilla', cantidad: 1, precio: 2500 } ] },
   ];
 
-  selectedOrder: Order | null = null;
+  ordenSeleccionada: Orden | null = null;
+  pagina: number = 1;
+  cantidadPorPagina: number = 10;
 
-  // Paginación
-  page: number = 1;
-  pageSize: number = 10;
-
-  get totalPages(): number {
-    return Math.ceil(this.orders.length / this.pageSize);
+  get totalPaginas(): number {
+    return Math.ceil(this.ordenes.length / this.cantidadPorPagina);
   }
 
-  get paginatedOrders(): Order[] {
-    const start = (this.page - 1) * this.pageSize;
-    return this.orders.slice(start, start + this.pageSize);
+  get ordenesPaginadas(): Orden[] {
+    const inicio = (this.pagina - 1) * this.cantidadPorPagina;
+    return this.ordenes.slice(inicio, inicio + this.cantidadPorPagina);
   }
 
-  goToPage(p: number) {
-    if (p >= 1 && p <= this.totalPages) {
-      this.page = p;
+  irAPagina(p: number) {
+    if (p >= 1 && p <= this.totalPaginas) {
+      this.pagina = p;
     }
   }
 
-  nextPage() {
-    if (this.page < this.totalPages) {
-      this.page++;
+  paginaSiguiente() {
+    if (this.pagina < this.totalPaginas) {
+      this.pagina++;
     }
   }
 
-  prevPage() {
-    if (this.page > 1) {
-      this.page--;
+  paginaAnterior() {
+    if (this.pagina > 1) {
+      this.pagina--;
     }
   }
 
-  selectOrder(order: Order) {
-    this.selectedOrder = order;
+  seleccionarOrden(orden: Orden) {
+    this.ordenSeleccionada = orden;
   }
 
-  closeDetail() {
-    this.selectedOrder = null;
+  cerrarDetalle() {
+    this.ordenSeleccionada = null;
   }
 
-  formatCLP(value: number): string {
-    return value.toLocaleString('es-CL', { style: 'currency', currency: 'CLP', maximumFractionDigits: 0 });
+  formatearCLP(valor: number): string {
+    return valor.toLocaleString('es-CL', { style: 'currency', currency: 'CLP', maximumFractionDigits: 0 });
   }
 }

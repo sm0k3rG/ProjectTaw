@@ -13,58 +13,58 @@ import { AuthService } from '../../../core/services/auth.service';
   styleUrls: ['./reset-password.component.css']
 })
 export class ResetPasswordComponent {
-  resetForm: FormGroup;
-  isLoading = false;
+  formularioReset: FormGroup;
+  cargando = false;
   token: string | null = null;
 
   constructor(
     private fb: FormBuilder,
-    private route: ActivatedRoute,
+    private ruta: ActivatedRoute,
     private authService: AuthService,
     private router: Router
   ) {
-    this.resetForm = this.fb.group({
-      password: ['', [Validators.required, Validators.minLength(6)]],
-      confirmPassword: ['', Validators.required]
-    }, { validators: this.passwordsMatchValidator });
+    this.formularioReset = this.fb.group({
+      contrasena: ['', [Validators.required, Validators.minLength(6)]],
+      confirmarContrasena: ['', Validators.required]
+    }, { validators: this.validadorCoincidenciaContrasena });
 
-    this.route.queryParams.subscribe(params => {
+    this.ruta.queryParams.subscribe(params => {
       this.token = params['token'] || null;
     });
   }
 
-  passwordsMatchValidator(group: FormGroup) {
-    const pass = group.get('password')?.value;
-    const confirm = group.get('confirmPassword')?.value;
+  validadorCoincidenciaContrasena(grupo: FormGroup) {
+    const pass = grupo.get('contrasena')?.value;
+    const confirm = grupo.get('confirmarContrasena')?.value;
     return pass === confirm ? null : { passwordMismatch: true };
   }
 
   enviarReset() {
-    if (this.resetForm.invalid || !this.token) {
-      this.resetForm.markAllAsTouched();
+    if (this.formularioReset.invalid || !this.token) {
+      this.formularioReset.markAllAsTouched();
       Swal.fire({ icon: 'error', title: 'Error', text: 'Completa todos los campos correctamente.' });
       return;
     }
-    this.isLoading = true;
-    const nuevaContraseña = this.resetForm.value.password;
+    this.cargando = true;
+    const nuevaContrasena = this.formularioReset.value.contrasena;
     // Simulación: reemplaza por llamada real al backend si es necesario
-    this.authService.restablecerContraseña(this.token, nuevaContraseña).subscribe({
+    this.authService.restablecerContraseña(this.token, nuevaContrasena).subscribe({
       next: () => {
-        this.isLoading = false;
+        this.cargando = false;
         Swal.fire({ icon: 'success', title: '¡Contraseña restablecida!', text: 'Ahora puedes iniciar sesión.', timer: 1500, showConfirmButton: false });
         this.router.navigate(['/']);
       },
       error: () => {
-        this.isLoading = false;
+        this.cargando = false;
         Swal.fire({ icon: 'error', title: 'Error', text: 'No se pudo restablecer la contraseña.' });
       }
     });
   }
 
-  get password() {
-    return this.resetForm.get('password');
+  get contrasena() {
+    return this.formularioReset.get('contrasena');
   }
-  get confirmPassword() {
-    return this.resetForm.get('confirmPassword');
+  get confirmarContrasena() {
+    return this.formularioReset.get('confirmarContrasena');
   }
 }
