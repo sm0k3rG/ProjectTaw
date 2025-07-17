@@ -1,0 +1,139 @@
+<!--
+Vista de detalle del pedido:
+- Encabezado con el número, fecha y estado del pedido.
+- Visualización gráfica del estado del pedido (pendiente, activo, completado, cancelado).
+- Muestra la dirección de entrega y el resumen del total.
+- Lista de productos del pedido con cantidad, precio unitario y total por producto.
+- Si no hay pedido, muestra un mensaje informativo.
+-->
+@if (order) {
+<!-- Encabezado del pedido -->
+<div class="container my-4">
+  <div class="row">
+    <div class="col-12">
+      <div class="bg-primary text-white rounded-top p-4 d-flex justify-content-between align-items-center">
+        <div>
+          <h3 class="mb-1">Pedido #{{ order.id || '...' }}</h3>
+          <div class="fw-light">Realizado el {{ order.fecha | date:'dd/MM/yyyy' }}</div>
+        </div>
+        @if(order.estado === 'activo') {<span class="badge bg-success fs-6">En camino</span>}
+        @if(order.estado === 'pendiente') {<span class="badge bg-warning text-dark fs-6">Pendiente</span>}
+        @if(order.estado === 'completado') {<span class="badge bg-success fs-6">Completado</span>}
+        @if(order.estado === 'cancelado') {<span class="badge bg-danger fs-6">Cancelado</span>}
+      </div>
+    </div>
+  </div>
+
+  <!-- Estado del pedido y resumen -->
+  <div class="row bg-white rounded-bottom shadow-sm p-4 mb-4">
+    <div class="col-12">
+      <h5 class="mb-3 text-center">Estado del Pedido</h5>
+      <div class="d-flex align-items-center justify-content-center mb-3 flex-wrap gap-4">
+        @for (estado of estados; let i = $index; track estado) {
+          <div class="text-center flex-fill" style="min-width: 180px;">
+            <div [ngClass]="{
+              'rounded-circle': true,
+              'mb-2': true,
+              'mx-auto': true,
+              'bg-warning text-white': estado === 'pendiente' && order.estado === 'pendiente',
+              'bg-primary text-white': estado === 'activo' && order.estado === 'activo',
+              'bg-success text-white': estado === 'completado' && order.estado === 'completado',
+              'bg-danger text-white': estado === 'cancelado' && order.estado === 'cancelado',
+              'bg-light text-secondary border': order.estado !== estado
+            }" style="width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; font-size: 2rem;">
+              <i [ngClass]="{
+                'bi bi-hourglass-split': estado === 'pendiente',
+                'bi bi-lightning-charge': estado === 'activo',
+                'bi bi-check-lg': estado === 'completado',
+                'bi bi-x-lg': estado === 'cancelado'
+              }"></i>
+            </div>
+            <div class="fw-bold fs-5" [ngClass]="{'text-secondary': order.estado !== estado}">
+              {{ estado | titlecase }}
+            </div>
+            <div class="text-muted small">
+              @if (estado === 'pendiente') {<span>Esperando confirmación</span>}
+              @if (estado === 'activo') {<span>En proceso</span>}
+              @if (estado === 'completado') {<span>Finalizado</span>}
+              @if (estado === 'cancelado') {<span>Pedido anulado</span>}
+            </div>
+          </div>
+          @if (i < 3) {<div class="flex-fill border-top border-2 mx-2 d-none d-md-block" [ngStyle]="{'border-color': order.estado === estados[i+1] ? '#198754' : '#dee2e6', 'min-width': '40px'}"></div>}
+        }
+      </div>
+    </div>
+  </div>
+
+  <!-- Dirección de entrega y resumen del pedido -->
+  <div class="row mb-4 align-items-stretch">
+    <div class="col-12 col-lg-8 mb-3 mb-lg-0">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-body d-flex align-items-center">
+          <div class="bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 48px; height: 48px;">
+            <i class="bi bi-geo-alt-fill text-primary fs-4"></i>
+          </div>
+          <div>
+            <div class="fw-bold mb-1">Dirección de Entrega</div>
+            @if (order.direccion) { {{ order.direccion.calle }} {{ order.direccion.numero }} }
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-lg-4 d-flex align-items-stretch">
+      <div class="card border-0 shadow-sm w-100">
+        <div class="card-body d-flex flex-column justify-content-center">
+          <h5 class="mb-3">Resumen del Pedido</h5>
+          <ul class="list-group mb-0">
+            <li class="list-group-item d-flex justify-content-between align-items-center fw-bold fs-5">
+              Total <span>${{ totalPedido }}</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Productos -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <h5 class="mb-3">Productos ({{ order.lineasPedido.length || 0 }})</h5>
+      <div class="list-group">
+        @for (linea of order.lineasPedido; let i = $index; track linea.id) {
+          <div class="list-group-item p-4">
+            <div class="row align-items-center">
+              <div class="col-12 col-md-3 d-flex justify-content-center mb-3 mb-md-0">
+                <img [src]="linea.producto.imagenUrl || 'https://via.placeholder.com/128'" alt="{{ linea.producto.nombre }}" class="rounded" style="width: 128px; height: 128px; object-fit: cover;">
+              </div>
+              <div class="col-12 col-md-5">
+                <div class="fw-bold fs-4">{{ linea.producto.nombre }}</div>
+                <div class="text-muted fs-5">{{ linea.producto.descripcion }}</div>
+              </div>
+              <div class="col-12 col-md-4">
+                <div class="row text-center">
+                  <div class="col-4">
+                    <div class="text-muted">Cantidad</div>
+                    <div class="fw-bold fs-5">{{ linea.cantidad }}</div>
+                  </div>
+                  <div class="col-4">
+                    <div class="text-muted">Precio unitario</div>
+                    <div class="fw-bold fs-5">${{ linea.precioUnitario }}</div>
+                  </div>
+                  <div class="col-4">
+                    <div class="text-muted">Total</div>
+                    <div class="fw-bold fs-5">${{ linea.cantidad * linea.precioUnitario }}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+</div>
+}
+@else {
+  <div class="text-center text-muted my-5">
+    No se encontró ningún pedido para este usuario.
+  </div>
+}

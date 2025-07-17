@@ -1,15 +1,25 @@
-import { Component } from '@angular/core';
+/**
+ * Componente encargado de simular el proceso de pago con tarjeta.
+ * Permite ingresar los datos de la tarjeta, validarlos y simular el resultado del pago.
+ * Si el pago es exitoso, muestra un comprobante; si falla, muestra un mensaje de error.
+ * Obtiene la orden del usuario para mostrar el monto a pagar.
+ */
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { OrderService } from '../../../core/services/order.service';
+import { Order } from '../../../core/models/order.interface';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-payment',
   standalone: true,
   imports: [CommonModule, FormsModule],
+  providers: [OrderService],
   templateUrl: './payment.component.html',
   styleUrl: './payment.component.css'
 })
-export class PaymentComponent {
+export class PaymentComponent implements OnInit {
   // Estados de la aplicación
   currentStep: 'initial' | 'payment-form' | 'success' | 'error' = 'initial';
   
@@ -32,6 +42,10 @@ export class PaymentComponent {
   errorMessage = 'Error en el servicio de pago. Por favor, intente nuevamente.';
   
   // Datos de la boleta
+  order?: Order;
+  totalPedido: number = 0;
+  fechaPedido: Date = new Date();
+
   receiptData = {
     transactionId: '',
     amount: 0,
@@ -41,6 +55,20 @@ export class PaymentComponent {
     description: 'Compra de productos varios'
   };
   
+  constructor(private orderService: OrderService, private route: ActivatedRoute) {}
+
+  ngOnInit(): void {
+    this.route.paramMap.subscribe(params => {
+      const usuarioId = Number(params.get('usuarioId'));
+      if (!usuarioId) return;
+      this.orderService.obtenerOrdenPorUsuarioId(usuarioId).subscribe((order: Order) => {
+        this.order = order;
+        this.totalPedido = this.order?.total || 0;
+        this.fechaPedido = new Date(this.order?.fecha || new Date());
+      });
+    });
+  }
+
   /**
    * Muestra el formulario de pago
    * Cambia el estado de la aplicación a 'payment-form'
@@ -174,8 +202,8 @@ export class PaymentComponent {
     const now = new Date();
     this.receiptData = {
       transactionId: 'TXN' + Math.random().toString(36).substr(2, 9).toUpperCase(),
-      amount: Math.floor(Math.random() * 1000) + 100, // Entre 100 y 1100
-      date: now,
+      amount: this.totalPedido, // monto real del pedido
+      date: this.fechaPedido,   // fecha real del pedido
       cardLastDigits: this.cardData.cardNumber.replace(/\s/g, '').slice(-4),
       merchant: 'Walmart',
       description: 'Compra de productos varios'
