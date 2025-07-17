@@ -112,46 +112,53 @@
                 </td>
                 <!-- Categoría del producto -->
                 <td class="align-middle">
-                  <span class="badge bg-info">{{ producto.categoria.nombre }}</span>
+                  <span class="badge bg-secondary">{{ producto.categoria.nombre }}</span>
                 </td>
                 <!-- Precio del producto -->
                 <td class="align-middle fw-bold text-success">${{ producto.precio | number:'1.0-0' }}</td>
                 <!-- Oferta del producto -->
                 <td class="align-middle">
                   @if (producto.oferta) {
-                    <span class="badge bg-success" title="{{ producto.oferta.descripcion }}">{{ producto.oferta.porcentaje }}%</span>
+                    <span class="badge bg-info" title="{{ producto.oferta.descripcion }}">{{ producto.oferta.porcentaje }}%</span>
                   } @else {
                     <!-- Celda vacía si no hay oferta -->
                   }
                 </td>
                 <!-- Stock por sucursal (badge por cada sucursal) -->
-                <td class="align-middle fw-semibold">
+                <td class="align-middle fw-semibold" style="vertical-align: top;">
                   @for (productoSucursal of producto.sucursales; track productoSucursal) {
-                    <span class="badge me-1" [ngClass]="getSucursalStockColor(productoSucursal.sucursal.nombre)">
-                      {{ productoSucursal.stock }}
-                    </span>
+                    <div class="mb-1">
+                      <span class="badge me-1" [ngClass]="getSucursalStockColor(productoSucursal.sucursal.nombre)">
+                        {{ productoSucursal.stock }}
+                      </span>
+                    </div>
                   }
                 </td>
                 <!-- Nombre de la sucursal (badge por cada una) -->
-                <td class="align-middle">
+                <td class="align-middle" style="vertical-align: top;">
                   @for (productoSucursal of producto.sucursales; track productoSucursal) {
-                    <span class="badge me-1" [ngClass]="getSucursalStockColor(productoSucursal.sucursal.nombre)">
-                      {{ productoSucursal.sucursal.nombre }}
-                    </span>
+                    <div class="mb-1">
+                      <span class="badge me-1" [ngClass]="getSucursalStockColor(productoSucursal.sucursal.nombre)">
+                        {{ productoSucursal.sucursal.nombre }}
+                      </span>
+                    </div>
                   }
                 </td>
                 <!-- Estado del producto -->
                 <td class="align-middle">
-                  <span class="badge bg-secondary">{{ producto.estado }}</span>
+                  <span class="badge" [ngClass]="getEstadoColor(producto.estado)">{{ producto.estado }}</span>
                 </td>
                 <!-- Acciones: editar y eliminar producto -->
                 <td class="align-middle">
-                  <button class="btn btn-outline-dark btn-sm rounded-2 me-1" title="Editar" (click)="onEditarProducto(producto)"><i class="bi bi-pencil"></i></button>
-                  <button 
-                    class="btn btn-outline-secondary btn-sm rounded-2" 
-                    title="Cambiar estado" >
-                    <i class="bi bi-toggle-on"></i>
-                  </button>
+                  @if (producto.estado !== 'ELIMINADO') {
+                    <button class="btn btn-outline-dark btn-sm rounded-2 me-1" title="Editar" (click)="onEditarProducto(producto)"><i class="bi bi-pencil"></i></button>
+                    <button 
+                      class="btn btn-outline-danger btn-sm rounded-2" 
+                      title="Eliminar" 
+                      (click)="eliminarProducto(producto)">
+                      <i class="bi bi-trash"></i>
+                    </button>
+                  }
                 </td>
               </tr>
             }

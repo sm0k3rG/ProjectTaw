@@ -67,6 +67,24 @@ export class ProductListComponent implements OnInit {
   }
 
   /**
+   * Retorna la clase CSS para el color del estado del producto
+   * @param estado - Estado del producto
+   * @returns Clase CSS para el color del badge
+   */
+  getEstadoColor(estado: string): string {
+    switch (estado?.toUpperCase()) {
+      case 'ACTIVO':
+        return 'bg-success text-white';
+      case 'ELIMINADO':
+        return 'bg-danger text-white';
+      case 'INACTIVO':
+        return 'bg-warning text-dark';
+      default:
+        return 'bg-secondary text-white';
+    }
+  }
+
+  /**
    * Método de ciclo de vida que se ejecuta al inicializar el componente.
    * Llama a la función para obtener los productosy productos-sucursal.
    */
@@ -155,6 +173,41 @@ export class ProductListComponent implements OnInit {
     console.log('Editar producto:');
   }
 
+  /**
+   * Elimina un producto por su ID.
+   * Muestra una confirmación antes de proceder con la eliminación.
+   * @param producto - Producto a eliminar
+   */
+  eliminarProducto(producto: Product): void {
+    const mensajeConfirmacion = `¿Estás seguro de que deseas eliminar el producto "${producto.nombre}"?`;
+    
+    if (!confirm(mensajeConfirmacion)) {
+      return;
+    }
+
+    this.productService.eliminarProducto(producto.id).subscribe({
+      next: () => {
+        this.mostrarMensajeUsuario('Producto eliminado exitosamente', 'success');
+        this.obtenerProductos(); // Recargar la lista de productos
+      },
+      error: (error) => {
+        console.error('Error al eliminar producto:', error);
+        let mensajeError = 'Error al eliminar el producto.';
+        
+        // Manejar errores específicos del backend
+        if (error.error?.message) {
+          mensajeError = error.error.message;
+        } else if (error.status === 404) {
+          mensajeError = 'Producto no encontrado.';
+        } else if (error.status === 400) {
+          mensajeError = 'No se puede eliminar el producto. Verifica que no tenga stock disponible o no esté asociado a pedidos activos.';
+        }
+        
+        this.mostrarMensajeUsuario(mensajeError, 'error');
+      }
+    });
+  }
+
   mostrarMensajeUsuario(mensaje: string, tipo: 'success' | 'error'): void {
     this.mensaje = mensaje;
     this.tipoMensaje = tipo;
@@ -165,9 +218,4 @@ export class ProductListComponent implements OnInit {
       this.mostrarMensaje = false;
     }, 5000);
   }
-
-  /**
-   * Elimina un producto por su ID.
-   * @param id - ID del producto a eliminar
-   */
 }
