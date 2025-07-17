@@ -1,0 +1,67 @@
+/* Estilos para la boleta */
+.receipt-container {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%) !important;
+    border: 2px solid #dee2e6 !important;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    position: relative;
+  }
+  
+  .receipt-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #4caf50, #45a049, #4caf50);
+    border-radius: 4px 4px 0 0;
+  }
+  
+  /* Animación para la boleta */
+  .receipt-container {
+    animation: slideInUp 0.5s ease-out;
+  }
+  
+  @keyframes slideInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  /* Estilos para los badges */
+  .badge {
+    font-size: 0.75rem;
+    padding: 0.5rem 0.75rem;
+  }
+  
+  /* Estilos para los inputs */
+  .form-control:focus {
+    border-color: #1976d2;
+    box-shadow: 0 0 0 0.2rem rgba(25, 118, 210, 0.25);
+  }
+  
+  /* Estilos para los botones */
+  .btn {
+    transition: all 0.3s ease;
+  }
+  
+  .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  }
+  
+  /* Estilos para las tarjetas */
+  .card {
+    transition: all 0.3s ease;
+  }
+  
+  .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  }
+  
