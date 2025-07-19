@@ -12,7 +12,7 @@ export class OfertaService {
     return this.prisma.oferta.create({
       data: {
         ...rest,
-        producto: {
+        productos: {
           connect: {
             id: productoId,
           },
@@ -24,7 +24,7 @@ export class OfertaService {
   async findAll() {
     return this.prisma.oferta.findMany({
       include: {
-        producto: true, // Esto incluirá los detalles del producto
+        productos: true, // Esto incluirá los detalles del producto
       },
     });
   }
@@ -33,7 +33,7 @@ export class OfertaService {
     return this.prisma.oferta.findUnique({
       where: { id },
       include: {
-        producto: true, // Esto incluirá los detalles del producto
+        productos: true, // Esto incluirá los detalles del producto
       },
     });
   }

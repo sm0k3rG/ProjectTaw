@@ -1,4 +1,3 @@
-import { PedidoUsuarioModule } from './pedido-usuario/pedido-usuario.module';
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -8,17 +7,14 @@ import { CategoriasModule } from './categorias/categorias.module';
 import { ProductoSucursalModule } from './producto-sucursal/producto-sucursal.module';
 import { OfertaModule } from './oferta/oferta.module';
 import { SucursalModule } from './sucursal/sucursal.module';
+import { AuthModule } from './auth/auth.module';
+import { UsuarioModule } from './usuario/usuario.module';
+import { PedidoModule } from './pedido/pedido.module';
+import { ConfigModule } from '@nestjs/config';
+import { PedidoUsuarioModule } from './pedido-usuario/pedido-usuario.module';
 
 @Module({
-  imports: [
-    PedidoUsuarioModule,
-    PrismaModule,
-    ProductosModule,
-    CategoriasModule,
-    ProductoSucursalModule,
-    OfertaModule,
-    SucursalModule,
-  ],
+  imports: [ConfigModule.forRoot({ isGlobal: true }),PrismaModule, ProductosModule, CategoriasModule, ProductoSucursalModule, OfertaModule, SucursalModule, AuthModule, UsuarioModule, PedidoModule, PedidoUsuarioModule],
   controllers: [AppController],
   providers: [AppService],
 })

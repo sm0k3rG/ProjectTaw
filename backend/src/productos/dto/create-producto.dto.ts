@@ -1,23 +1,34 @@
-import { IsNotEmpty, IsOptional, IsNumber, isString, Min } from 'class-validator';
+// create-product.dto.ts
 
-export class CreateProductoDto {
+import { IsNotEmpty, IsOptional, IsNumber, IsString, IsArray } from 'class-validator';
+
+export class CreateProductDto {
   @IsNotEmpty()
+  @IsString()
   nombre: string;
 
   @IsNotEmpty()
+  @IsString()
   descripcion: string;
 
+  @IsNotEmpty()
   @IsNumber()
-  @Min(0)
   precio: number;
 
+  @IsNotEmpty()
   @IsNumber()
   categoriaId: number;
 
   @IsOptional()
   @IsNumber()
   ofertaId?: number;
-  
+
   @IsOptional()
+  @IsString()
   imagenUrl?: string;
+
+  @IsArray()
+  @IsNotEmpty()
+  sucursales: { id: number, stock: number }[];  // Para definir las sucursales y stock
 }
+

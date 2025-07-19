@@ -1,34 +1,54 @@
-import { Controller, Get, Post, Body, Param, Put, Delete } from '@nestjs/common';
-import { CreateProductoDto } from './dto/create-producto.dto';
+import { Controller, Get, Post, Body, Param, Put, Delete, UseGuards, Query, UsePipes, ValidationPipe } from '@nestjs/common';
 import { UpdateProductoDto } from './dto/update-producto.dto';
 import { ProductoService } from './productos.service';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { Producto, Rol } from '@prisma/client';
+import { RolesGuard } from 'src/auth/roles.guard';
+import { Roles } from 'src/auth/roles.decorator';
+import { CreateProductDto } from './dto/create-producto.dto';
+import { GetProductosDto } from './dto/get-productos.dto';
 
 @Controller('producto')
 export class ProductoController {
   constructor(private readonly productoService: ProductoService) {}
-
+   // @Roles(Rol.Admin)  // Usamos el enum Rol para definir los roles permitidos
+  // @UseGuards(JwtAuthGuard, RolesGuard)  // Usamos ambos guards
   @Post()
-  create(@Body() createProductoDto: CreateProductoDto) {
+  create(@Body() createProductoDto: CreateProductDto) {
     return this.productoService.create(createProductoDto);
   }
 
-  @Get()
-  findAll() {
-    return this.productoService.findAll();
+  @Get("Catalago")
+  @UsePipes(new ValidationPipe({ transform: true }))
+  async listar(@Query() params: GetProductosDto) {
+    return this.productoService.findAll(params);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.productoService.findOne(+id);
-  }
+    @Get('registrados')
+  // @Roles(Rol.Admin)  // Usamos el enum Rol para definir los roles permitidos
+  // @UseGuards(JwtAuthGuard, RolesGuard)  // Usamos ambos guards
+  async obtenerProductosConDetalles(
+  @Query('page') page: number = 1,  // Página por defecto
+  @Query('limit') limit: number = 10,  // Límite por defecto
+  @Query('categoriaId') categoriaId?: number,
+  @Query('orden') orden?: string,  // 'asc' o 'desc'
+): Promise<{ total: number; totalPaginas: number; productos: Producto[] }> {
+  // Llamamos a la función del servicio que ya tenemos
+  const { total, totalPaginas, productos } = await this.productoService.obtenerProductosConDetalles(page, limit, categoriaId, orden);
 
-  @Put(':id')
-  update(@Param('id') id: string, @Body() updateProductoDto: UpdateProductoDto) {
-    return this.productoService.update(+id, updateProductoDto);
-  }
+  // Devolvemos el objeto con el total de productos, el total de páginas y los productos
+  return {
+    total,
+    totalPaginas,
+    productos,
+  };
+}
 
+
+// @Roles(Rol.Admin)  // Usamos el enum Rol para definir los roles permitidos
+// @UseGuards(JwtAuthGuard, RolesGuard)  // Usamos ambos guards
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.productoService.remove(+id);
+  async eliminarProducto(@Param('id') id: number) {
+    return this.productoService.eliminarProducto(id);
   }
 }
