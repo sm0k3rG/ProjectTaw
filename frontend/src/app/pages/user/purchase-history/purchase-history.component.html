@@ -10,7 +10,7 @@
           <th>Fecha</th>
           <th>Total</th>
           <th>Estado</th>
-          <th>Productos</th>
+          <th>Acciones</th>
         </tr>
       </thead>
       <tbody>
@@ -29,29 +29,88 @@
             </span>
           </td>
           <td>
-            <ul class="mb-0 ps-3">
-              <li *ngFor="let p of compra.productos">
-                {{ p.nombre }} <span class="text-muted">x{{ p.cantidad }}</span>
-              </li>
-            </ul>
+            <button class="btn btn-outline-primary btn-sm" (click)="seleccionarCompra(compra)">
+              Detalles
+            </button>
           </td>
         </tr>
       </tbody>
     </table>
   </div>
 
-  <!-- Paginación -->
+  <!-- Paginación estilo avanzado -->
   <nav *ngIf="totalPaginas > 1" aria-label="Paginación de historial" class="mt-3">
     <ul class="pagination justify-content-center">
       <li class="page-item" [class.disabled]="pagina === 1">
         <button class="page-link" (click)="paginaAnterior()" [disabled]="pagina === 1">Anterior</button>
       </li>
-      <li class="page-item" *ngFor="let p of [].constructor(totalPaginas); let i = index" [class.active]="pagina === (i+1)">
-        <button class="page-link" (click)="irAPagina(i+1)">{{ i+1 }}</button>
+      <li class="page-item" *ngIf="paginasVisibles[0] > 1">
+        <button class="page-link" (click)="irAPagina(1)">1</button>
+      </li>
+      <li class="page-item disabled" *ngIf="paginasVisibles[0] > 2">
+        <span class="page-link">...</span>
+      </li>
+      <li class="page-item" *ngFor="let p of paginasVisibles" [class.active]="pagina === p">
+        <button class="page-link" (click)="irAPagina(p)">{{ p }}</button>
+      </li>
+      <li class="page-item disabled" *ngIf="paginasVisibles[paginasVisibles.length-1] < totalPaginas - 1">
+        <span class="page-link">...</span>
+      </li>
+      <li class="page-item" *ngIf="paginasVisibles[paginasVisibles.length-1] < totalPaginas">
+        <button class="page-link" (click)="irAPagina(totalPaginas)">{{ totalPaginas }}</button>
       </li>
       <li class="page-item" [class.disabled]="pagina === totalPaginas">
         <button class="page-link" (click)="paginaSiguiente()" [disabled]="pagina === totalPaginas">Siguiente</button>
       </li>
     </ul>
   </nav>
+
+  <!-- Detalle de la compra -->
+  <div *ngIf="compraSeleccionada" class="modal fade show d-block" tabindex="-1" style="background: rgba(0,0,0,0.3);">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Detalle de Compra #{{ compraSeleccionada.id }}</h5>
+          <button type="button" class="btn-close" aria-label="Cerrar" (click)="cerrarDetalle()"></button>
+        </div>
+        <div class="modal-body">
+          <p><strong>Fecha:</strong> {{ compraSeleccionada.fecha }}</p>
+          <p><strong>Estado:</strong> <span class="badge"
+            [ngClass]="{
+              'bg-success': compraSeleccionada.estado === 'Entregado',
+              'bg-warning text-dark': compraSeleccionada.estado === 'En camino',
+              'bg-danger': compraSeleccionada.estado === 'Cancelado'
+            }">
+            {{ compraSeleccionada.estado }}
+          </span></p>
+          <div class="table-responsive">
+            <table class="table table-bordered">
+              <thead class="table-light">
+                <tr>
+                  <th>Producto</th>
+                  <th>Cantidad</th>
+                  <th>Precio Unitario</th>
+                  <th>Subtotal</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let p of compraSeleccionada.productos">
+                  <td>{{ p.nombre }}</td>
+                  <td>{{ p.cantidad }}</td>
+                  <td>{{ formatearCLP(p.precio) }}</td>
+                  <td>{{ formatearCLP(p.precio * p.cantidad) }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="text-end">
+            <strong>Total: {{ formatearCLP(compraSeleccionada.total) }}</strong>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="cerrarDetalle()">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

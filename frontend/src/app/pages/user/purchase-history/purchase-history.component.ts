@@ -35,6 +35,7 @@ export class PurchaseHistoryComponent {
 
   pagina: number = 1;
   cantidadPorPagina: number = 10;
+  compraSeleccionada: Compra | null = null;
 
   get totalPaginas(): number {
     return Math.ceil(this.historial.length / this.cantidadPorPagina);
@@ -43,6 +44,25 @@ export class PurchaseHistoryComponent {
   get comprasPaginadas(): Compra[] {
     const inicio = (this.pagina - 1) * this.cantidadPorPagina;
     return this.historial.slice(inicio, inicio + this.cantidadPorPagina);
+  }
+
+  get paginasVisibles(): number[] {
+    const total = this.totalPaginas;
+    const actual = this.pagina;
+    let inicio = Math.max(1, actual - 2);
+    let fin = Math.min(total, actual + 2);
+    if (fin - inicio < 4) {
+      if (inicio === 1) {
+        fin = Math.min(total, inicio + 4);
+      } else if (fin === total) {
+        inicio = Math.max(1, fin - 4);
+      }
+    }
+    const paginas: number[] = [];
+    for (let i = inicio; i <= fin; i++) {
+      paginas.push(i);
+    }
+    return paginas;
   }
 
   irAPagina(p: number) {
@@ -61,6 +81,14 @@ export class PurchaseHistoryComponent {
     if (this.pagina > 1) {
       this.pagina--;
     }
+  }
+
+  seleccionarCompra(compra: Compra) {
+    this.compraSeleccionada = compra;
+  }
+
+  cerrarDetalle() {
+    this.compraSeleccionada = null;
   }
 
   formatearCLP(valor: number): string {

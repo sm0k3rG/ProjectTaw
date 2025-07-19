@@ -10,6 +10,46 @@ h2 {
   text-shadow: 0 2px 8px rgba(0,113,206,0.08);
 }
 
+/* Estilos para filtros y búsqueda */
+.form-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #0071ce !important;
+  margin-bottom: 0.5rem;
+}
+
+.form-select, .form-control {
+  border: 2px solid #e3eaf5;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-select:focus, .form-control:focus {
+  border-color: #0071ce;
+  box-shadow: 0 0 0 0.2rem rgba(0, 113, 206, 0.15);
+}
+
+.btn-outline-secondary {
+  border-color: #6c757d;
+  color: #6c757d;
+  font-weight: 600;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+
+.btn-outline-secondary:hover {
+  background: #6c757d;
+  color: #fff;
+  border-color: #6c757d;
+}
+
+/* Card de filtros */
+.card.shadow-sm {
+  border-radius: 12px;
+  border: 1px solid #e3eaf5;
+}
+
 .table {
   background: #fff;
   border-radius: 12px;
@@ -53,6 +93,14 @@ h2 {
   font-size: 1rem;
   padding: 0.5em 1em;
 }
+.badge.bg-info {
+  background: #17a2b8 !important;
+  color: #fff !important;
+  font-weight: 600;
+  border-radius: 8px;
+  font-size: 1rem;
+  padding: 0.5em 1em;
+}
 
 .btn-outline-primary {
   border-color: #0071ce;
@@ -63,6 +111,18 @@ h2 {
 }
 .btn-outline-primary:hover {
   background: #0071ce;
+  color: #fff;
+}
+
+.btn-outline-danger {
+  border-color: #dc3545;
+  color: #dc3545;
+  font-weight: 600;
+  border-radius: 8px;
+  transition: background 0.2s, color 0.2s;
+}
+.btn-outline-danger:hover {
+  background: #dc3545;
   color: #fff;
 }
 
@@ -100,6 +160,19 @@ h2 {
   color: #0071ce;
   font-size: 1.2rem;
 }
+
+/* Mensaje de no resultados */
+.text-center.py-5 {
+  background: #f8f9fa;
+  border-radius: 12px;
+  margin: 2rem 0;
+}
+
+.text-center.py-5 i {
+  color: #0071ce;
+  opacity: 0.5;
+}
+
 @media (max-width: 700px) {
   .container {
     padding: 0 0.5rem;
@@ -110,6 +183,11 @@ h2 {
   }
   .modal-content {
     padding: 0.5rem;
+  }
+
+  /* Responsive para filtros */
+  .col-md-3, .col-md-4, .col-md-2 {
+    margin-bottom: 1rem;
   }
 }
 

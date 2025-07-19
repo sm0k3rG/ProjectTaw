@@ -23,8 +23,8 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/admin/dashboard/dashboard.component').then(m => m.DashboardComponent)
   },
   {
-    path: 'user/order-list',
-    loadComponent: () => import('./pages/user/orders/order-list/order-list.component').then(m => m.OrderListComponent)
+    path: 'admin/order-list',
+    loadComponent: () => import('./pages/admin/orders/order-list/order-list.component').then(m => m.OrderListComponent)
   },
   {
     path: 'user/purchase-history',
