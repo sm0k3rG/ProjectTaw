@@ -10,9 +10,11 @@ import { SucursalModule } from './sucursal/sucursal.module';
 import { AuthModule } from './auth/auth.module';
 import { UsuarioModule } from './usuario/usuario.module';
 import { PedidoModule } from './pedido/pedido.module';
+import { NotificationsModule } from './notifications/notifications.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
-  imports: [PrismaModule, ProductosModule, CategoriasModule, ProductoSucursalModule, OfertaModule, SucursalModule, AuthModule, UsuarioModule, PedidoModule],
+  imports: [ConfigModule.forRoot({ isGlobal: true }),PrismaModule, ProductosModule, CategoriasModule, ProductoSucursalModule, OfertaModule, SucursalModule, AuthModule, UsuarioModule, PedidoModule, NotificationsModule],
   controllers: [AppController],
   providers: [AppService],
 })

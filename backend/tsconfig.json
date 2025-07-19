@@ -18,7 +18,8 @@
     "strictBindCallApply": false,
     "noFallthroughCasesInSwitch": false,
     "types": [
-      "@prisma/client"  // Prisma genera los tipos dentro de este paquete
+      "@prisma/client",  // Prisma genera los tipos dentro de este paquete
+      "node"
     ]
   }
 }

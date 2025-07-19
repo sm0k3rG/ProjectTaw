@@ -29,6 +29,7 @@ CREATE TABLE `Pedido` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `fechaPedido` DATETIME(3) NOT NULL,
     `estado` ENUM('PENDIENTE', 'ACTIVO', 'COMPLETADO', 'CANCELADO') NOT NULL,
+    `total` DOUBLE NOT NULL,
     `usuarioId` INTEGER NOT NULL,
     `direccionId` INTEGER NOT NULL,
 
@@ -78,9 +79,7 @@ CREATE TABLE `Oferta` (
     `fechaInicio` DATETIME(3) NOT NULL,
     `fechaFin` DATETIME(3) NOT NULL,
     `estado` VARCHAR(191) NOT NULL,
-    `productoId` INTEGER NOT NULL,
 
-    UNIQUE INDEX `Oferta_productoId_key`(`productoId`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -104,6 +103,17 @@ CREATE TABLE `ProductoSucursal` (
     PRIMARY KEY (`productoId`, `sucursalId`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
+-- CreateTable
+CREATE TABLE `HistorialVisita` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `usuarioId` INTEGER NOT NULL,
+    `productoId` INTEGER NOT NULL,
+    `fecha` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+
+    UNIQUE INDEX `HistorialVisita_usuarioId_productoId_key`(`usuarioId`, `productoId`),
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
 -- AddForeignKey
 ALTER TABLE `Direccion` ADD CONSTRAINT `Direccion_usuarioId_fkey` FOREIGN KEY (`usuarioId`) REFERENCES `Usuario`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
@@ -123,10 +133,16 @@ ALTER TABLE `LineaDePedido` ADD CONSTRAINT `LineaDePedido_pedidoId_fkey` FOREIGN
 ALTER TABLE `Producto` ADD CONSTRAINT `Producto_categoriaId_fkey` FOREIGN KEY (`categoriaId`) REFERENCES `Categoria`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `Oferta` ADD CONSTRAINT `Oferta_productoId_fkey` FOREIGN KEY (`productoId`) REFERENCES `Producto`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `Producto` ADD CONSTRAINT `Producto_ofertaId_fkey` FOREIGN KEY (`ofertaId`) REFERENCES `Oferta`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `ProductoSucursal` ADD CONSTRAINT `ProductoSucursal_productoId_fkey` FOREIGN KEY (`productoId`) REFERENCES `Producto`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `ProductoSucursal` ADD CONSTRAINT `ProductoSucursal_sucursalId_fkey` FOREIGN KEY (`sucursalId`) REFERENCES `Sucursal`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `HistorialVisita` ADD CONSTRAINT `HistorialVisita_usuarioId_fkey` FOREIGN KEY (`usuarioId`) REFERENCES `Usuario`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `HistorialVisita` ADD CONSTRAINT `HistorialVisita_productoId_fkey` FOREIGN KEY (`productoId`) REFERENCES `Producto`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
