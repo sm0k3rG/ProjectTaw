@@ -1,0 +1,29 @@
+.table img {
+  transition: transform 0.2s ease-in-out;
+}
+
+.table img:hover {
+  transform: scale(1.1);
+}
+
+.btn {
+  transition: all 0.2s ease-in-out;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+}
+
+.input-group input {
+  border-left: none;
+  border-right: none;
+}
+
+.input-group input:focus {
+  box-shadow: none;
+  border-color: #ced4da;
+}
+
+.card {
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
