@@ -27,7 +27,31 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/admin/orders/order-list/order-list.component').then(m => m.OrderListComponent)
   },
   {
+    path: 'admin/products',
+    loadComponent: () => import('./pages/admin/products/product-list/product-list.component').then(m => m.ProductListComponent)
+  },
+  {
+    path: 'admin/offers',
+    loadComponent: () => import('./pages/admin/offer/offer-list/offer-list.component').then(m => m.OfferListComponent)
+  },
+  {
+    path: 'admin/categories',
+    loadComponent: () => import('./pages/admin/products/category/category.component').then(m => m.CategoryComponent)
+  },
+  {
+    path: 'admin/branches',
+    loadComponent: () => import('./pages/admin/branch/branch-list/branch-list.component').then(m => m.BranchListComponent)
+  },
+  {
     path: 'user/purchase-history',
     loadComponent: () => import('./pages/user/purchase-history/purchase-history.component').then(m => m.PurchaseHistoryComponent)
   },
+  {
+    path: 'user/order/:usuarioId',
+    loadComponent: () => import('./pages/user/order/order.component').then(m => m.OrderComponent)
+  },
+  {
+    path: 'user/payment/:usuarioId',
+    loadComponent: () => import('./pages/user/payment/payment.component').then(m => m.PaymentComponent)
+  }
 ];
