@@ -1,13 +1,20 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
+import * as nodemailer from 'nodemailer';
+import { ForgotPasswordDto } from './dto/forgot-password.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
 
 @Injectable()
 export class AuthService {
   constructor(private prisma: PrismaService) {}
 
-  // ✅ Función para registrar usuario
+  // ✅ Registro
   async register(dto: any) {
     const { nombre, email, contrasena, terminosAceptados } = dto;
 
@@ -18,6 +25,7 @@ export class AuthService {
     const existingUser = await this.prisma.usuario.findUnique({
       where: { email },
     });
+
     if (existingUser) {
       throw new BadRequestException('El correo ya está registrado');
     }
@@ -38,7 +46,7 @@ export class AuthService {
     return { message: 'Registro exitoso. Verifica tu correo (simulado).' };
   }
 
-  // ✅ Función para iniciar sesión
+  // ✅ Login
   async login(dto: any) {
     const { email, contrasena } = dto;
 
@@ -55,7 +63,6 @@ export class AuthService {
       throw new BadRequestException('Credenciales incorrectas');
     }
 
-    // 🔐 JWT token
     const secret = process.env.JWT_SECRET;
     if (!secret) {
       throw new Error('Falta JWT_SECRET en el archivo .env');
@@ -65,7 +72,6 @@ export class AuthService {
       expiresIn: '1h',
     });
 
-    // Puedes cambiar esto si agregas el tipo de usuario en el modelo
     const tipoUsuario = 'cliente';
 
     console.log(`[AUDIT] Usuario inició sesión: ${user.id}, IP simulada: 127.0.0.1`);
@@ -74,5 +80,74 @@ export class AuthService {
       token,
       tipoUsuario,
     };
+  }
+
+  // ✅ Recuperar contraseña
+  async solicitarRecuperacionContrasena(dto: ForgotPasswordDto) {
+    const user = await this.prisma.usuario.findUnique({
+      where: { email: dto.email },
+    });
+
+    if (!user) {
+      throw new NotFoundException('No existe una cuenta con este correo');
+    }
+
+    const token = jwt.sign(
+      { userId: user.id },
+      process.env.JWT_SECRET as string,
+      { expiresIn: '1h' },
+    );
+
+    const resetLink = `${process.env.FRONTEND_URL}/reset-password?token=${token}`;
+
+    const transporter = nodemailer.createTransport({
+      host: process.env.SMTP_HOST,
+      port: Number(process.env.SMTP_PORT),
+      auth: {
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASS,
+      },
+    });
+
+    await transporter.sendMail({
+      to: user.email,
+      subject: 'Recuperación de contraseña',
+      html: `
+        <p>Hola, ${user.nombre}</p>
+        <p>Haz clic en el siguiente enlace para restablecer tu contraseña:</p>
+        <a href="${resetLink}">Restablecer contraseña</a>
+        <p>Este enlace expirará en 1 hora.</p>
+      `,
+    });
+
+    return { message: 'Correo de recuperación enviado correctamente' };
+  }
+
+  // ✅ Restablecer contraseña
+  async restablecerContrasena(dto: ResetPasswordDto) {
+    let payload: any;
+
+    try {
+      payload = jwt.verify(dto.token, process.env.JWT_SECRET as string);
+    } catch (err) {
+      throw new BadRequestException('Token inválido o expirado');
+    }
+
+    const user = await this.prisma.usuario.findUnique({
+      where: { id: payload.userId },
+    });
+
+    if (!user) {
+      throw new NotFoundException('Usuario no encontrado');
+    }
+
+    const hashedPassword = await bcrypt.hash(dto.newPassword, 12);
+
+    await this.prisma.usuario.update({
+      where: { id: user.id },
+      data: { contrasena: hashedPassword },
+    });
+
+    return { message: 'Contraseña restablecida exitosamente' };
   }
 }
