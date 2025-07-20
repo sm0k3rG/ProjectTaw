@@ -1,0 +1,168 @@
+<div class="delivery-sidebar-overlay" *ngIf="show" (click)="closeSidebar.emit()"></div>
+<div class="delivery-sidebar" [class.open]="show">
+  <div class="sidebar-header d-flex justify-content-between align-items-center p-3 border-bottom">
+    <h5 class="mb-0 fw-bold" style="font-size: 1.2rem; color: #222;">Elige un modo de entrega</h5>
+    <button class="btn btn-link text-dark fs-4 p-0" (click)="closeSidebar.emit()">
+      <i class="bi bi-x-lg"></i>
+    </button>
+  </div>
+
+  <div class="sidebar-tabs d-flex border-0 p-3 pb-0">
+    <button class="tab-btn flex-fill me-2"
+            [class.active]="deliveryType==='delivery'"
+            (click)="setType('delivery')"
+            style="border-radius: 8px 0 0 8px;">
+      A Domicilio
+    </button>
+    <button class="tab-btn flex-fill"
+            [class.active]="deliveryType==='retiro'"
+            (click)="setType('retiro')"
+            style="border-radius: 0 8px 8px 0;">
+      Retiro Pickup
+    </button>
+  </div>
+
+  <div class="sidebar-content">
+    <!-- Tab de Retiro en Tienda -->
+    <ng-container *ngIf="deliveryType==='retiro'">
+      <label class="fw-bold mb-1" style="color: #222;">Busca un local</label>
+      <div class="input-group mb-2">
+        <span class="input-group-text bg-white border-end-0">
+          <i class="bi bi-search"></i>
+        </span>
+        <input type="text"
+               class="form-control border-start-0"
+               placeholder="Busca por ciudad, comuna o calle"
+               [(ngModel)]="searchTerm"
+               (input)="onSearchChange()">
+        <button class="btn btn-outline-primary ms-2 d-flex align-items-center"
+                style="height: 38px; min-width: 38px; border-radius: 50%;"
+                (click)="goToMap()">
+          <i class="bi bi-map" style="font-size: 1.2rem;"></i>
+        </button>
+      </div>
+
+      <!-- Lista de sucursales -->
+      <div class="stores-list">
+        <div *ngFor="let store of filteredStores"
+             class="store-item mb-2 p-2 border rounded"
+             [class.selected]="selectedStore?.id === store.id"
+             (click)="selectStoreFromList(store)">
+          <div class="d-flex justify-content-between align-items-start">
+            <div class="flex-grow-1">
+              <h6 class="mb-1 fw-bold">{{ store.name }}</h6>
+              <p class="mb-1 text-muted small">
+                <i class="bi bi-geo-alt me-1"></i>
+                {{ store.address }}
+              </p>
+              <p class="mb-1 text-muted small">
+                <i class="bi bi-telephone me-1"></i>
+                {{ store.phone }}
+              </p>
+              <p class="mb-1 text-muted small">
+                <i class="bi bi-clock me-1"></i>
+                {{ store.hours }}
+              </p>
+              <p class="mb-1 text-muted small">
+                <i class="bi bi-geo-alt me-1"></i>
+                {{ store.comuna }}, {{ store.region }}
+              </p>
+              <span *ngIf="store.distance !== undefined && store.distance !== null"
+                    class="badge bg-warning text-dark">
+                <i class="bi bi-geo-alt me-1"></i>{{ getDistanceText(store.distance) }}
+              </span>
+            </div>
+            <div class="ms-2">
+              <button class="btn btn-sm btn-outline-primary"
+                      (click)="selectStoreFromList(store); $event.stopPropagation()">
+                <i class="bi bi-check-lg"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mensaje si no hay sucursales -->
+      <div *ngIf="filteredStores.length === 0" class="text-center py-4">
+        <i class="bi bi-shop text-muted display-6"></i>
+        <p class="text-muted mt-2 mb-1">No hay tiendas disponibles</p>
+        <p class="text-muted small">Las tiendas se cargarán cuando el servicio esté disponible</p>
+      </div>
+    </ng-container>
+
+    <!-- Tab de Delivery a Domicilio -->
+    <ng-container *ngIf="deliveryType==='delivery'">
+      <h6 class="mb-2">Ingresa la dirección de entrega:</h6>
+      <form #deliveryForm="ngForm" (ngSubmit)="saveAddress()">
+        <div class="mb-1">
+          <label class="form-label">Dirección</label>
+          <input class="form-control" [(ngModel)]="address.direccion" name="direccion" required>
+        </div>
+        <div class="mb-1">
+          <label class="form-label">Número</label>
+          <input class="form-control"
+                 [(ngModel)]="address.numero"
+                 name="numero"
+                 type="number"
+                 pattern="[0-9]*"
+                 (keypress)="onlyNumbers($event)"
+                 (input)="validateNumber($event)"
+                 required>
+        </div>
+        <div class="mb-1">
+          <label class="form-label">Depto, Casa, Oficina (opcional)</label>
+          <input class="form-control" [(ngModel)]="address.depto" name="depto">
+        </div>
+
+        <!-- Selector de Región -->
+        <div class="mb-1">
+          <label class="form-label">Región</label>
+          <select class="form-control"
+                  name="region"
+                  (change)="onRegionChange($any($event.target).value)"
+                  required>
+            <option value="">Selecciona una región</option>
+            <option *ngFor="let region of regiones" [value]="region.id">
+              {{ region.nombre }}
+            </option>
+          </select>
+          <div *ngIf="loadingRegiones" class="text-muted small mt-1">
+            <i class="bi bi-arrow-clockwise me-1"></i>Cargando regiones...
+          </div>
+        </div>
+
+        <!-- Selector de Comuna -->
+        <div class="mb-1">
+          <label class="form-label">Comuna</label>
+          <select class="form-control"
+                  name="comuna"
+                  (change)="onComunaChange($any($event.target).value)"
+                  [disabled]="!selectedRegion || loadingComunas"
+                  required>
+            <option value="">Selecciona una comuna</option>
+            <option *ngFor="let comuna of comunas" [value]="comuna.id">
+              {{ comuna.nombre }}
+            </option>
+          </select>
+          <div *ngIf="loadingComunas" class="text-muted small mt-1">
+            <i class="bi bi-arrow-clockwise me-1"></i>Cargando comunas...
+          </div>
+          <div *ngIf="!selectedRegion && !loadingComunas" class="text-muted small mt-1">
+            Primero selecciona una región
+          </div>
+        </div>
+
+        <div class="mb-1">
+          <label class="form-label">Referencias (opcional)</label>
+          <input class="form-control" [(ngModel)]="address.referencias" name="referencias">
+        </div>
+        <button class="btn btn-success w-100 mt-1" type="submit" [disabled]="!deliveryForm.valid">
+          <i class="bi bi-check-lg me-2"></i>Confirmar Dirección
+        </button>
+        <div *ngIf="!deliveryForm.valid && deliveryForm.touched" class="text-danger small text-center">
+          Por favor completa todos los campos requeridos
+        </div>
+      </form>
+    </ng-container>
+  </div>
+</div>
