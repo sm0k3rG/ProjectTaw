@@ -1,1 +1,260 @@
+
 <router-outlet></router-outlet>
+
+<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
+<!-- * * * * * * * * * * * The content below * * * * * * * * * * * -->
+<!-- * * * * * * * * * * is only a placeholder * * * * * * * * * * -->
+<!-- * * * * * * * * * * and can be replaced.  * * * * * * * * * * -->
+<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
+<!-- * * * * * * * * * Delete the template below * * * * * * * * * -->
+<!-- * * * * * * * to get started with your project! * * * * * * * -->
+<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
+
+<style>
+  :host {
+    --bright-blue: oklch(51.01% 0.274 263.83);
+    --electric-violet: oklch(53.18% 0.28 296.97);
+    --french-violet: oklch(47.66% 0.246 305.88);
+    --vivid-pink: oklch(69.02% 0.277 332.77);
+    --hot-red: oklch(61.42% 0.238 15.34);
+    --orange-red: oklch(63.32% 0.24 31.68);
+
+    --gray-900: oklch(19.37% 0.006 300.98);
+    --gray-700: oklch(36.98% 0.014 302.71);
+    --gray-400: oklch(70.9% 0.015 304.04);
+
+    --red-to-pink-to-purple-vertical-gradient: linear-gradient(
+      180deg,
+      var(--orange-red) 0%,
+      var(--vivid-pink) 50%,
+      var(--electric-violet) 100%
+    );
+
+    --red-to-pink-to-purple-horizontal-gradient: linear-gradient(
+      90deg,
+      var(--orange-red) 0%,
+      var(--vivid-pink) 50%,
+      var(--electric-violet) 100%
+    );
+
+    --pill-accent: var(--bright-blue);
+
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+      Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+      "Segoe UI Symbol";
+    box-sizing: border-box;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1 {
+    font-size: 3.125rem;
+    color: var(--gray-900);
+    font-weight: 500;
+    line-height: 100%;
+    letter-spacing: -0.125rem;
+    margin: 0;
+    font-family: "Inter Tight", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+      Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+      "Segoe UI Symbol";
+  }
+
+  p {
+    margin: 0;
+    color: var(--gray-700);
+  }
+
+  main {
+    width: 100%;
+    min-height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+    box-sizing: inherit;
+    position: relative;
+  }
+
+  .angular-logo {
+    max-width: 9.2rem;
+  }
+
+  .content {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+    max-width: 700px;
+    margin-bottom: 3rem;
+  }
+
+  .content h1 {
+    margin-top: 1.75rem;
+  }
+
+  .content p {
+    margin-top: 1.5rem;
+  }
+
+  .divider {
+    width: 1px;
+    background: var(--red-to-pink-to-purple-vertical-gradient);
+    margin-inline: 0.5rem;
+  }
+
+  .pill-group {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    flex-wrap: wrap;
+    gap: 1.25rem;
+  }
+
+  .pill {
+    display: flex;
+    align-items: center;
+    --pill-accent: var(--bright-blue);
+    background: color-mix(in srgb, var(--pill-accent) 5%, transparent);
+    color: var(--pill-accent);
+    padding-inline: 0.75rem;
+    padding-block: 0.375rem;
+    border-radius: 2.75rem;
+    border: 0;
+    transition: background 0.3s ease;
+    font-family: var(--inter-font);
+    font-size: 0.875rem;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 1.4rem;
+    letter-spacing: -0.00875rem;
+    text-decoration: none;
+  }
+
+  .pill:hover {
+    background: color-mix(in srgb, var(--pill-accent) 15%, transparent);
+  }
+
+  .pill-group .pill:nth-child(6n + 1) {
+    --pill-accent: var(--bright-blue);
+  }
+  .pill-group .pill:nth-child(6n + 2) {
+    --pill-accent: var(--french-violet);
+  }
+  .pill-group .pill:nth-child(6n + 3),
+  .pill-group .pill:nth-child(6n + 4),
+  .pill-group .pill:nth-child(6n + 5) {
+    --pill-accent: var(--hot-red);
+  }
+
+  .pill-group svg {
+    margin-inline-start: 0.25rem;
+  }
+
+  .social-links {
+    display: flex;
+    align-items: center;
+    gap: 0.73rem;
+    margin-top: 1.5rem;
+  }
+
+  .social-links path {
+    transition: fill 0.3s ease;
+    fill: var(--gray-400);
+  }
+
+  .social-links a:hover svg path {
+    fill: var(--gray-900);
+  }
+
+  @media screen and (max-width: 650px) {
+    .content {
+      flex-direction: column;
+      width: max-content;
+    }
+
+    .divider {
+      height: 1px;
+      width: 100%;
+      background: var(--red-to-pink-to-purple-horizontal-gradient);
+      margin-block: 1.5rem;
+    }
+  }
+</style>
+
+<!-- Menú superior estilo Lider.cl -->
+<nav class="lider-navbar navbar navbar-expand-lg" style="background: #0074d9; min-height: 56px;">
+  <div class="container-fluid d-flex align-items-center justify-content-between">
+    <!-- Logo -->
+    <div class="d-flex align-items-center">
+      <img src="assets/walmart-chile-logo.png" alt="Walmart Chile" style="height: 36px; margin-right: 16px;">
+      <button class="btn btn-link text-white fw-bold d-flex align-items-center me-3" style="text-decoration: none;">
+        <i class="bi bi-grid-3x3-gap-fill me-1"></i> Categorías
+      </button>
+    </div>
+    <!-- Buscador -->
+    <form class="flex-grow-1 mx-3" style="max-width: 600px;">
+      <div class="input-group rounded-pill overflow-hidden">
+        <input type="text" class="form-control border-0" placeholder="Busca en Supermercado" style="border-radius: 24px 0 0 24px;">
+        <button class="btn" type="submit" style="background: #ffc20e; border-radius: 0 24px 24px 0;">
+          <i class="bi bi-search"></i>
+        </button>
+      </div>
+    </form>
+    <!-- Selector de sucursal, login y carrito -->
+    <div class="d-flex align-items-center">
+      <button class="btn btn-white me-4 d-flex align-items-center shadow-sm border rounded-pill px-4 py-3 position-relative" style="background: #fff; color: #0074d9; font-weight: 600; min-width: 270px; max-width: 320px; height: 56px; overflow: hidden;" (click)="showDeliverySidebar = true">
+        <i class="bi bi-geo-alt me-1"></i>
+        <span class="fw-bold text-truncate" style="display: inline-block; max-width: 180px; vertical-align: middle; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+          <ng-container *ngIf="selectedDeliveryType === 'retiro'; else envio">
+            <ng-container *ngIf="selectedStore; else sinTienda">
+              Retira en {{ selectedStore.name }}
+            </ng-container>
+            <ng-template #sinTienda>
+              Selecciona una tienda
+            </ng-template>
+          </ng-container>
+          <ng-template #envio>
+            <ng-container *ngIf="deliveryAddress?.direccion; else sinDireccion">
+              Envío a {{ deliveryAddress.direccion }}
+            </ng-container>
+            <ng-template #sinDireccion>
+              Ingresa dirección de entrega
+            </ng-template>
+          </ng-template>
+        </span>
+        <i class="bi bi-chevron-down position-absolute end-0 me-3" style="right: 18px;"></i>
+      </button>
+      <button class="btn btn-link text-white me-3 d-flex align-items-center" style="text-decoration: none;">
+        <i class="bi bi-person me-1"></i> Ingresar
+      </button>
+      <!-- Elimino el botón del carrito del header -->
+    </div>
+  </div>
+</nav>
+
+
+<app-delivery-type-sidebar
+  [show]="showDeliverySidebar"
+  [selectedDeliveryType]="selectedDeliveryType"
+  [selectedStore]="selectedStore"
+  [deliveryAddress]="deliveryAddress"
+  (closeSidebar)="showDeliverySidebar = false"
+  (deliveryTypeChange)="onDeliveryTypeChange($event)"
+  (storeChange)="onStoreChange($event)"
+  (addressChange)="onAddressChange($event)">
+</app-delivery-type-sidebar>
+
+<!-- Main Content -->
+<main>
+  <router-outlet></router-outlet>
+</main>
+
+<!-- Cart Sidebar -->
+<app-cart-sidebar></app-cart-sidebar>
+
+<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
+<!-- * * * * * * * * * * * The content above * * * * * * * * * * * * -->
+<!-- * * * * * * * * * * is only a placeholder * * * * * * * * * * * -->
+<!-- * * * * * * * * * * and can be replaced.  * * * * * * * * * * * -->
+<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
+<!-- * * * * * * * * * * End of Placeholder  * * * * * * * * * * * * -->
+<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->

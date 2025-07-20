@@ -1,10 +1,26 @@
 import { Routes } from '@angular/router';
-import { LoginComponent } from './pages/auth/login/login.component';
 
 export const routes: Routes = [
   {
     path: '',
-    component: LoginComponent
+    redirectTo: '/products',
+    pathMatch: 'full'
+  },
+  {
+    path: 'login',
+    loadComponent: () => import('./pages/auth/login/login.component').then(m => m.LoginComponent)
+  },
+  {
+    path: 'products',
+    loadComponent: () => import('./components/user/products/products-list/products-list.component').then(m => m.ProductsListComponent)
+  },
+  {
+    path: 'product/:id',
+    loadComponent: () => import('./components/user/products/product/product.component').then(m => m.ProductComponent)
+  },
+  {
+    path: 'cart',
+    loadComponent: () => import('./components/user/carrito/cart/cart.component').then(m => m.CartComponent)
   },
   {
     path: 'register',

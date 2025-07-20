@@ -180,7 +180,7 @@ export class ProductListComponent implements OnInit {
    */
   eliminarProducto(producto: Product): void {
     const mensajeConfirmacion = `¿Estás seguro de que deseas eliminar el producto "${producto.nombre}"?`;
-    
+
     if (!confirm(mensajeConfirmacion)) {
       return;
     }
@@ -193,7 +193,7 @@ export class ProductListComponent implements OnInit {
       error: (error) => {
         console.error('Error al eliminar producto:', error);
         let mensajeError = 'Error al eliminar el producto.';
-        
+
         // Manejar errores específicos del backend
         if (error.error?.message) {
           mensajeError = error.error.message;
@@ -202,7 +202,7 @@ export class ProductListComponent implements OnInit {
         } else if (error.status === 400) {
           mensajeError = 'No se puede eliminar el producto. Verifica que no tenga stock disponible o no esté asociado a pedidos activos.';
         }
-        
+
         this.mostrarMensajeUsuario(mensajeError, 'error');
       }
     });
@@ -212,7 +212,7 @@ export class ProductListComponent implements OnInit {
     this.mensaje = mensaje;
     this.tipoMensaje = tipo;
     this.mostrarMensaje = true;
-    
+
     // Ocultar el mensaje después de 5 segundos
     setTimeout(() => {
       this.mostrarMensaje = false;
