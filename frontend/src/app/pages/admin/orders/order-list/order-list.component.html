@@ -1,0 +1,349 @@
+<app-navbar tipo="admin"></app-navbar>
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-12">
+      <!-- Header -->
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-primary mb-0">
+          <i class="fas fa-shopping-cart me-2"></i>
+          Gestión de Pedidos
+        </h2>
+        <div class="text-muted">
+          <small>Total: {{ pedidosFiltrados.length }} pedidos</small>
+        </div>
+      </div>
+
+      <!-- Filtros y Búsqueda -->
+      <div class="card mb-4 border-0 shadow-sm">
+        <div class="card-body">
+          <div class="row g-3">
+            <!-- Filtro por Estado -->
+            <div class="col-md-3">
+              <label for="filtroEstado" class="form-label fw-bold text-muted">
+                <i class="fas fa-filter me-1"></i>Estado
+              </label>
+              <select
+                id="filtroEstado"
+                class="form-select"
+                [(ngModel)]="filtroEstado"
+                (change)="onFiltroEstadoChange()">
+                <option *ngFor="let estado of estadosDisponibles" [value]="estado">
+                  {{ estado }}
+                </option>
+              </select>
+            </div>
+
+            <!-- Filtro por Orden -->
+            <div class="col-md-3">
+              <label for="filtroOrden" class="form-label fw-bold text-muted">
+                <i class="fas fa-sort me-1"></i>Orden
+              </label>
+              <select
+                id="filtroOrden"
+                class="form-select"
+                [(ngModel)]="filtroOrden"
+                (change)="onFiltroOrdenChange()">
+                <option *ngFor="let orden of opcionesOrden" [value]="orden">
+                  {{ orden }}
+                </option>
+              </select>
+            </div>
+
+            <!-- Buscador -->
+            <div class="col-md-4">
+              <label for="terminoBusqueda" class="form-label fw-bold text-muted">
+                <i class="fas fa-search me-1"></i>Buscar
+              </label>
+              <input
+                type="text"
+                id="terminoBusqueda"
+                class="form-control"
+                placeholder="Buscar por usuario, ID o correo..."
+                [(ngModel)]="terminoBusqueda"
+                (input)="onBusquedaChange()">
+            </div>
+
+            <!-- Botón Limpiar -->
+            <div class="col-md-2 d-flex align-items-end">
+              <button
+                type="button"
+                class="btn btn-outline-secondary w-100"
+                (click)="limpiarFiltros()">
+                <i class="fas fa-times me-1"></i>
+                Limpiar
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabla de Pedidos -->
+      <div class="card border-0 shadow-sm">
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-hover mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th class="border-0 px-3 py-3">
+                    <i class="fas fa-hashtag me-1 text-muted"></i>ID
+                  </th>
+                  <th class="border-0 px-3 py-3">
+                    <i class="fas fa-user me-1 text-muted"></i>Usuario
+                  </th>
+                  <th class="border-0 px-3 py-3">
+                    <i class="fas fa-envelope me-1 text-muted"></i>Email
+                  </th>
+                  <th class="border-0 px-3 py-3">
+                    <i class="fas fa-boxes me-1 text-muted"></i>Productos
+                  </th>
+                  <th class="border-0 px-3 py-3">
+                    <i class="fas fa-dollar-sign me-1 text-muted"></i>Total
+                  </th>
+                  <th class="border-0 px-3 py-3">
+                    <i class="fas fa-info-circle me-1 text-muted"></i>Estado
+                  </th>
+                  <th class="border-0 px-3 py-3">
+                    <i class="fas fa-calendar me-1 text-muted"></i>Fecha
+                  </th>
+                  <th class="border-0 px-3 py-3 text-center">
+                    <i class="fas fa-cogs me-1 text-muted"></i>Acciones
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let pedido of pedidosPaginados" class="align-middle">
+                  <td class="px-3 py-3">
+                    <span class="fw-bold text-primary">#{{ pedido.id }}</span>
+                  </td>
+                  <td class="px-3 py-3">
+                    <div>
+                      <div class="fw-semibold">{{ pedido.usuario.nombre }}</div>
+                      <small class="text-muted">ID: {{ pedido.usuario.id }}</small>
+                    </div>
+                  </td>
+                  <td class="px-3 py-3">
+                    <span class="text-muted">{{ pedido.usuario.email }}</span>
+                  </td>
+                  <td class="px-3 py-3">
+                    <span class="badge bg-light text-dark">
+                      {{ pedido.productos.length }} producto{{ pedido.productos.length !== 1 ? 's' : '' }}
+                    </span>
+                  </td>
+                  <td class="px-3 py-3">
+                    <span class="fw-bold text-success">{{ formatearPrecio(pedido.total) }}</span>
+                  </td>
+                  <td class="px-3 py-3">
+                    <span [class]="obtenerClaseEstado(pedido.estado)">
+                      {{ pedido.estado }}
+                    </span>
+                  </td>
+                  <td class="px-3 py-3">
+                    <small class="text-muted">{{ formatearFecha(pedido.fechaCreacion) }}</small>
+                  </td>
+                  <td class="px-3 py-3 text-center">
+                    <div class="btn-group" role="group">
+                      <button
+                        type="button"
+                        class="btn btn-sm btn-outline-primary"
+                        (click)="verDetalles(pedido)"
+                        title="Ver detalles">
+                        <i class="fas fa-eye"></i>
+                      </button>
+                      <button
+                        *ngIf="pedido.estado === 'En camino' || pedido.estado === 'Pendiente'"
+                        type="button"
+                        class="btn btn-sm btn-outline-danger"
+                        (click)="cancelarPedido(pedido)"
+                        title="Cancelar pedido">
+                        <i class="fas fa-times"></i>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Mensaje cuando no hay resultados -->
+          <div *ngIf="pedidosFiltrados.length === 0" class="text-center py-5">
+            <i class="fas fa-search fa-3x text-muted mb-3"></i>
+            <h5 class="text-muted">No se encontraron pedidos</h5>
+            <p class="text-muted">Intenta ajustar los filtros o la búsqueda</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Paginación -->
+      <div *ngIf="totalPaginas > 1" class="d-flex justify-content-between align-items-center mt-4">
+        <div class="text-muted">
+          <small>
+            Mostrando {{ (paginaActual - 1) * elementosPorPagina + 1 }} -
+            {{ Math.min(paginaActual * elementosPorPagina, pedidosFiltrados.length) }}
+            de {{ pedidosFiltrados.length }} pedidos
+          </small>
+        </div>
+
+        <nav aria-label="Navegación de páginas">
+          <ul class="pagination pagination-sm mb-0">
+            <!-- Botón Anterior -->
+            <li class="page-item" [class.disabled]="paginaActual === 1">
+              <button
+                class="page-link"
+                (click)="cambiarPagina(paginaActual - 1)"
+                [disabled]="paginaActual === 1">
+                <i class="fas fa-chevron-left"></i>
+              </button>
+            </li>
+
+            <!-- Números de página -->
+            <li
+              *ngFor="let pagina of obtenerRangoPaginas()"
+              class="page-item"
+              [class.active]="pagina === paginaActual">
+              <button
+                class="page-link"
+                (click)="cambiarPagina(pagina)">
+                {{ pagina }}
+              </button>
+            </li>
+
+            <!-- Botón Siguiente -->
+            <li class="page-item" [class.disabled]="paginaActual === totalPaginas">
+              <button
+                class="page-link"
+                (click)="cambiarPagina(paginaActual + 1)"
+                [disabled]="paginaActual === totalPaginas">
+                <i class="fas fa-chevron-right"></i>
+              </button>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de Detalles -->
+<div
+  class="modal fade"
+  [class.show]="pedidoSeleccionado !== null"
+  [style.display]="pedidoSeleccionado !== null ? 'block' : 'none'"
+  tabindex="-1"
+  aria-labelledby="detallesModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title" id="detallesModalLabel">
+          <i class="fas fa-info-circle me-2"></i>
+          Detalles del Pedido #{{ pedidoSeleccionado?.id }}
+        </h5>
+        <button
+          type="button"
+          class="btn-close btn-close-white"
+          (click)="cerrarModal()"
+          aria-label="Cerrar">
+        </button>
+      </div>
+      <div class="modal-body" *ngIf="pedidoSeleccionado">
+        <div class="row">
+          <!-- Información del Usuario -->
+          <div class="col-md-6 mb-4">
+            <h6 class="text-primary mb-3">
+              <i class="fas fa-user me-2"></i>Información del Cliente
+            </h6>
+            <div class="card bg-light">
+              <div class="card-body">
+                <p class="mb-2">
+                  <strong>Nombre:</strong> {{ pedidoSeleccionado.usuario.nombre }}
+                </p>
+                <p class="mb-2">
+                  <strong>ID:</strong> {{ pedidoSeleccionado.usuario.id }}
+                </p>
+                <p class="mb-0">
+                  <strong>Email:</strong> {{ pedidoSeleccionado.usuario.email }}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Información del Pedido -->
+          <div class="col-md-6 mb-4">
+            <h6 class="text-primary mb-3">
+              <i class="fas fa-shopping-cart me-2"></i>Información del Pedido
+            </h6>
+            <div class="card bg-light">
+              <div class="card-body">
+                <p class="mb-2">
+                  <strong>Estado:</strong>
+                  <span [class]="obtenerClaseEstado(pedidoSeleccionado.estado)">
+                    {{ pedidoSeleccionado.estado }}
+                  </span>
+                </p>
+                <p class="mb-2">
+                  <strong>Fecha de Creación:</strong><br>
+                  {{ formatearFecha(pedidoSeleccionado.fechaCreacion) }}
+                </p>
+                <p class="mb-0" *ngIf="pedidoSeleccionado.fechaEntrega">
+                  <strong>Fecha de Entrega:</strong><br>
+                  {{ formatearFecha(pedidoSeleccionado.fechaEntrega) }}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Productos -->
+        <div class="mb-4">
+          <h6 class="text-primary mb-3">
+            <i class="fas fa-boxes me-2"></i>Productos
+          </h6>
+          <div class="table-responsive">
+            <table class="table table-sm">
+              <thead class="table-light">
+                <tr>
+                  <th>Producto</th>
+                  <th class="text-center">Cantidad</th>
+                  <th class="text-end">Precio Unitario</th>
+                  <th class="text-end">Subtotal</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let producto of pedidoSeleccionado.productos">
+                  <td>{{ producto.nombre }}</td>
+                  <td class="text-center">{{ producto.cantidad }}</td>
+                  <td class="text-end">{{ formatearPrecio(producto.precio) }}</td>
+                  <td class="text-end fw-bold">{{ formatearPrecio(producto.precio * producto.cantidad) }}</td>
+                </tr>
+              </tbody>
+              <tfoot class="table-light">
+                <tr>
+                  <td colspan="3" class="text-end fw-bold">Total:</td>
+                  <td class="text-end fw-bold text-success fs-5">
+                    {{ formatearPrecio(pedidoSeleccionado.total) }}
+                  </td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-secondary"
+          (click)="cerrarModal()">
+          <i class="fas fa-times me-1"></i>Cerrar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Overlay del modal -->
+<div
+  class="modal-backdrop fade show"
+  *ngIf="pedidoSeleccionado !== null"
+  (click)="cerrarModal()">
+</div>

@@ -1,16 +1,33 @@
 import { Routes } from '@angular/router';
-import { ProductListComponent } from './pages/admin/products/product-list/product-list.component';
-import { OfferListComponent } from './pages/admin/offer/offer-list/offer-list.component';
-import { CategoryComponent } from './pages/admin/products/category/category.component';
-import { BranchListComponent } from './pages/admin/branch/branch-list/branch-list.component';
-import { OrderComponent } from './pages/user/order/order.component';
-import { PaymentComponent } from './pages/user/payment/payment.component';
+import { LoginComponent } from './pages/auth/login/login.component';
 
 export const routes: Routes = [
-  { path: 'admin/products', component: ProductListComponent },
-  { path: 'admin/offers', component: OfferListComponent },
-  { path: 'admin/categories', component: CategoryComponent },
-  { path: 'admin/branches', component: BranchListComponent },
-  { path: 'user/order/:usuarioId', component: OrderComponent},
-  { path: 'user/payment/:usuarioId', component: PaymentComponent}
+  {
+    path: '',
+    component: LoginComponent
+  },
+  {
+    path: 'register',
+    loadComponent: () => import('./pages/auth/register/register.component').then(m => m.RegisterComponent)
+  },
+  {
+    path: 'recover-password',
+    loadComponent: () => import('./pages/auth/recover-password/recover-password.component').then(m => m.RecoverPasswordComponent)
+  },
+  {
+    path: 'reset-password',
+    loadComponent: () => import('./pages/auth/reset-password/reset-password.component').then(m => m.ResetPasswordComponent)
+  },
+  {
+    path: 'admin/dashboard',
+    loadComponent: () => import('./pages/admin/dashboard/dashboard.component').then(m => m.DashboardComponent)
+  },
+  {
+    path: 'admin/order-list',
+    loadComponent: () => import('./pages/admin/orders/order-list/order-list.component').then(m => m.OrderListComponent)
+  },
+  {
+    path: 'user/purchase-history',
+    loadComponent: () => import('./pages/user/purchase-history/purchase-history.component').then(m => m.PurchaseHistoryComponent)
+  },
 ];
