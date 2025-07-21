@@ -1,11 +1,34 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';  // Asegúrate de que PrismaService esté importado correctamente
 import { Pedido, LineaDePedido, Usuario, Direccion } from '@prisma/client';
 import { CreatePedidoDto } from './dto/create-pedido.dto';
+import { NotificationsService } from 'src/notifications/notifications.service';
 
 @Injectable()
 export class PedidoService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService,
+    private notificationsService: NotificationsService
+  ) {}
+  async obtenerPedidosDelUsuario(usuarioId: number) {
+    const pedidos = await this.prisma.pedido.findMany({
+      where: { usuarioId },
+      orderBy: { fechaPedido: 'desc' },
+      include: {
+        direccion: true,
+        lineasDePedido: {
+          include: {
+            producto: true,
+          },
+        },
+      },
+    });
+
+    if (!pedidos.length) {
+      throw new NotFoundException('No se encontraron pedidos para este usuario.');
+    }
+
+    return pedidos;
+  }
 
   // Crear un nuevo pedido
   async create(createPedidoDto: CreatePedidoDto): Promise<Pedido> {
@@ -69,7 +92,11 @@ export class PedidoService {
       lineasDePedido: true,
     },
   });
-
+  await this.notificationsService.notificarCreacionPedido(
+  pedido.usuario.email,
+  pedido.id,
+  pedido.total,
+);
   return pedido;
 }
 
