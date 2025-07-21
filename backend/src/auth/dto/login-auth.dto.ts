@@ -6,7 +6,7 @@ export class LoginAuthDto {
     email: string;
 
     @MinLength(4)
-    @MaxLength(12)
+    @MaxLength(19)
     @IsNotEmpty()
     @IsString()
     contrasena: string;

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Put, Delete, ParseIntPipe, UseGuards, Request, ForbiddenException, Patch } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, ParseIntPipe, UseGuards, Request, ForbiddenException, Patch } from '@nestjs/common';
 import { CreatePedidoDto } from './dto/create-pedido.dto';
 import { Pedido } from '@prisma/client';
 import { PedidoService } from './pedido.service';
@@ -7,11 +7,13 @@ import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 @Controller('pedidos')
 export class PedidoController {
   constructor(private readonly pedidoService: PedidoService) {}
-
+  
+  @UseGuards(JwtAuthGuard)
   @Post()
   create(@Body() createPedidoDto: CreatePedidoDto): Promise<Pedido> {
     return this.pedidoService.create(createPedidoDto);
   }
+
   @UseGuards(JwtAuthGuard)
   @Get('usuario/:id')
   async obtenerPedidos(

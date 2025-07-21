@@ -12,9 +12,10 @@ import { UsuarioModule } from './usuario/usuario.module';
 import { PedidoModule } from './pedido/pedido.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { ConfigModule } from '@nestjs/config';
+import { EstadisticasModule } from './estadisticas/estadisticas.module';
 
 @Module({
-  imports: [ConfigModule.forRoot({ isGlobal: true }),PrismaModule, ProductosModule, CategoriasModule, ProductoSucursalModule, OfertaModule, SucursalModule, AuthModule, UsuarioModule, PedidoModule, NotificationsModule],
+  imports: [ConfigModule.forRoot({ isGlobal: true }),PrismaModule, ProductosModule, CategoriasModule, ProductoSucursalModule, OfertaModule, SucursalModule, AuthModule, UsuarioModule, PedidoModule, NotificationsModule, EstadisticasModule],
   controllers: [AppController],
   providers: [AppService],
 })
