@@ -26,14 +26,14 @@ export class CategoriaService {
 
   async update(id: number, updateCategoriaDto: UpdateCategoriaDto) {
     return this.prisma.categoria.update({
-      where: { id },
+      where: { id: Number(id) },
       data: updateCategoriaDto,
     });
   }
 
   async remove(id: number) {
     return this.prisma.categoria.delete({
-      where: { id },
+      where: { id: Number(id) },
     });
   }
 }
