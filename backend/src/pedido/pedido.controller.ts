@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Put, Delete, ParseIntPipe, UseGuards, Request, ForbiddenException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Put, Delete, ParseIntPipe, UseGuards, Request, ForbiddenException, Patch } from '@nestjs/common';
 import { CreatePedidoDto } from './dto/create-pedido.dto';
 import { Pedido } from '@prisma/client';
 import { PedidoService } from './pedido.service';
@@ -23,5 +23,13 @@ export class PedidoController {
       throw new ForbiddenException('No puedes acceder a pedidos de otro usuario.');
     }
     return this.pedidoService.obtenerPedidosDelUsuario(usuarioId)
+  }
+    @UseGuards(JwtAuthGuard)
+    @Patch(':id/cancelar')
+    async cancelarPedido(
+      @Param('id', ParseIntPipe) pedidoId: number,
+      @Body('usuarioId', ParseIntPipe) usuarioId: number // reemplazar por JWT si usas auth
+      ) {
+    return this.pedidoService.cancelarPedidoPropio(pedidoId, usuarioId);
   }
 }

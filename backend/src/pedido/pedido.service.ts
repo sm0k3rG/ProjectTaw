@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';  // Asegúrate de que PrismaService esté importado correctamente
 import { Pedido, LineaDePedido, Usuario, Direccion } from '@prisma/client';
 import { CreatePedidoDto } from './dto/create-pedido.dto';
@@ -98,6 +98,32 @@ export class PedidoService {
   pedido.total,
 );
   return pedido;
+}
+async cancelarPedidoPropio(pedidoId: number, usuarioId: number) {
+  const pedido = await this.prisma.pedido.findUnique({
+    where: { id: pedidoId },
+  });
+
+  if (!pedido) {
+    throw new NotFoundException('El pedido no existe.');
+  }
+
+  if (pedido.usuarioId !== usuarioId) {
+    throw new ForbiddenException('No puedes cancelar un pedido que no te pertenece.');
+  }
+
+  if (pedido.estado === 'CANCELADO' || pedido.estado === 'COMPLETADO') {
+    throw new ForbiddenException('No se puede cancelar este pedido.');
+  }
+
+  const pedidoCancelado = await this.prisma.pedido.update({
+    where: { id: pedidoId },
+    data: {
+      estado: 'CANCELADO',
+    },
+  });
+
+  return pedidoCancelado;
 }
 
 }
