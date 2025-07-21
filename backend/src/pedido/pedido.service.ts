@@ -126,4 +126,27 @@ async cancelarPedidoPropio(pedidoId: number, usuarioId: number) {
   return pedidoCancelado;
 }
 
+async cancelarPedidoAdmin(pedidoId: number) {
+  const pedido = await this.prisma.pedido.findUnique({
+    where: { id: pedidoId },
+  });
+
+  if (!pedido) {
+    throw new NotFoundException('El pedido no existe.');
+  }
+
+  if (pedido.estado === 'CANCELADO' || pedido.estado === 'COMPLETADO') {
+    throw new ForbiddenException('No se puede cancelar este pedido.');
+  }
+
+  const pedidoCancelado = await this.prisma.pedido.update({
+    where: { id: pedidoId },
+    data: {
+      estado: 'CANCELADO',
+    },
+  });
+
+  return pedidoCancelado;
+}
+
 }

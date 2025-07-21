@@ -3,6 +3,7 @@ import { CreatePedidoDto } from './dto/create-pedido.dto';
 import { Pedido } from '@prisma/client';
 import { PedidoService } from './pedido.service';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { RolesGuard } from 'src/auth/roles.guard';
 
 @Controller('pedidos')
 export class PedidoController {
@@ -33,5 +34,13 @@ export class PedidoController {
       @Body('usuarioId', ParseIntPipe) usuarioId: number // reemplazar por JWT si usas auth
       ) {
     return this.pedidoService.cancelarPedidoPropio(pedidoId, usuarioId);
+  }
+  @UseGuards(RolesGuard)
+  @UseGuards(JwtAuthGuard)
+    @Patch(':id/cancelar')
+    async cancelarPedidoAdmin(
+      @Param('id', ParseIntPipe) pedidoId: number,
+      ) {
+    return this.pedidoService.cancelarPedidoAdmin(pedidoId);
   }
 }
