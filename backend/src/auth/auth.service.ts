@@ -84,6 +84,7 @@ export class AuthService {
         contrasena: hashedPassword,
         telefono: userData.telefono,
         tarjetas: userData.tarjetas,
+        rol: 'Cliente',
       },
     });
   }
