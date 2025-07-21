@@ -9,6 +9,8 @@ import * as jwt from 'jsonwebtoken';
 import * as nodemailer from 'nodemailer';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
+
 
 @Injectable()
 export class AuthService {
@@ -149,5 +151,37 @@ export class AuthService {
     });
 
     return { message: 'Contraseña restablecida exitosamente' };
+  }
+
+  async editarUsuario(id: number, dto: UpdateUserDto) {
+    const user = await this.prisma.usuario.findUnique({ where: { id } });
+    if (!user) {
+      throw new BadRequestException('Usuario no encontrado');
+    }
+
+    const { nombre, email, telefono, tarjetas, direccion } = dto;
+
+    // Actualiza usuario
+    await this.prisma.usuario.update({
+      where: { id },
+      data: {
+        nombre,
+        email,
+        telefono,
+        tarjetas,
+      },
+    });
+
+    // Si se proporciona una nueva dirección, agregarla
+    if (direccion) {
+      await this.prisma.direccion.create({
+        data: {
+          ...direccion,
+          usuarioId: id,
+        },
+      });
+    }
+
+    return { message: 'Usuario actualizado correctamente' };
   }
 }
