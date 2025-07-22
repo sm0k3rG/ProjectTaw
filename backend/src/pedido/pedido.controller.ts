@@ -9,7 +9,7 @@ import { RolesGuard } from 'src/auth/roles.guard';
 export class PedidoController {
   constructor(private readonly pedidoService: PedidoService) {}
   
-  @UseGuards(JwtAuthGuard)
+  //@UseGuards(JwtAuthGuard)
   @Post()
   create(@Body() createPedidoDto: CreatePedidoDto): Promise<Pedido> {
     return this.pedidoService.create(createPedidoDto);

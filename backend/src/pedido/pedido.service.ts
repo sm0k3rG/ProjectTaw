@@ -30,59 +30,63 @@ export class PedidoService {
     return pedidos;
   }
 
-  // Crear un nuevo pedido
-  async create(createPedidoDto: CreatePedidoDto): Promise<Pedido> {
+ async create(createPedidoDto: CreatePedidoDto): Promise<Pedido> {
   const { usuarioId, direccionId, lineasDePedido } = createPedidoDto;
 
-  // Obtener el usuario y la dirección
-  const usuario = await this.prisma.usuario.findUnique({
-    where: { id: usuarioId },
-  });
-  const direccion = await this.prisma.direccion.findUnique({
-    where: { id: direccionId },
-  });
+  // Verificar usuario y dirección
+  const usuario = await this.prisma.usuario.findUnique({ where: { id: usuarioId } });
+  const direccion = await this.prisma.direccion.findUnique({ where: { id: direccionId } });
 
   if (!usuario || !direccion) {
     throw new Error('Usuario o dirección no encontrados');
   }
 
-  // Calcular el total del pedido y los precios unitarios de las líneas de pedido
-  const lineasConTotales = await Promise.all(lineasDePedido.map(async (linea) => {
-    // Obtener el precio unitario del producto
-    const producto = await this.prisma.producto.findUnique({
-      where: { id: linea.productoId },
-    });
+  // Preparar líneas de pedido con precio final
+  const lineasConTotales = await Promise.all(
+    lineasDePedido.map(async (linea) => {
+      const producto = await this.prisma.producto.findUnique({
+        where: { id: linea.productoId },
+        include: { oferta: true },
+      });
 
-    if (!producto) {
-      throw new Error(`Producto con ID ${linea.productoId} no encontrado`);
-    }
+      if (!producto) {
+        throw new Error(`Producto con ID ${linea.productoId} no encontrado`);
+      }
 
-    // Calcular el total de la línea de pedido
-    const totalLinea = producto.precio * linea.cantidad; // Total por línea = precio unitario * cantidad
-    return {
-      ...linea,
-      precioUnitario: producto.precio,
-      total: totalLinea,
-    };
-  }));
+      let precioFinal = producto.precio;
 
-  // Calcular el total general del pedido
-  const totalPedido = lineasConTotales.reduce((acc, linea) => acc + linea.total, 0);
+      if (producto.oferta) {
+        const descuento = producto.precio * (producto.oferta.porcentaje / 100);
+        precioFinal = +(producto.precio - descuento).toFixed(2);
+      }
+
+      return {
+        productoId: linea.productoId,
+        cantidad: linea.cantidad,
+        precioUnitario: precioFinal,
+      };
+    })
+  );
+
+  // Calcular total del pedido
+  const totalPedido = lineasConTotales.reduce(
+    (acc, linea) => acc + linea.precioUnitario * linea.cantidad,
+    0
+  );
 
   // Crear el pedido
   const pedido = await this.prisma.pedido.create({
     data: {
       usuarioId,
       direccionId,
-      estado: 'PENDIENTE',  // Estado inicial
-      fechaPedido: new Date(),  // Fecha actual
-      total: totalPedido, // Asignar el total del pedido
+      estado: 'PENDIENTE',
+      fechaPedido: new Date(),
+      total: totalPedido,
       lineasDePedido: {
         create: lineasConTotales.map((linea) => ({
           productoId: linea.productoId,
           cantidad: linea.cantidad,
           precioUnitario: linea.precioUnitario,
-          total: linea.total,
         })),
       },
     },
@@ -92,13 +96,25 @@ export class PedidoService {
       lineasDePedido: true,
     },
   });
-  await this.notificationsService.notificarCreacionPedido(
-  pedido.usuario.email,
-  pedido.id,
-  pedido.total,
-);
+
+  // ✅ Enviar notificación por correo
+  try {
+    await this.notificationsService.notificarCreacionPedido(
+      usuario.email,
+      pedido.id,
+      pedido.total,
+    );
+  } catch (error) {
+    console.error('❌ No se pudo enviar el correo de notificación:', error);
+  }
+
   return pedido;
 }
+
+
+
+
+
 async cancelarPedidoPropio(pedidoId: number, usuarioId: number) {
   const pedido = await this.prisma.pedido.findUnique({
     where: { id: pedidoId },

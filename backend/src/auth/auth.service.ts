@@ -1,276 +1,48 @@
-
-// import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
-// import { JwtService } from '@nestjs/jwt';
-// import { PrismaService } from '../prisma/prisma.service';
-// import * as bcrypt from 'bcryptjs';
-
-// export interface LoginDto {
-//   email: string;
-//   password: string;
-// }
-
-// export interface JwtPayload {
-//   id: number;
-//   email: string;
-//   role: 'Administrator' | 'Client';
-//   name: string;
-// }
-
-// @Injectable()
-// export class AuthService {
-//   constructor(
-//     private prisma: PrismaService,
-//     private jwtService: JwtService,
-//   ) {}
-
-//   async validateUser(email: string, password: string) {
-
-// import {
-//   BadRequestException,
-//   Injectable,
-//   NotFoundException,
-// } from '@nestjs/common';
-// import { PrismaService } from '../prisma/prisma.service';
-// import * as bcrypt from 'bcrypt';
-// import * as jwt from 'jsonwebtoken';
-// import * as nodemailer from 'nodemailer';
-// import { ForgotPasswordDto } from './dto/forgot-password.dto';
-// import { ResetPasswordDto } from './dto/reset-password.dto';
-// import { UpdateUserDto } from './dto/update-user.dto';
-
+// src/auth/auth.service.ts
+import { Injectable } from '@nestjs/common';
+import { PrismaService } from '../prisma/prisma.service';
+import { JwtService } from '@nestjs/jwt';
+import * as bcrypt from 'bcrypt';
+import { UsuarioResponseDto } from 'src/auth/dto/usuario.response.dto';
+import { LoginAuthDto } from './dto/login-auth.dto';
 
 @Injectable()
 export class AuthService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,  // Usamos Prisma directamente aquí
+    private readonly jwtService: JwtService,  // Servicio para generar JWT
+  ) {}
 
-  // ✅ Registro
-  async register(dto: any) {
-    const { nombre, email, contrasena, terminosAceptados } = dto;
+  async login(loginUsuarioDto: LoginAuthDto): Promise<{ access_token: string }> {
+    const { email, contrasena } = loginUsuarioDto;
 
-    if (!terminosAceptados) {
-      throw new BadRequestException('Debes aceptar los términos y condiciones');
-    }
-
-    const existingUser = await this.prisma.usuario.findUnique({
-      where: { email },
+    // Buscar el usuario directamente con Prisma
+    const usuario = await this.prisma.usuario.findUnique({
+      where: { email },  // Prisma consulta por email
     });
 
-    if (existingUser) {
-      throw new BadRequestException('El correo ya está registrado');
+    if (!usuario) {
+      throw new Error('Usuario no encontrado');
     }
 
-    const hashedPassword = await bcrypt.hash(contrasena, 12);
+    // Verificar si la contraseña es correcta
+    const isPasswordValid = await bcrypt.compare(contrasena, usuario.contrasena);
 
-    const user = await this.prisma.usuario.create({
-      data: {
-        nombre,
-        email,
-        contrasena: hashedPassword,
-        telefono: '',
-        tarjetas: '',
-      },
-    });
-
-    console.log(`[AUDIT] Usuario registrado: ${user.id}, IP simulada: 127.0.0.1`);
-    return { message: 'Registro exitoso. Verifica tu correo (simulado).' };
-  }
-
-  // ✅ Login
-  async login(dto: any) {
-    const { email, contrasena } = dto;
-
-    const user = await this.prisma.usuario.findUnique({
-      where: { email },
-    });
-
-    if (user && await bcrypt.compare(password, user.contrasena)) {
-      const { contrasena, ...result } = user;
-      return result;
-    }
-    return null;
-  }
-
-  async login(loginDto: LoginDto) {
-    const user = await this.validateUser(loginDto.email, loginDto.password);
-    
-    if (!user) {
-      throw new UnauthorizedException('Credenciales inválidas');
+    if (!isPasswordValid) {
+      throw new Error('Contraseña incorrecta');
     }
 
-    // Determinar el rol basado en el email (puedes ajustar esta lógica)
-    const role = this.determineRole(user.email);
-    
-    const payload: JwtPayload = {
-      id: user.id,
-      email: user.email,
-      role,
-      name: user.nombre,
+    // Generar el payload para el JWT
+    const payload = {
+      sub: usuario.id,     // ID del usuario
+      email: usuario.email, // Email del usuario
+      rol: usuario.rol,     // Rol del usuario (agregado aquí)
     };
+    // Generar el token JWT
+    const access_token = this.jwtService.sign(payload);
 
     return {
-      token: this.jwtService.sign(payload),
-      user: {
-        id: user.id,
-        email: user.email,
-        role,
-        name: user.nombre,
-      },
+      access_token,  // Devolvemos el JWT generado
     };
-  }
-
-  private determineRole(email: string): 'Administrator' | 'Client' {
-    // Lógica simple: si el email contiene 'admin' es administrador
-    // Puedes ajustar esta lógica según tus necesidades
-    return email.toLowerCase().includes('admin') ? 'Administrator' : 'Client';
-  }
-
-  async createUser(userData: {
-    nombre: string;
-    email: string;
-    password: string;
-    telefono: string;
-    tarjetas: string;
-  }) {
-    const hashedPassword = await bcrypt.hash(userData.password, 10);
-    
-    return this.prisma.usuario.create({
-      data: {
-        nombre: userData.nombre,
-        email: userData.email,
-        contrasena: hashedPassword,
-        telefono: userData.telefono,
-        tarjetas: userData.tarjetas,
-        rol: 'Cliente',
-      },
-    });
-  }
-} 
-    if (!user) {
-      throw new BadRequestException('El correo no está registrado');
-    }
-
-    const passwordMatch = await bcrypt.compare(contrasena, user.contrasena);
-    if (!passwordMatch) {
-      throw new BadRequestException('Credenciales incorrectas');
-    }
-
-    const secret = process.env.JWT_SECRET;
-    if (!secret) {
-      throw new Error('Falta JWT_SECRET en el archivo .env');
-    }
-
-    const token = jwt.sign({ userId: user.id, email: user.email }, secret, {
-      expiresIn: '1h',
-    });
-
-    const tipoUsuario = 'cliente';
-
-    console.log(`[AUDIT] Usuario inició sesión: ${user.id}, IP simulada: 127.0.0.1`);
-    return {
-      message: 'Inicio de sesión exitoso',
-      token,
-      tipoUsuario,
-    };
-  }
-
-  // ✅ Recuperar contraseña
-  async solicitarRecuperacionContrasena(dto: ForgotPasswordDto) {
-    const user = await this.prisma.usuario.findUnique({
-      where: { email: dto.email },
-    });
-
-    if (!user) {
-      throw new NotFoundException('No existe una cuenta con este correo');
-    }
-
-    const token = jwt.sign(
-      { userId: user.id },
-      process.env.JWT_SECRET as string,
-      { expiresIn: '1h' },
-    );
-
-    const resetLink = `${process.env.FRONTEND_URL}/reset-password?token=${token}`;
-
-    const transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST,
-      port: Number(process.env.SMTP_PORT),
-      auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
-      },
-    });
-
-    await transporter.sendMail({
-      to: user.email,
-      subject: 'Recuperación de contraseña',
-      html: `
-        <p>Hola, ${user.nombre}</p>
-        <p>Haz clic en el siguiente enlace para restablecer tu contraseña:</p>
-        <a href="${resetLink}">Restablecer contraseña</a>
-        <p>Este enlace expirará en 1 hora.</p>
-      `,
-    });
-
-    return { message: 'Correo de recuperación enviado correctamente' };
-  }
-
-  // ✅ Restablecer contraseña
-  async restablecerContrasena(dto: ResetPasswordDto) {
-    let payload: any;
-
-    try {
-      payload = jwt.verify(dto.token, process.env.JWT_SECRET as string);
-    } catch (err) {
-      throw new BadRequestException('Token inválido o expirado');
-    }
-
-    const user = await this.prisma.usuario.findUnique({
-      where: { id: payload.userId },
-    });
-
-    if (!user) {
-      throw new NotFoundException('Usuario no encontrado');
-    }
-
-    const hashedPassword = await bcrypt.hash(dto.newPassword, 12);
-
-    await this.prisma.usuario.update({
-      where: { id: user.id },
-      data: { contrasena: hashedPassword },
-    });
-
-    return { message: 'Contraseña restablecida exitosamente' };
-  }
-
-  async editarUsuario(id: number, dto: UpdateUserDto) {
-    const user = await this.prisma.usuario.findUnique({ where: { id } });
-    if (!user) {
-      throw new BadRequestException('Usuario no encontrado');
-    }
-
-    const { nombre, email, telefono, tarjetas, direccion } = dto;
-
-    // Actualiza usuario
-    await this.prisma.usuario.update({
-      where: { id },
-      data: {
-        nombre,
-        email,
-        telefono,
-        tarjetas,
-      },
-    });
-
-    // Si se proporciona una nueva dirección, agregarla
-    if (direccion) {
-      await this.prisma.direccion.create({
-        data: {
-          ...direccion,
-          usuarioId: id,
-        },
-      });
-    }
-
-    return { message: 'Usuario actualizado correctamente' };
   }
 }

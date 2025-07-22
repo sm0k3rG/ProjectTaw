@@ -39,15 +39,7 @@ export class ProductoSucursalController {
   ) {
     return this.productoSucursalService.update(productoId, sucursalId, updateDto);
   }
-   // Endpoint para reposicionar stock de un producto en una sucursal
-  @Put('notificar/:productoId/sucursal/:sucursalId')
-  async reposicionarStock(
-    @Param('productoId') productoId: number,
-    @Param('sucursalId') sucursalId: number,
-    @Body('stockNuevo') stockNuevo: number,
-  ): Promise<void> {
-    await this.productoSucursalService.actualizarNotificarStock(productoId, sucursalId, stockNuevo);
-  }
+   
 
   @Get('reposicion/:productoId/sucursal/:sucursalId')
   async predecirReposicionStockPorSucursal(

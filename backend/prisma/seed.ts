@@ -1,5 +1,5 @@
 import { PrismaClient, Rol, PedidoEstado, ProductoEstado } from '@prisma/client';
-import bcrypt from 'bcryptjs';
+import * as bcrypt from 'bcrypt';
 
 const prisma = new PrismaClient();
 
@@ -125,7 +125,6 @@ async function main() {
         data: {
           cantidad,
           precioUnitario: precio,
-          total,
           productoId: producto.id,
           pedidoId: pedido.id
         }

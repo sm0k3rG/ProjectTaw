@@ -31,4 +31,3 @@ export class CreateProductDto {
   @IsNotEmpty()
   sucursales: { id: number, stock: number }[];  // Para definir las sucursales y stock
 }
-
