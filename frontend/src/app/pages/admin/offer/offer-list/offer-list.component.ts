@@ -3,11 +3,12 @@ import { OfferService } from '../../../../core/services/offer.service';
 import { Offer } from '../../../../core/models/offer.interface';
 import { DatePipe } from '@angular/common';
 import { OfferAddComponent } from "../offer-add/offer-add.component";
+import { OfferEditComponent } from "../offer-edit/offer-edit.component";
 
 @Component({
   selector: 'app-offer-list',
   standalone: true,
-  imports: [DatePipe, OfferAddComponent],
+  imports: [DatePipe, OfferAddComponent, OfferEditComponent],
   templateUrl: './offer-list.component.html',
   styleUrl: './offer-list.component.css'
 })
@@ -38,7 +39,14 @@ export class OfferListComponent implements OnInit {
 
   // Método para editar una oferta (lógica pendiente de implementar)
   editarOferta(oferta: Offer): void {
-    console.log('Editar');
+    // Aquí en el futuro se podrá pasar la oferta a editar al componente hijo
+    const modal = document.getElementById('modalEditarOferta');
+    if (modal) {
+      // Usando Bootstrap 5 para mostrar el modal
+      // @ts-ignore
+      const modalInstance = bootstrap.Modal.getOrCreateInstance(modal);
+      modalInstance.show();
+    }
   }
 
   // Método para eliminar una oferta (lógica pendiente de implementar)
