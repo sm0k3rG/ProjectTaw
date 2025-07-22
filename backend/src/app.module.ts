@@ -15,9 +15,35 @@ import { ConfigModule } from '@nestjs/config';
 import { EstadisticasModule } from './estadisticas/estadisticas.module';
 
 @Module({
-  imports: [ConfigModule.forRoot({ isGlobal: true }),PrismaModule, ProductosModule, CategoriasModule, ProductoSucursalModule, OfertaModule, SucursalModule, AuthModule, UsuarioModule, PedidoModule, NotificationsModule, EstadisticasModule],
+  imports: [
+    ConfigModule.forRoot({ isGlobal: true }),
+    PrismaModule, 
+    ProductosModule, 
+    CategoriasModule, 
+    ProductoSucursalModule, 
+    OfertaModule, 
+    SucursalModule, 
+    AuthModule, 
+    UsuarioModule, 
+    PedidoModule, 
+    NotificationsModule, 
+    EstadisticasModule
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
+
+// import { AuthController } from './auth/auth.controller';
+// import { AuthService } from './auth/auth.service';
+// import { PrismaService } from './prisma/prisma.service';
+// //import { AuditService } from './audit/audit.service';
+// //import { SucursalModule } from './sucursal/sucursal.module';
+
+
+// @Module({
+//   controllers: [AuthController],
+//   providers: [AuthService, PrismaService],
+//   //imports: [SucursalModule],
+
 export class AppModule {}
 

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Put, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Put, Delete, NotFoundException } from '@nestjs/common';
 import { SucursalService } from './sucursal.service';
 import { CreateSucursalDto } from './dto/create-sucursal.dto';
 import { UpdateSucursalDto } from './dto/update-sucursal.dto';
@@ -35,5 +35,15 @@ export class SucursalController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.sucursalService.remove(+id);
+  @Get('cercanas/:usuarioId')
+  async getSucursalesCercanas(@Param('usuarioId') usuarioId: string) {
+    const id = parseInt(usuarioId);
+    const sucursales = await this.sucursalService.obtenerSucursalesCercanas(id);
+
+    if (!sucursales.length) {
+      throw new NotFoundException('No hay sucursales cercanas a tu ubicación');
+    }
+
+    return sucursales;
   }
 }
