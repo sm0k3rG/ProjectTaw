@@ -69,7 +69,7 @@
           <!-- Estado de carga: muestra spinner mientras se cargan los productos -->
           @if (cargando) {
             <tr>
-              <td colspan="8" class="text-center py-4">
+              <td colspan="9" class="text-center py-4">
                 <div class="text-muted">
                   <div class="spinner-border text-primary" role="status">
                     <span class="visually-hidden">Cargando...</span>
@@ -182,20 +182,8 @@
   </div>
 
   <!-- Modal para agregar producto -->
-  <div class="modal fade" id="modalAgregarProducto" tabindex="-1" aria-labelledby="modalAgregarProductoLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h2 class="modal-title fw-bold" style="font-size: 2.2rem;" id="modalAgregarProductoLabel">Agregar producto</h2>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-        </div>
-        <div class="modal-body">
-          <!-- Componente de formulario de producto, emite evento al agregar -->
-          <app-product-add (productoAgregado)="onProductoAgregado()"></app-product-add>
-        </div>
-      </div>
-    </div>
-  </div>
+<app-product-add (productoAgregado)="onProductoAgregado()"></app-product-add>
+ 
 
   <!-- Componente de gestión de categorías (modal) -->
   <app-category></app-category>

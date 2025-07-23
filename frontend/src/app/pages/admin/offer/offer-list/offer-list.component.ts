@@ -19,6 +19,11 @@ export class OfferListComponent implements OnInit {
   // Inyección del servicio que permite obtener las ofertas
   constructor(private offerService: OfferService) {}
 
+   /**
+   * Indica si se están cargando los productos.
+   */
+   cargando: boolean = false;
+
   // Al inicializar el componente, se obtienen las ofertas
   ngOnInit(): void {
     this.obtenerOfertas();
@@ -26,9 +31,11 @@ export class OfferListComponent implements OnInit {
 
   // Llama al servicio para obtener las ofertas y las asigna al arreglo
   obtenerOfertas(): void {
+    this.cargando = true;
     this.offerService.obtenerOfertas().subscribe({
       next: (ofertas: Offer[]) => {
         this.ofertas = ofertas;
+        this.cargando = false;
       },
       error: (err) => {
         // Manejo de errores al obtener las ofertas

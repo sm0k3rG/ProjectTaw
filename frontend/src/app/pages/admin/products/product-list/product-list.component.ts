@@ -157,14 +157,14 @@ export class ProductListComponent implements OnInit {
    */
   onProductoAgregado(): void {
     this.obtenerProductos();
-    // Cerrar el modal usando Bootstrap
-    const modal = document.getElementById('modalAgregarProducto');
-    if (modal) {
-      const bootstrapModal = (window as any).bootstrap?.Modal.getInstance(modal);
-      if (bootstrapModal) {
-        bootstrapModal.hide();
-      }
-    }
+    //Cerrar el modal usando Bootstrap
+    // const modal = document.getElementById('modalAgregarProducto');
+    // if (modal) {
+    //   const bootstrapModal = (window as any).bootstrap?.Modal.getInstance(modal);
+    //   if (bootstrapModal) {
+    //     bootstrapModal.hide();
+    //   }
+    // }
     // Mostrar mensaje de éxito al usuario
     this.mostrarMensajeUsuario('Producto agregado exitosamente', 'success');
   }
