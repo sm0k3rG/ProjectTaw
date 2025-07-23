@@ -3,11 +3,15 @@ import { CommonModule } from '@angular/common';
 import { Product } from '../../../../models/product.model';
 import { ProductsService } from '../../../../services/products.service';
 import { CartService } from '../../../../services/cart.service';
+import { MainNavbarComponent } from '../../../../shared/main-navbar/main-navbar.component';
 
 @Component({
   selector: 'app-products-list',
   standalone: true,
-  imports: [CommonModule],
+  imports: [
+    CommonModule,
+    MainNavbarComponent,
+  ],
   templateUrl: './products-list.component.html',
   styleUrls: ['./products-list.component.css']
 })

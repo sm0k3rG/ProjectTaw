@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ChileGeoService, Region, Comuna } from '../../../services/chile-geo.service';
 import { DeliveryService, DeliveryAddress } from '../../../services/delivery.service';
+import { AuthService } from '../../../core/services/auth.service';
 import { Router } from '@angular/router';
 
 interface StoreWithDistance {
@@ -43,38 +44,37 @@ export class DeliveryTypeSidebarComponent implements OnInit, OnChanges {
   filteredStores: StoreWithDistance[] = [];
   userLocation: { lat: number; lng: number } | null = null;
 
-  // Para regiones y comunas
   regiones: Region[] = [];
   comunas: Comuna[] = [];
   selectedRegion: Region | null = null;
   loadingRegiones = false;
   loadingComunas = false;
 
+  userAddresses: DeliveryAddress[] = [];
+  isAuthenticated = false;
+
   constructor(
     private chileGeoService: ChileGeoService,
     private deliveryService: DeliveryService,
+    private authService: AuthService,
     private router: Router,
     private cdr: ChangeDetectorRef
   ) {
     this.loadStores();
   }
 
-  loadStores(): void {
-    // Inicializar con array vacío, las tiendas se cargarán desde el backend cuando esté disponible
-    this.stores = [];
-    this.filteredStores = [];
-    console.log('Lista de tiendas inicializada (vacía)');
-
-    // Calcular distancias después de cargar las tiendas si hay ubicación
-    if (this.userLocation && this.stores.length > 0) {
-      this.calculateDistances();
-    }
-  }
-
   ngOnInit(): void {
     this.getUserLocation();
     this.loadRegiones();
     this.loadStores();
+
+    this.isAuthenticated = this.authService.isAuthenticated();
+    if (this.isAuthenticated) {
+      this.deliveryService.userAddresses$.subscribe(addresses => {
+        this.userAddresses = addresses;
+      });
+      this.deliveryService.loadUserAddresses();
+    }
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -86,67 +86,27 @@ export class DeliveryTypeSidebarComponent implements OnInit, OnChanges {
     }
   }
 
-  loadRegiones(): void {
-    this.loadingRegiones = true;
-    console.log('Iniciando carga de regiones...');
-    this.chileGeoService.getRegiones().subscribe({
-      next: (regiones) => {
-        this.regiones = regiones;
-        this.loadingRegiones = false;
-        console.log('Regiones cargadas exitosamente:', regiones);
-        console.log('Número de regiones:', regiones.length);
-      },
-      error: (error) => {
-        console.error('Error cargando regiones:', error);
-        console.error('Detalles del error:', error.message);
-        this.loadingRegiones = false;
-      }
-    });
+  selectSavedAddress(addr: DeliveryAddress): void {
+    this.address = { ...addr };
   }
 
-  onRegionChange(regionId: string): void {
-    if (regionId && regionId !== '') {
-      const regionIdNum = parseInt(regionId);
-      const selectedRegion = this.regiones.find(r => r.id === regionIdNum);
-
-      if (selectedRegion) {
-        this.selectedRegion = selectedRegion;
-        this.address.region = selectedRegion.nombre;
-        this.address.comuna = '';
-        this.comunas = [];
-
-        this.loadComunasByRegion(regionIdNum);
-      }
+  handleOverlayClick(event: MouseEvent) {
+    const sidebar = document.querySelector('.delivery-sidebar');
+    if (sidebar && !sidebar.contains(event.target as Node)) {
+      this.closeSidebar.emit();
     }
   }
 
-  loadComunasByRegion(regionId: number): void {
-    this.loadingComunas = true;
-    console.log('Haciendo petición a:', `https://apis.digital.gob.cl/dpa/regiones/${regionId}/comunas`);
-    this.chileGeoService.getComunasByRegion(regionId).subscribe({
-      next: (comunas) => {
-        this.comunas = comunas;
-        this.loadingComunas = false;
-        console.log('Comunas cargadas exitosamente:', comunas);
-        console.log('Número de comunas:', comunas.length);
-      },
-      error: (error) => {
-        console.error('Error cargando comunas:', error);
-        console.error('Detalles del error:', error.message);
-        this.loadingComunas = false;
-      }
-    });
+  setType(tipo: 'retiro' | 'delivery'): void {
+    this.deliveryType = tipo;
+    this.deliveryTypeChange.emit(tipo);
   }
 
-  onComunaChange(comunaId: string): void {
-    if (comunaId && comunaId !== '') {
-      const comunIdNum = parseInt(comunaId);
-      const selectedComuna = this.comunas.find(c => c.id === comunIdNum);
-
-      if (selectedComuna) {
-        this.address.comuna = selectedComuna.nombre;
-        console.log('Comuna seleccionada:', selectedComuna.nombre);
-      }
+  loadStores(): void {
+    this.stores = [];
+    this.filteredStores = [];
+    if (this.userLocation && this.stores.length > 0) {
+      this.calculateDistances();
     }
   }
 
@@ -158,31 +118,22 @@ export class DeliveryTypeSidebarComponent implements OnInit, OnChanges {
             lat: position.coords.latitude,
             lng: position.coords.longitude
           };
-          console.log('Ubicación del usuario obtenida:', this.userLocation);
-          // Calcular distancias si las tiendas ya están cargadas
           if (this.stores.length > 0) {
             this.calculateDistances();
           }
         },
         (error) => {
-          console.log('Error obteniendo ubicación:', error);
           if (error.code === error.PERMISSION_DENIED) {
             alert('Debes permitir el acceso a la ubicación para ver tiendas cercanas.');
           }
-          // Ubicación por defecto (Arica centro)
           this.userLocation = { lat: -18.4783, lng: -70.3126 };
-          console.log('Usando ubicación por defecto:', this.userLocation);
-          // Calcular distancias si las tiendas ya están cargadas
           if (this.stores.length > 0) {
             this.calculateDistances();
           }
         }
       );
     } else {
-      // Ubicación por defecto si no hay geolocalización
       this.userLocation = { lat: -18.4783, lng: -70.3126 };
-      console.log('No hay geolocalización, usando ubicación por defecto:', this.userLocation);
-      // Calcular distancias si las tiendas ya están cargadas
       if (this.stores.length > 0) {
         this.calculateDistances();
       }
@@ -190,12 +141,7 @@ export class DeliveryTypeSidebarComponent implements OnInit, OnChanges {
   }
 
   calculateDistances(): void {
-    if (!this.userLocation || this.stores.length === 0) {
-      console.log('No hay ubicación del usuario o tiendas disponibles');
-      return;
-    }
-
-    console.log('Calculando distancias desde:', this.userLocation);
+    if (!this.userLocation || this.stores.length === 0) return;
 
     this.stores.forEach(store => {
       if (typeof store.latitude === 'number' && typeof store.longitude === 'number') {
@@ -205,10 +151,8 @@ export class DeliveryTypeSidebarComponent implements OnInit, OnChanges {
           store.latitude,
           store.longitude
         );
-        console.log(`${store.name}: ${store.distance} km`);
       } else {
-        console.warn(`Tienda ${store.name} no tiene coordenadas válidas`);
-        store.distance = 999; // Distancia muy alta para que aparezca al final
+        store.distance = 999;
       }
     });
 
@@ -216,21 +160,17 @@ export class DeliveryTypeSidebarComponent implements OnInit, OnChanges {
       (a.distance || 999) - (b.distance || 999)
     );
 
-    console.log('Tiendas ordenadas por distancia:', this.filteredStores.map(s => `${s.name}: ${s.distance}km`));
-
-    // Seleccionar automáticamente la tienda más cercana
     if (this.filteredStores.length > 0) {
       const nearestStore = this.filteredStores[0];
-      console.log('Seleccionando automáticamente la tienda más cercana:', nearestStore.name);
       this.selectStoreFromList(nearestStore);
-      // Forzar la detección de cambios para que se actualice la vista
       this.cdr.detectChanges();
-
-      // Pequeño delay para asegurar que la vista se actualice correctamente
-      setTimeout(() => {
-        this.cdr.detectChanges();
-      }, 100);
+      setTimeout(() => this.cdr.detectChanges(), 100);
     }
+  }
+
+  selectStoreFromList(store: StoreWithDistance): void {
+    this.selectedStore = store;
+    this.storeChange.emit(store);
   }
 
   filterStores(): void {
@@ -249,44 +189,76 @@ export class DeliveryTypeSidebarComponent implements OnInit, OnChanges {
     this.filterStores();
   }
 
-  selectStoreFromList(store: StoreWithDistance): void {
-    this.selectedStore = store;
-    this.storeChange.emit(store);
+  onRegionChange(regionId: string): void {
+    if (regionId && regionId !== '') {
+      const regionIdNum = parseInt(regionId);
+      const selectedRegion = this.regiones.find(r => r.id === regionIdNum);
+
+      if (selectedRegion) {
+        this.selectedRegion = selectedRegion;
+        this.address.region = selectedRegion.nombre;
+        this.address.comuna = '';
+        this.comunas = [];
+        this.loadComunasByRegion(regionIdNum);
+      }
+    }
   }
 
-  setType(tipo: 'retiro' | 'delivery'): void {
-    this.deliveryType = tipo;
-    this.deliveryTypeChange.emit(tipo);
+  loadRegiones(): void {
+    this.loadingRegiones = true;
+    this.chileGeoService.getRegiones().subscribe({
+      next: (regiones) => {
+        this.regiones = regiones;
+        this.loadingRegiones = false;
+      },
+      error: () => {
+        this.loadingRegiones = false;
+      }
+    });
+  }
+
+  loadComunasByRegion(regionId: number): void {
+    this.loadingComunas = true;
+    this.chileGeoService.getComunasByRegion(regionId).subscribe({
+      next: (comunas) => {
+        this.comunas = comunas;
+        this.loadingComunas = false;
+      },
+      error: () => {
+        this.loadingComunas = false;
+      }
+    });
+  }
+
+  onComunaChange(comunaId: string): void {
+    if (comunaId && comunaId !== '') {
+      const comunIdNum = parseInt(comunaId);
+      const selectedComuna = this.comunas.find(c => c.id === comunIdNum);
+
+      if (selectedComuna) {
+        this.address.comuna = selectedComuna.nombre;
+      }
+    }
   }
 
   saveAddress(): void {
     if (this.deliveryType === 'delivery') {
-      // Validar que los campos requeridos estén completos
-      if (!this.address.direccion || !this.address.numero) {
-        alert('Por favor completa la dirección y número');
+      if (!this.address.direccion || !this.address.numero || !this.address.comuna) {
+        alert('Por favor completa todos los campos requeridos');
         return;
       }
 
-      // Guardar dirección en el backend
+      this.closeSidebar.emit();
+
       this.deliveryService.saveDeliveryAddress(this.address).subscribe({
         next: (savedAddress) => {
-          console.log('Dirección guardada exitosamente:', savedAddress);
           this.addressChange.emit(this.address);
-          alert('Dirección guardada exitosamente');
         },
-        error: (error) => {
-          console.error('Error guardando dirección:', error);
-          // Aún así emitir el evento para que el componente padre sepa que se guardó
+        error: () => {
           this.addressChange.emit(this.address);
-          alert('Dirección guardada localmente');
         }
       });
     }
-  }
-
-  goToMap(): void {
-    // Implementar navegación al mapa si es necesario
-    console.log('Navegando al mapa...');
   }
 
   getDistanceText(distance: number | undefined): string {
@@ -296,7 +268,7 @@ export class DeliveryTypeSidebarComponent implements OnInit, OnChanges {
   }
 
   private calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
-    const R = 6371; // Radio de la Tierra en km
+    const R = 6371;
     const dLat = this.deg2rad(lat2 - lat1);
     const dLon = this.deg2rad(lon2 - lon1);
     const a =
@@ -304,7 +276,7 @@ export class DeliveryTypeSidebarComponent implements OnInit, OnChanges {
       Math.cos(this.deg2rad(lat1)) * Math.cos(this.deg2rad(lat2)) *
       Math.sin(dLon / 2) * Math.sin(dLon / 2);
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    const distance = R * c; // Distancia en km
+    const distance = R * c;
     return distance;
   }
 
@@ -314,19 +286,13 @@ export class DeliveryTypeSidebarComponent implements OnInit, OnChanges {
 
   onlyNumbers(event: KeyboardEvent): boolean {
     const charCode = (event.which) ? event.which : event.keyCode;
-    if (charCode > 31 && (charCode < 48 || charCode > 57)) {
-      return false;
-    }
-    return true;
+    return !(charCode > 31 && (charCode < 48 || charCode > 57));
   }
 
   validateNumber(event: Event): void {
     const target = event.target as HTMLInputElement;
     const value = target.value;
-
-    // Remover caracteres no numéricos
     const numericValue = value.replace(/[^0-9]/g, '');
-
     if (value !== numericValue) {
       target.value = numericValue;
     }

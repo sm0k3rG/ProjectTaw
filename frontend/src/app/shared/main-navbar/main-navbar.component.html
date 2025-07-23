@@ -1,0 +1,59 @@
+<nav class="lider-navbar navbar navbar-expand-lg w-100">
+  <div class="navbar-content d-flex align-items-center justify-content-between w-100">
+    <!-- Logo -->
+    <div class="d-flex align-items-center">
+      <img src="assets/walmart-chile-logo.png" alt="Walmart Chile" class="logo">
+      <button class="btn btn-link text-white fw-bold d-flex align-items-center me-3 categories-btn">
+        <i class="bi bi-grid-3x3-gap-fill me-1"></i> Categorías
+      </button>
+    </div>
+    <!-- Buscador -->
+    <form class="flex-grow-1 mx-3 search-form">
+      <div class="input-group rounded-pill overflow-hidden">
+        <input type="text" class="form-control border-0" placeholder="Busca en Supermercado">
+        <button class="btn search-btn" type="submit">
+          <i class="bi bi-search"></i>
+        </button>
+      </div>
+    </form>
+    <!-- Selector de sucursal, login y carrito -->
+    <div class="d-flex align-items-center">
+      <button class="btn btn-white me-4 d-flex align-items-center shadow-sm border rounded-pill px-4 py-3 position-relative delivery-btn" (click)="showDeliverySidebar = true">
+        <i class="bi bi-geo-alt me-1"></i>
+        <span class="fw-bold text-truncate delivery-text">
+          <ng-container *ngIf="selectedDeliveryType === 'retiro'; else envio">
+            <ng-container *ngIf="selectedStore; else sinTienda">
+              Retira en {{ selectedStore.name }}
+            </ng-container>
+            <ng-template #sinTienda>
+              Selecciona una tienda
+            </ng-template>
+          </ng-container>
+          <ng-template #envio>
+            <ng-container *ngIf="deliveryAddress?.direccion; else sinDireccion">
+              Envío a {{ deliveryAddress.direccion }}
+            </ng-container>
+            <ng-template #sinDireccion>
+              Ingresa dirección de entrega
+            </ng-template>
+          </ng-template>
+        </span>
+        <i class="bi bi-chevron-down position-absolute end-0 me-3"></i>
+      </button>
+      <a routerLink="/login" class="btn btn-link text-white me-3 d-flex align-items-center login-btn">
+        <i class="bi bi-person me-1"></i> Ingresar
+      </a>
+    </div>
+  </div>
+</nav>
+
+<app-delivery-type-sidebar
+  [show]="showDeliverySidebar"
+  [selectedDeliveryType]="selectedDeliveryType"
+  [selectedStore]="selectedStore"
+  [deliveryAddress]="deliveryAddress"
+  (closeSidebar)="showDeliverySidebar = false"
+  (deliveryTypeChange)="onDeliveryTypeChange($event)"
+  (storeChange)="onStoreChange($event)"
+  (addressChange)="onAddressChange($event)">
+</app-delivery-type-sidebar>

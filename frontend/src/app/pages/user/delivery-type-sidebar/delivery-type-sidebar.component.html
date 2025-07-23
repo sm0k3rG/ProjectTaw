@@ -1,6 +1,5 @@
-<div class="delivery-sidebar-overlay" *ngIf="show" (click)="closeSidebar.emit()"></div>
-<div class="delivery-sidebar" [class.open]="show">
-  <div class="sidebar-header d-flex justify-content-between align-items-center p-3 border-bottom">
+<div class="delivery-sidebar-overlay" *ngIf="show" (click)="handleOverlayClick($event)"></div>
+<div class="delivery-sidebar" [class.open]="show" (click)="$event.stopPropagation()">  <div class="sidebar-header d-flex justify-content-between align-items-center p-3 border-bottom">
     <h5 class="mb-0 fw-bold" style="font-size: 1.2rem; color: #222;">Elige un modo de entrega</h5>
     <button class="btn btn-link text-dark fs-4 p-0" (click)="closeSidebar.emit()">
       <i class="bi bi-x-lg"></i>
@@ -10,13 +9,13 @@
   <div class="sidebar-tabs d-flex border-0 p-3 pb-0">
     <button class="tab-btn flex-fill me-2"
             [class.active]="deliveryType==='delivery'"
-            (click)="setType('delivery')"
+            (click)="setType('delivery'); $event.stopPropagation()"
             style="border-radius: 8px 0 0 8px;">
       A Domicilio
     </button>
     <button class="tab-btn flex-fill"
             [class.active]="deliveryType==='retiro'"
-            (click)="setType('retiro')"
+            (click)="setType('retiro'); $event.stopPropagation()"
             style="border-radius: 0 8px 8px 0;">
       Retiro Pickup
     </button>
@@ -27,7 +26,7 @@
     <ng-container *ngIf="deliveryType==='retiro'">
       <label class="fw-bold mb-1" style="color: #222;">Busca un local</label>
       <div class="input-group mb-2">
-        <span class="input-group-text bg-white border-end-0">
+        <span class="input-group-text bg-white">
           <i class="bi bi-search"></i>
         </span>
         <input type="text"
@@ -35,14 +34,8 @@
                placeholder="Busca por ciudad, comuna o calle"
                [(ngModel)]="searchTerm"
                (input)="onSearchChange()">
-        <button class="btn btn-outline-primary ms-2 d-flex align-items-center"
-                style="height: 38px; min-width: 38px; border-radius: 50%;"
-                (click)="goToMap()">
-          <i class="bi bi-map" style="font-size: 1.2rem;"></i>
-        </button>
       </div>
 
-      <!-- Lista de sucursales -->
       <div class="stores-list">
         <div *ngFor="let store of filteredStores"
              class="store-item mb-2 p-2 border rounded"
@@ -92,8 +85,24 @@
 
     <!-- Tab de Delivery a Domicilio -->
     <ng-container *ngIf="deliveryType==='delivery'">
-      <h6 class="mb-2">Ingresa la dirección de entrega:</h6>
-      <form #deliveryForm="ngForm" (ngSubmit)="saveAddress()">
+      <ng-container *ngIf="isAuthenticated && userAddresses.length > 0">
+        <h6 class="mb-2 fw-bold">Direcciones registradas</h6>
+        <div class="list-group mb-3">
+          <button *ngFor="let addr of userAddresses"
+                  class="list-group-item list-group-item-action"
+                  [class.active]="address.id === addr.id"
+                  (click)="selectSavedAddress(addr)">
+            {{ addr.direccion }}, {{ addr.numero }}{{ addr.depto ? ', ' + addr.depto : '' }} - {{ addr.comuna }}, {{ addr.region }}
+          </button>
+        </div>
+        <h6 class="mb-2">O agrega una nueva dirección:</h6>
+      </ng-container>
+
+      <ng-container *ngIf="!isAuthenticated || userAddresses.length === 0">
+        <h6 class="mb-2">Ingresa la dirección de entrega:</h6>
+      </ng-container>
+
+      <form #deliveryForm="ngForm" (ngSubmit)="saveAddress(); $event.preventDefault()">
         <div class="mb-1">
           <label class="form-label">Dirección</label>
           <input class="form-control" [(ngModel)]="address.direccion" name="direccion" required>
@@ -156,7 +165,11 @@
           <label class="form-label">Referencias (opcional)</label>
           <input class="form-control" [(ngModel)]="address.referencias" name="referencias">
         </div>
-        <button class="btn btn-success w-100 mt-1" type="submit" [disabled]="!deliveryForm.valid">
+
+        <button class="btn btn-success w-100 mt-1"
+                type="button"
+                (click)="saveAddress()"
+                [disabled]="!deliveryForm.valid">
           <i class="bi bi-check-lg me-2"></i>Confirmar Dirección
         </button>
         <div *ngIf="!deliveryForm.valid && deliveryForm.touched" class="text-danger small text-center">

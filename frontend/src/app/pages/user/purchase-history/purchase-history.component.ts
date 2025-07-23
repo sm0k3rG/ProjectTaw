@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { NavbarComponent } from '../../../shared/navbar/navbar.component';
-
+import { MainNavbarComponent } from '../../../shared/main-navbar/main-navbar.component';
 interface Compra {
   id: number;
   fecha: string;
@@ -13,7 +12,7 @@ interface Compra {
 @Component({
   selector: 'app-purchase-history',
   standalone: true,
-  imports: [CommonModule, NavbarComponent],
+  imports: [CommonModule, MainNavbarComponent],
   templateUrl: './purchase-history.component.html',
   styleUrl: './purchase-history.component.css'
 })

@@ -8,11 +8,17 @@ import { CommonModule, DatePipe, TitleCasePipe } from '@angular/common';
 import { OrderService } from '../../../core/services/order.service';
 import { Order } from '../../../core/models/order.interface';
 import { ActivatedRoute } from '@angular/router';
+import { MainNavbarComponent } from '../../../shared/main-navbar/main-navbar.component';
 
 @Component({
   selector: 'app-order',
   standalone: true,
-  imports: [CommonModule, DatePipe, TitleCasePipe],
+  imports: [
+    CommonModule,
+    DatePipe,
+    TitleCasePipe,
+    MainNavbarComponent,
+  ],
   providers: [OrderService],
   templateUrl: './order.component.html',
   styleUrl: './order.component.css'
