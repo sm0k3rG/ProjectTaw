@@ -10,11 +10,12 @@ import { FormsModule } from '@angular/forms';
 import { OrderService } from '../../../core/services/order.service';
 import { Order } from '../../../core/models/order.interface';
 import { ActivatedRoute } from '@angular/router';
+import { MainNavbarComponent } from '../../../shared/main-navbar/main-navbar.component';
 
 @Component({
   selector: 'app-payment',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, MainNavbarComponent],
   providers: [OrderService],
   templateUrl: './payment.component.html',
   styleUrl: './payment.component.css'
@@ -22,25 +23,25 @@ import { ActivatedRoute } from '@angular/router';
 export class PaymentComponent implements OnInit {
   // Estados de la aplicación
   currentStep: 'initial' | 'payment-form' | 'success' | 'error' = 'initial';
-  
+
   // Datos del formulario
   cardData = {
     cardNumber: '',
     cvv: '',
     cardholderName: ''
   };
-  
+
   // Validaciones
   errors = {
     cardNumber: '',
     cvv: '',
     cardholderName: ''
   };
-  
+
   // Mensajes
   successMessage = '¡Pago procesado exitosamente!';
   errorMessage = 'Error en el servicio de pago. Por favor, intente nuevamente.';
-  
+
   // Datos de la boleta
   order?: Order;
   totalPedido: number = 0;
@@ -54,7 +55,7 @@ export class PaymentComponent implements OnInit {
     merchant: 'Walmart',
     description: 'Compra de productos varios'
   };
-  
+
   constructor(private orderService: OrderService, private route: ActivatedRoute) {}
 
   ngOnInit(): void {
@@ -76,7 +77,7 @@ export class PaymentComponent implements OnInit {
   showPaymentForm() {
     this.currentStep = 'payment-form';
   }
-  
+
   /**
    * Valida el número de tarjeta
    * @param value - Número de tarjeta sin formatear
@@ -85,16 +86,16 @@ export class PaymentComponent implements OnInit {
   validateCardNumber(value: string): boolean {
     // Limpiar espacios y guiones
     const cleanValue = value.replace(/\s/g, '').replace(/-/g, '');
-    
+
     if (cleanValue.length !== 16) {
       this.errors.cardNumber = 'El número de tarjeta debe tener 16 dígitos';
       return false;
     }
-    
+
     this.errors.cardNumber = '';
     return true;
   }
-  
+
   /**
    * Valida el CVV
    * @param value - CVV a validar
@@ -105,12 +106,12 @@ export class PaymentComponent implements OnInit {
       this.errors.cvv = 'El CVV debe tener 3 dígitos';
       return false;
     }
-    
-    
+
+
     this.errors.cvv = '';
     return true;
   }
-  
+
   /**
    * Valida el nombre del titular
    * @param value - Nombre a validar
@@ -125,7 +126,7 @@ export class PaymentComponent implements OnInit {
     this.errors.cardholderName = '';
     return true;
   }
-  
+
   /**
    * Formatea el número de tarjeta en grupos de 4 dígitos
    * Solo permite números y formatea automáticamente
@@ -133,67 +134,67 @@ export class PaymentComponent implements OnInit {
    */
   formatCardNumber(event: any) {
     let value = event.target.value;
-    
+
     // Solo permitir números
     value = value.replace(/\D/g, '');
-    
+
     // Limitar a 16 dígitos
     if (value.length > 16) {
       value = value.substring(0, 16);
     }
-    
+
     // Formatear en grupos de 4
     const formatted = value.replace(/(\d{4})(?=\d)/g, '$1 ');
-    
+
     // Actualizar el valor en el input
     event.target.value = formatted;
     this.cardData.cardNumber = formatted;
-    
+
     // Validar
     this.validateCardNumber(value);
   }
-  
+
   /**
    * Formatea el CVV (solo números)
    * @param event - Evento del input
    */
   formatCvv(event: any) {
     let value = event.target.value;
-    
+
     // Solo permitir números
     value = value.replace(/\D/g, '');
-    
+
     // Limitar a 3 dígitos
     if (value.length > 3) {
       value = value.substring(0, 3);
     }
-    
+
     // Actualizar el valor en el input
     event.target.value = value;
     this.cardData.cvv = value;
-    
+
     // Validar
     this.validateCvv(value);
   }
-  
+
   /**
    * Formatea el nombre del titular (solo letras)
    * @param event - Evento del input
    */
   formatCardholderName(event: any) {
     let value = event.target.value;
-    
+
     // Solo permitir letras, espacios y caracteres especiales del español
     value = value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '');
-    
+
     // Actualizar el valor en el input
     event.target.value = value;
     this.cardData.cardholderName = value;
-    
+
     // Validar
     this.validateCardholderName(value);
   }
-  
+
   /**
    * Genera datos ficticios para la boleta
    * Se ejecuta cuando el pago es exitoso
@@ -209,7 +210,7 @@ export class PaymentComponent implements OnInit {
       description: 'Compra de productos varios'
     };
   }
-  
+
   /**
    * Procesa el pago y simula el resultado
    * Valida todos los campos antes de procesar
@@ -219,14 +220,14 @@ export class PaymentComponent implements OnInit {
     const isCardNumberValid = this.validateCardNumber(this.cardData.cardNumber.replace(/\s/g, ''));
     const isCvvValid = this.validateCvv(this.cardData.cvv);
     const isCardholderNameValid = this.validateCardholderName(this.cardData.cardholderName);
-    
+
     if (!isCardNumberValid || !isCvvValid || !isCardholderNameValid) {
       return;
     }
-    
+
     // Simular procesamiento de pago (90% éxito, 10% error)
     const random = Math.random();
-    
+
     if (random > 0.1) { // 80% de probabilidad de éxito
       this.generateReceiptData();
       this.currentStep = 'success';
@@ -234,7 +235,7 @@ export class PaymentComponent implements OnInit {
       this.currentStep = 'error';
     }
   }
-  
+
   /**
    * Vuelve al estado inicial
    * Limpia todos los datos del formulario
@@ -252,7 +253,7 @@ export class PaymentComponent implements OnInit {
       cardholderName: ''
     };
   }
-  
+
   /**
    * Previene la entrada de caracteres no numéricos en el campo de tarjeta
    * @param event - Evento keypress
@@ -263,7 +264,7 @@ export class PaymentComponent implements OnInit {
       event.preventDefault();
     }
   }
-  
+
   /**
    * Previene la entrada de caracteres no numéricos en el campo CVV
    * @param event - Evento keypress
@@ -274,7 +275,7 @@ export class PaymentComponent implements OnInit {
       event.preventDefault();
     }
   }
-  
+
   /**
    * Previene la entrada de caracteres no alfabéticos en el campo nombre
    * @param event - Evento keypress
@@ -282,7 +283,7 @@ export class PaymentComponent implements OnInit {
   preventNonAlphabetic(event: any) {
     const charCode = event.which ? event.which : event.keyCode;
     // Permitir: letras (65-90, 97-122), espacios (32), ñ (241), Ñ (209), acentos
-    if (charCode > 31 && 
+    if (charCode > 31 &&
         !(charCode === 32 || // espacio
           (charCode >= 65 && charCode <= 90) || // A-Z
           (charCode >= 97 && charCode <= 122) || // a-z

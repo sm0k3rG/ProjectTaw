@@ -62,9 +62,10 @@ export class AppStateService {
     const currentState = this.state.value;
     this.state.next({
       ...currentState,
-      deliveryAddress: address
+      deliveryAddress: { ...address }
     });
   }
+
 
   // Actualizar cantidad de items en el carrito
   updateCartItemCount(count: number): void {

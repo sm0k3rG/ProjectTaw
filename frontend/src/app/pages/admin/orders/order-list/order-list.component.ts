@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
-import { NavbarComponent } from '../../../../shared/navbar/navbar.component';
+import { MainNavbarComponent } from '../../../../shared/main-navbar/main-navbar.component';
 
 interface Pedido {
   id: number;
@@ -25,7 +25,7 @@ interface Pedido {
 @Component({
   selector: 'app-order-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, NavbarComponent],
+  imports: [CommonModule, FormsModule, MainNavbarComponent],
   templateUrl: './order-list.component.html',
   styleUrls: ['./order-list.component.css']
 })

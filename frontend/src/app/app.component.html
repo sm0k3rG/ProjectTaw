@@ -180,58 +180,6 @@
   }
 </style>
 
-<!-- Menú superior estilo Lider.cl -->
-<nav class="lider-navbar navbar navbar-expand-lg" style="background: #0074d9; min-height: 56px;">
-  <div class="container-fluid d-flex align-items-center justify-content-between">
-    <!-- Logo -->
-    <div class="d-flex align-items-center">
-      <img src="assets/walmart-chile-logo.png" alt="Walmart Chile" style="height: 36px; margin-right: 16px;">
-      <button class="btn btn-link text-white fw-bold d-flex align-items-center me-3" style="text-decoration: none;">
-        <i class="bi bi-grid-3x3-gap-fill me-1"></i> Categorías
-      </button>
-    </div>
-    <!-- Buscador -->
-    <form class="flex-grow-1 mx-3" style="max-width: 600px;">
-      <div class="input-group rounded-pill overflow-hidden">
-        <input type="text" class="form-control border-0" placeholder="Busca en Supermercado" style="border-radius: 24px 0 0 24px;">
-        <button class="btn" type="submit" style="background: #ffc20e; border-radius: 0 24px 24px 0;">
-          <i class="bi bi-search"></i>
-        </button>
-      </div>
-    </form>
-    <!-- Selector de sucursal, login y carrito -->
-    <div class="d-flex align-items-center">
-      <button class="btn btn-white me-4 d-flex align-items-center shadow-sm border rounded-pill px-4 py-3 position-relative" style="background: #fff; color: #0074d9; font-weight: 600; min-width: 270px; max-width: 320px; height: 56px; overflow: hidden;" (click)="showDeliverySidebar = true">
-        <i class="bi bi-geo-alt me-1"></i>
-        <span class="fw-bold text-truncate" style="display: inline-block; max-width: 180px; vertical-align: middle; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-          <ng-container *ngIf="selectedDeliveryType === 'retiro'; else envio">
-            <ng-container *ngIf="selectedStore; else sinTienda">
-              Retira en {{ selectedStore.name }}
-            </ng-container>
-            <ng-template #sinTienda>
-              Selecciona una tienda
-            </ng-template>
-          </ng-container>
-          <ng-template #envio>
-            <ng-container *ngIf="deliveryAddress?.direccion; else sinDireccion">
-              Envío a {{ deliveryAddress.direccion }}
-            </ng-container>
-            <ng-template #sinDireccion>
-              Ingresa dirección de entrega
-            </ng-template>
-          </ng-template>
-        </span>
-        <i class="bi bi-chevron-down position-absolute end-0 me-3" style="right: 18px;"></i>
-      </button>
-      <button class="btn btn-link text-white me-3 d-flex align-items-center" style="text-decoration: none;">
-        <i class="bi bi-person me-1"></i> Ingresar
-      </button>
-      <!-- Elimino el botón del carrito del header -->
-    </div>
-  </div>
-</nav>
-
-
 <app-delivery-type-sidebar
   [show]="showDeliverySidebar"
   [selectedDeliveryType]="selectedDeliveryType"

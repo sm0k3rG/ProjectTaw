@@ -5,11 +5,12 @@ import { ActivatedRoute } from '@angular/router';
 import { Product } from '../../../../models/product.model';
 import { ProductsService } from '../../../../services/products.service';
 import { CartService } from '../../../../services/cart.service';
+import { MainNavbarComponent } from '../../../../shared/main-navbar/main-navbar.component';
 
 @Component({
   selector: 'app-product',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, MainNavbarComponent],
   templateUrl: './product.component.html',
   styleUrls: ['./product.component.css']
 })

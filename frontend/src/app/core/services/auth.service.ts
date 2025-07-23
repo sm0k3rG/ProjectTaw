@@ -105,4 +105,11 @@ export class AuthService {
     // Simula una respuesta exitosa
     return of({ mensaje: 'Contraseña restablecida correctamente' });
   }
+
+  getUserRole(): Observable<'Administrator' | 'Client' | null> {
+    const user = this.getCurrentUser();
+    // Si no hay usuario, devuelve 'Client' por defecto para que se muestre el navbar de usuario.
+    // Si hay usuario, devuelve su rol.
+    return of(user ? user.role : 'Client');
+  }
 }

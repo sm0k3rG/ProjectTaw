@@ -1,9 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { NavbarComponent } from './shared/navbar/navbar.component';
-import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
+import { RouterOutlet} from '@angular/router';
 import { CartService } from './services/cart.service';
-import { CartSidebarComponent } from './components/user/carrito/cart-sidebar/cart-sidebar.component';
-import { DeliveryTypeSidebarComponent } from './components/user/delivery-type-sidebar/delivery-type-sidebar.component';
+import { CartSidebarComponent } from './pages/user/cart/cart-sidebar/cart-sidebar.component';
+import { DeliveryTypeSidebarComponent } from './pages/user/delivery-type-sidebar/delivery-type-sidebar.component';
 import { AppStateService, AppState } from './services/app-state.service';
 import { CommonModule } from '@angular/common';
 
@@ -13,11 +12,8 @@ import { CommonModule } from '@angular/common';
   imports: [
     CommonModule,
     RouterOutlet,
-    RouterLink,
-    RouterLinkActive,
     CartSidebarComponent,
     DeliveryTypeSidebarComponent,
-    NavbarComponent
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
@@ -31,13 +27,9 @@ export class AppComponent implements OnInit {
     private appStateService: AppStateService
   ) {
     this.appState = this.appStateService.getCurrentState();
-
-    // Suscribirse a cambios en el estado
     this.appStateService.getState().subscribe(state => {
       this.appState = state;
     });
-
-    // Suscribirse a cambios en el carrito
     this.cartService.getCartItems().subscribe(items => {
       this.appStateService.updateCartItemCount(this.cartService.getTotalItems());
     });

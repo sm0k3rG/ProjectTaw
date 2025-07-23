@@ -2,7 +2,7 @@ import { Component, AfterViewInit, ElementRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import Chart from 'chart.js/auto';
-import { NavbarComponent } from '../../../shared/navbar/navbar.component';
+import { MainNavbarComponent } from '../../../shared/main-navbar/main-navbar.component';
 
 // Interfaces para los datos esperados del backend
 interface SucursalVentas {
@@ -23,7 +23,7 @@ interface UsuariosPorRegion {
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, FormsModule, NavbarComponent],
+  imports: [CommonModule, FormsModule, MainNavbarComponent],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css'
 })

@@ -2,29 +2,23 @@
   position: fixed;
   top: 0;
   left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0,0,0,0.3);
-  z-index: 1040;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
 }
 
 .delivery-sidebar {
   position: fixed;
   top: 0;
   right: 0;
-  width: 420px;
-  max-width: 100vw;
-  height: 100vh;
-  max-height: 100vh;
-  background: #fff;
-  z-index: 1050;
-  box-shadow: -2px 0 8px rgba(0,0,0,0.08);
+  bottom: 0;
+  width: 100%;
+  max-width: 400px;
+  background: white;
+  z-index: 1001;
   transform: translateX(100%);
-  transition: transform 0.3s;
-  border-radius: 0 12px 12px 0;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
+  transition: transform 0.3s ease;
 }
 
 .delivery-sidebar.open {
@@ -153,10 +147,6 @@
   font-size: 0.9rem !important;
 }
 
-/* Estilos para el campo número */
-input[type="number"] {
-  -moz-appearance: textfield;
-}
 
 input[type="number"]::-webkit-outer-spin-button,
 input[type="number"]::-webkit-inner-spin-button {
@@ -164,7 +154,6 @@ input[type="number"]::-webkit-inner-spin-button {
   margin: 0;
 }
 
-/* Estilo para indicar que es campo numérico */
 input[name="numero"] {
   font-family: 'Courier New', monospace;
   text-align: left;
