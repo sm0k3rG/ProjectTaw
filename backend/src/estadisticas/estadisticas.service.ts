@@ -9,12 +9,6 @@ export class EstadisticasService {
     return this.prisma.pedido.count({ where: { estado: 'COMPLETADO' } });
   }
 
-  async cantidadVentasPorSucursal() {
-    return this.prisma.productoSucursal.groupBy({
-      by: ['sucursalId'],
-      _sum: { stock: true }, // Cambia a un campo más representativo si existe
-    });
-  }
 
   async cantidadUsuarios() {
     return this.prisma.usuario.count();

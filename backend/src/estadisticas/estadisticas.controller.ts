@@ -10,10 +10,7 @@ export class EstadisticasController {
     return this.service.cantidadVentasTotales();
   }
 
-  @Get('ventas-por-sucursal')
-  getVentasPorSucursal() {
-    return this.service.cantidadVentasPorSucursal();
-  }
+ 
 
   @Get('usuarios')
   getCantidadUsuarios() {

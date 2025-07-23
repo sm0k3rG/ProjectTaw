@@ -12,24 +12,22 @@ export class PedidoController {
   //@UseGuards(JwtAuthGuard)
   @Post()
   create(@Body() createPedidoDto: CreatePedidoDto): Promise<Pedido> {
-    return this.pedidoService.create(createPedidoDto);
+    return this.pedidoService.crearPeido(createPedidoDto);
   }
 
-  @UseGuards(JwtAuthGuard)
-  @Get('usuario/:id')
-  async obtenerPedidos(
-    @Param('id', ParseIntPipe) usuarioId: number,
+  //@UseGuards(JwtAuthGuard)
+  @Get(':id/propio')
+  async getPedidoPropio(
+    @Param('id', ParseIntPipe) pedidoId: number,
     @Request() req,
-  )
-  {
-    if (req.user.id !== usuarioId) {
-      throw new ForbiddenException('No puedes acceder a pedidos de otro usuario.');
-    }
-    return this.pedidoService.obtenerPedidosDelUsuario(usuarioId)
+  ) {
+    const usuarioId = req.user.id; // asumiendo que JwtAuthGuard pone el payload en req.user
+    return this.pedidoService.verPedidoPropio(pedidoId, usuarioId);
   }
-    @UseGuards(JwtAuthGuard)
-    @Patch(':id/cancelar')
-    async cancelarPedido(
+
+    //@UseGuards(JwtAuthGuard)
+    @Patch(':id/cancelar/propio')
+    async cancelarPedidoPropio(
       @Param('id', ParseIntPipe) pedidoId: number,
       @Body('usuarioId', ParseIntPipe) usuarioId: number // reemplazar por JWT si usas auth
       ) {
@@ -37,10 +35,15 @@ export class PedidoController {
   }
   @UseGuards(RolesGuard)
   @UseGuards(JwtAuthGuard)
-    @Patch(':id/cancelar')
+    @Patch(':id/cancelar/admin')
     async cancelarPedidoAdmin(
       @Param('id', ParseIntPipe) pedidoId: number,
       ) {
     return this.pedidoService.cancelarPedidoAdmin(pedidoId);
+  }
+
+  @Get('/registrados')
+  async verPedidosRegistrados() {
+    return this.pedidoService.verPedidosRegistrados();
   }
 }

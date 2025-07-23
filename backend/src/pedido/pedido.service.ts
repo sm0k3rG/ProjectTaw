@@ -9,28 +9,40 @@ export class PedidoService {
   constructor(private readonly prisma: PrismaService,
     private notificationsService: NotificationsService
   ) {}
-  async obtenerPedidosDelUsuario(usuarioId: number) {
-    const pedidos = await this.prisma.pedido.findMany({
-      where: { usuarioId },
-      orderBy: { fechaPedido: 'desc' },
+  async verPedidoPropio(
+    pedidoId: number,
+    usuarioId: number,
+  ): Promise<Pedido> {
+    const pedido = await this.prisma.pedido.findFirst({
+      where: {
+        id: pedidoId,
+        usuarioId: usuarioId,
+      },
       include: {
+        usuario: true,
         direccion: true,
         lineasDePedido: {
           include: {
-            producto: true,
+            producto: {
+              include: {
+                oferta: true,
+              },
+            },
           },
         },
       },
     });
 
-    if (!pedidos.length) {
-      throw new NotFoundException('No se encontraron pedidos para este usuario.');
+    if (!pedido) {
+      throw new NotFoundException(
+        `Pedido ${pedidoId} no encontrado para el usuario ${usuarioId}`,
+      );
     }
 
-    return pedidos;
+    return pedido;
   }
 
- async create(createPedidoDto: CreatePedidoDto): Promise<Pedido> {
+ async crearPeido(createPedidoDto: CreatePedidoDto): Promise<Pedido> {
   const { usuarioId, direccionId, lineasDePedido } = createPedidoDto;
 
   // Verificar usuario y dirección
@@ -164,5 +176,23 @@ async cancelarPedidoAdmin(pedidoId: number) {
 
   return pedidoCancelado;
 }
+
+ async verPedidosRegistrados(): Promise<Pedido[]> {
+    return this.prisma.pedido.findMany({
+      include: {
+        usuario: true,
+        direccion: true,
+        lineasDePedido: {
+          include: {
+            producto: {
+              include: {
+                oferta: true,
+              },
+            },
+          },
+        },
+      },
+    });
+  }
 
 }

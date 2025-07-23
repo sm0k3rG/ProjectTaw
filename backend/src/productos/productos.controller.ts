@@ -14,8 +14,8 @@ export class ProductoController {
    // @Roles(Rol.Admin)  // Usamos el enum Rol para definir los roles permitidos
   // @UseGuards(JwtAuthGuard, RolesGuard)  // Usamos ambos guards
   @Post()
-  create(@Body() createProductoDto: CreateProductDto) {
-    return this.productoService.create(createProductoDto);
+  agregarProducto(@Body() createProductoDto: CreateProductDto) {
+    return this.productoService.agregarProducto(createProductoDto);
   }
 
   @Get("Catalago")

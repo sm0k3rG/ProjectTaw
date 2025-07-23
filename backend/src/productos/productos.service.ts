@@ -9,7 +9,7 @@ import { Producto, ProductoEstado } from '@prisma/client';
 export class ProductoService {
   constructor(private readonly prisma: PrismaService) {}
   
-async create(createProductDto: CreateProductDto) {
+async agregarProducto(createProductDto: CreateProductDto) {
     const { nombre, descripcion, precio, categoriaId, ofertaId, imagenUrl, sucursales } = createProductDto;
     // Validación de que el stock de cada sucursal sea mayor a 0
     for (const sucursal of sucursales) {
@@ -54,7 +54,6 @@ async create(createProductDto: CreateProductDto) {
 async obtenerProductosConDetalles(
   page: number = 1,  // Página por defecto
   limit: number = 10,  // Límite por defecto
-
   // Parámetros opcionales para filtrado y ordenamiento (añadir bajo del limit)
   categoriaId?: number,
   orden?: string,
@@ -86,7 +85,7 @@ async obtenerProductosConDetalles(
   // Obtener los productos con los detalles
   const productos = await this.prisma.producto.findMany({
     skip,
-    take: limit,  // Paginación
+    take: Number(limit),  // Paginación
     where,
     orderBy,
     include: {
@@ -96,7 +95,7 @@ async obtenerProductosConDetalles(
           sucursal: true,  // Incluir los detalles de la sucursal
         },
       }, // Incluir las sucursales asociadas
-    oferta:true
+    oferta:true,
     },
   });
 
