@@ -43,8 +43,24 @@ export class OfertaService {
   }
 
   async remove(id: number) {
-    return this.prisma.oferta.delete({
-      where: { id },
-    });
+    try {
+      const productosAsociados = await this.prisma.producto.findMany({
+        where: { ofertaId: id },
+        select: { id: true },
+      });
+
+      await this.prisma.oferta.update({
+        where: { id },
+        data: {
+          estado: 'ELIMINADO',
+          productos: {
+            disconnect: productosAsociados.map((producto) => ({ id: producto.id })),
+          },
+        },
+      });
+      return {mensaje: "Oferta eliminada correctamente"};
+    } catch (error) {
+      throw error;
+    }
   }
 }

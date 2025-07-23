@@ -1,10 +1,8 @@
 import { Controller, Get, Post, Body, Param, Put, Delete, UseGuards, Query, UsePipes, ValidationPipe, BadRequestException, ParseIntPipe } from '@nestjs/common';
 import { UpdateProductoDto } from './dto/update-producto.dto';
 import { ProductoService } from './productos.service';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { Producto, Rol } from '@prisma/client';
-import { RolesGuard } from 'src/auth/roles.guard';
-import { Roles } from 'src/auth/roles.decorator';
+
 import { CreateProductDto } from './dto/create-producto.dto';
 import { GetProductosDto } from './dto/get-productos.dto';
 
@@ -31,10 +29,11 @@ export class ProductoController {
   @Query('page') page: number = 1,  // Página por defecto
   @Query('limit') limit: number = 10,  // Límite por defecto
   @Query('categoriaId') categoriaId?: number,
+  @Query('ofertaId') ofertaId?: number,  // 'asc' o 'desc'
   @Query('orden') orden?: string,  // 'asc' o 'desc'
 ): Promise<{ total: number; totalPaginas: number; productos: Producto[] }> {
   // Llamamos a la función del servicio que ya tenemos
-  const { total, totalPaginas, productos } = await this.productoService.obtenerProductosConDetalles(page, limit, categoriaId, orden);
+  const { total, totalPaginas, productos } = await this.productoService.obtenerProductosConDetalles(page, limit, categoriaId, orden, ofertaId);
 
   // Devolvemos el objeto con el total de productos, el total de páginas y los productos
   return {

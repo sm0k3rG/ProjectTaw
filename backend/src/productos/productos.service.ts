@@ -57,12 +57,15 @@ async obtenerProductosConDetalles(
   // Parámetros opcionales para filtrado y ordenamiento (añadir bajo del limit)
   categoriaId?: number,
   orden?: string,
+  ofertaId?: number,
 ) {
   const skip = (page - 1) * limit;  // Calcular el offset para la paginación
 
   // Construir el objeto de filtros dinámicamente
   const where: any = {};
   if (categoriaId) where.categoriaId = Number(categoriaId);
+  if (ofertaId) where.ofertaId = Number(ofertaId);
+
 
   // Ordenar por nombre o precio
   let orderBy: any = undefined;

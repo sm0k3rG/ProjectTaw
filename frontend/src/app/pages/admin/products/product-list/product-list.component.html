@@ -1,10 +1,10 @@
 <!-- Contenedor principal de la vista de gestión de productos -->
 <div class="container-fluid px-2 px-md-4 py-3">
-  
+
   <!-- Alerta de mensaje de éxito o error (feedback al usuario) -->
   @if (mostrarMensaje) {
-    <div class="alert alert-{{ tipoMensaje === 'success' ? 'success' : 'danger' }} alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3" 
-         role="alert" 
+    <div class="alert alert-{{ tipoMensaje === 'success' ? 'success' : 'danger' }} alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3"
+         role="alert"
          style="z-index: 1050; min-width: 300px;">
       <i class="bi bi-{{ tipoMensaje === 'success' ? 'check-circle' : 'exclamation-triangle' }} me-2"></i>
       {{ mensaje }}
@@ -39,6 +39,12 @@
           <option [value]="cat.id">{{ cat.nombre }}</option>
         }
       </select>
+      <select class="form-select rounded-3 w-auto" [(ngModel)]="ofertaSeleccionada" (change)="onCambiarOferta($event)">
+        <option value="">Todas las ofertas</option>
+        @for (oferta of ofertas; track oferta.id) {
+          <option [value]="oferta.id">{{ oferta.porcentaje }}</option>
+        }
+      </select>
       <select class="form-select rounded-3 w-auto" [(ngModel)]="ordenSeleccionado" (change)="onCambiarOrden($event)">
         <option value="">Ordenar por</option>
         <option value="asc">Nombre: A-Z</option>
@@ -69,7 +75,7 @@
           <!-- Estado de carga: muestra spinner mientras se cargan los productos -->
           @if (cargando) {
             <tr>
-              <td colspan="8" class="text-center py-4">
+              <td colspan="9" class="text-center py-4">
                 <div class="text-muted">
                   <div class="spinner-border text-primary" role="status">
                     <span class="visually-hidden">Cargando...</span>
@@ -78,7 +84,7 @@
                 </div>
               </td>
             </tr>
-          } 
+          }
           <!-- Estado vacío: no hay productos registrados -->
           @else if (productos.length === 0) {
             <tr>
@@ -90,7 +96,7 @@
                 </div>
               </td>
             </tr>
-          } 
+          }
           <!-- Renderizado de la lista de productos -->
           @else {
             @for (producto of productos; track producto.id) {
@@ -152,9 +158,9 @@
                 <td class="align-middle">
                   @if (producto.estado !== 'ELIMINADO') {
                     <button class="btn btn-outline-dark btn-sm rounded-2 me-1" title="Editar" (click)="onEditarProducto(producto)"><i class="bi bi-pencil"></i></button>
-                    <button 
-                      class="btn btn-outline-danger btn-sm rounded-2" 
-                      title="Eliminar" 
+                    <button
+                      class="btn btn-outline-danger btn-sm rounded-2"
+                      title="Eliminar"
                       (click)="eliminarProducto(producto)">
                       <i class="bi bi-trash"></i>
                     </button>
@@ -182,20 +188,8 @@
   </div>
 
   <!-- Modal para agregar producto -->
-  <div class="modal fade" id="modalAgregarProducto" tabindex="-1" aria-labelledby="modalAgregarProductoLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h2 class="modal-title fw-bold" style="font-size: 2.2rem;" id="modalAgregarProductoLabel">Agregar producto</h2>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-        </div>
-        <div class="modal-body">
-          <!-- Componente de formulario de producto, emite evento al agregar -->
-          <app-product-add (productoAgregado)="onProductoAgregado()"></app-product-add>
-        </div>
-      </div>
-    </div>
-  </div>
+<app-product-add (productoAgregado)="onProductoAgregado()"></app-product-add>
+
 
   <!-- Componente de gestión de categorías (modal) -->
   <app-category></app-category>

@@ -1,6 +1,16 @@
 <!-- Contenedor principal con espaciado -->
 <div class="container-fluid px-2 px-md-4 py-3">
   <!-- Tarjeta visual para la gestión de ofertas -->
+    <!-- Alerta de mensaje de éxito o error (feedback al usuario) -->
+  @if (mostrarMensaje) {
+    <div class="alert alert-{{ tipoMensaje === 'success' ? 'success' : 'danger' }} alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3"
+         role="alert"
+         style="z-index: 1050; min-width: 300px;">
+      <i class="bi bi-{{ tipoMensaje === 'success' ? 'check-circle' : 'exclamation-triangle' }} me-2"></i>
+      {{ mensaje }}
+      <button type="button" class="btn-close" (click)="mostrarMensaje = false"></button>
+    </div>
+  }
   <div class="card shadow-sm rounded-4 p-4 w-100" style="background: #fff; min-width: 1000px;">
     <!-- Encabezado con título y botón para agregar nueva oferta -->
     <div class="d-flex justify-content-between align-items-center mb-3">
@@ -27,6 +37,18 @@
           </tr>
         </thead>
         <tbody>
+          @if (cargando) {
+            <tr>
+              <td colspan="6" class="text-center py-4">
+                <div class="text-muted">
+                  <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Cargando...</span>
+                  </div>
+                  <p class="mt-2 mb-0">Cargando ofertas...</p>
+                </div>
+              </td>
+            </tr>
+          }
           <!-- Itera sobre el arreglo de ofertas y muestra cada una en una fila -->
           @for (oferta of ofertas; track oferta.id) {
             <tr>
@@ -34,17 +56,22 @@
               <td>{{ oferta.descripcion }}</td>
               <td>{{ oferta.fechaInicio | date:'yyyy-MM-dd' }}</td>
               <td>{{ oferta.fechaFin | date:'yyyy-MM-dd' }}</td>
-              <td>{{ oferta.estado }}</td>
-              <td>
-                <!-- Botón para editar la oferta -->
-                <button class="btn btn-outline-dark btn-sm rounded-2 me-1" (click)="editarOferta(oferta)" title="Editar">
-                  <i class="bi bi-pencil"></i>
-                </button>
-                <!-- Botón para eliminar la oferta -->
-                <button class="btn btn-outline-danger btn-sm rounded-2" (click)="eliminarOferta(oferta)" title="Eliminar">
-                  <i class="bi bi-trash"></i>
-                </button>
-              </td>
+              <!-- <td>{{ oferta.estado }}</td> -->
+               <td class="align-middle">
+                  <span class="badge" [ngClass]="getEstadoColor(oferta.estado)">{{ oferta.estado }}</span>
+                </td>
+              <!-- Acciones: editar y eliminar producto -->
+                <td class="align-middle">
+                  @if (oferta.estado !== 'ELIMINADO') {
+                    <button class="btn btn-outline-dark btn-sm rounded-2 me-1" title="Editar" (click)="editarOferta(oferta)"><i class="bi bi-pencil"></i></button>
+                    <button
+                      class="btn btn-outline-danger btn-sm rounded-2"
+                      title="Eliminar"
+                      (click)="eliminarOferta(oferta)">
+                      <i class="bi bi-trash"></i>
+                    </button>
+                  }
+                </td>
             </tr>
           }
         </tbody>
@@ -63,6 +90,22 @@
         <div class="modal-body">
           <!-- Formulario para agregar una nueva oferta -->
           <app-offer-add></app-offer-add>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal para editar oferta -->
+  <div class="modal fade" id="modalEditarOferta" tabindex="-1" aria-labelledby="modalEditarOfertaLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title fw-bold mb-0" id="modalEditarOfertaLabel" style="font-size: 2rem;">Editar Oferta</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <!-- Formulario para editar una oferta -->
+          <app-offer-edit></app-offer-edit>
         </div>
       </div>
     </div>
