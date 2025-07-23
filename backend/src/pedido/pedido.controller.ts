@@ -12,7 +12,7 @@ export class PedidoController {
   //@UseGuards(JwtAuthGuard)
   @Post()
   create(@Body() createPedidoDto: CreatePedidoDto): Promise<Pedido> {
-    return this.pedidoService.crearPeido(createPedidoDto);
+    return this.pedidoService.crearPedido(createPedidoDto);
   }
 
   //@UseGuards(JwtAuthGuard)

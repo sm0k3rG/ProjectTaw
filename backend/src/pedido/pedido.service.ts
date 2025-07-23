@@ -42,7 +42,7 @@ export class PedidoService {
     return pedido;
   }
 
- async crearPeido(createPedidoDto: CreatePedidoDto): Promise<Pedido> {
+ async crearPedido(createPedidoDto: CreatePedidoDto): Promise<Pedido> {
   const { usuarioId, direccionId, lineasDePedido } = createPedidoDto;
 
   // Verificar usuario y dirección
