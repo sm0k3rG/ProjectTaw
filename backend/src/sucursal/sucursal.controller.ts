@@ -35,15 +35,10 @@ export class SucursalController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.sucursalService.remove(+id);
+  }
+
   @Get('cercanas/:usuarioId')
-  async getSucursalesCercanas(@Param('usuarioId') usuarioId: string) {
-    const id = parseInt(usuarioId);
-    const sucursales = await this.sucursalService.obtenerSucursalesCercanas(id);
-
-    if (!sucursales.length) {
-      throw new NotFoundException('No hay sucursales cercanas a tu ubicación');
-    }
-
-    return sucursales;
+  getSucursalesCercanas(@Param('usuarioId') usuarioId: string) {
+    return this.sucursalService.obtenerSucursalesCercanas(+usuarioId);;
   }
 }

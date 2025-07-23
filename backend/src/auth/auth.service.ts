@@ -1,8 +1,8 @@
 
-// import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
-// import { JwtService } from '@nestjs/jwt';
-// import { PrismaService } from '../prisma/prisma.service';
-// import * as bcrypt from 'bcryptjs';
+import { BadRequestException, Injectable, UnauthorizedException, NotFoundException } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+import { PrismaService } from '../prisma/prisma.service';
+import * as bcrypt from 'bcryptjs';
 
 // export interface LoginDto {
 //   email: string;
@@ -23,28 +23,22 @@
 //     private jwtService: JwtService,
 //   ) {}
 
-//   async validateUser(email: string, password: string) {
 
-// import {
-//   BadRequestException,
-//   Injectable,
-//   NotFoundException,
-// } from '@nestjs/common';
-// import { PrismaService } from '../prisma/prisma.service';
-// import * as bcrypt from 'bcrypt';
-// import * as jwt from 'jsonwebtoken';
-// import * as nodemailer from 'nodemailer';
-// import { ForgotPasswordDto } from './dto/forgot-password.dto';
-// import { ResetPasswordDto } from './dto/reset-password.dto';
-// import { UpdateUserDto } from './dto/update-user.dto';
+import * as jwt from 'jsonwebtoken';
+import * as nodemailer from 'nodemailer';
+import { ForgotPasswordDto } from './dto/forgot-password.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { RegisterDto } from './dto/register.dto';
+import { LoginDto } from './dto/login.dto';
 
 
 @Injectable()
 export class AuthService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService, private jwtService: JwtService) {}
 
   // ✅ Registro
-  async register(dto: any) {
+  async register(dto: RegisterDto) {
     const { nombre, email, contrasena, terminosAceptados } = dto;
 
     if (!terminosAceptados) {
@@ -68,6 +62,7 @@ export class AuthService {
         contrasena: hashedPassword,
         telefono: '',
         tarjetas: '',
+        rol: 'Cliente',
       },
     });
 
@@ -76,19 +71,19 @@ export class AuthService {
   }
 
   // ✅ Login
-  async login(dto: any) {
-    const { email, contrasena } = dto;
+  // async login(dto: any) {
+  //   const { email, contrasena } = dto;
 
-    const user = await this.prisma.usuario.findUnique({
-      where: { email },
-    });
+  //   const user = await this.prisma.usuario.findUnique({
+  //     where: { email },
+  //   });
 
-    if (user && await bcrypt.compare(password, user.contrasena)) {
-      const { contrasena, ...result } = user;
-      return result;
-    }
-    return null;
-  }
+  //   if (user && await bcrypt.compare(password, user.contrasena)) {
+  //     const { contrasena, ...result } = user;
+  //     return result;
+  //   }
+  //   return null;
+  // }
 
   async login(loginDto: LoginDto) {
     const user = await this.validateUser(loginDto.email, loginDto.password);

@@ -60,6 +60,11 @@ export class SucursalService {
       },
     });
 
+
+    if (!sucursales.length) {
+      throw new NotFoundException('No hay sucursales cercanas a tu ubicación');
+    }
+
     return sucursales;
   }
 }
