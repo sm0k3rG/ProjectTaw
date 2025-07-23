@@ -1,3 +1,4 @@
+import { OfferService } from './../../../../core/services/offer.service.spec';
 import { Component, OnInit, Provider } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CategoryComponent } from '../category/category.component';
@@ -27,12 +28,19 @@ export class ProductListComponent implements OnInit {
   totalItems = 0; // Total de productos (se actualizará desde el backend)
 
   categorias: any[] = [];
+  ofertas: any[] = [];
+  categoriasSeleccionadas: string[] = [];
   categoriaSeleccionada: string = '';
+  ofertasSeleccionadas: string[] = [];
+  ofertaSeleccionada: string = '';
   ordenSeleccionado: string = '';
+
+
 
   constructor(
     private productService: ProductService,
     private categoryService: CategoryService,
+    private offerService: OfferService,
     config: NgbPaginationConfig
   ) {
     config.size = 'md';
@@ -69,7 +77,6 @@ export class ProductListComponent implements OnInit {
   /**
    * Retorna la clase CSS para el color del estado del producto
    * @param estado - Estado del producto
-   * @returns Clase CSS para el color del badge
    */
   getEstadoColor(estado: string): string {
     switch (estado?.toUpperCase()) {
@@ -90,6 +97,7 @@ export class ProductListComponent implements OnInit {
    */
   ngOnInit(): void {
     this.cargarCategorias();
+    this.cargarOfertas();
     this.obtenerProductos();
   }
 
@@ -97,6 +105,14 @@ export class ProductListComponent implements OnInit {
     this.categoryService.obtenerCategorias().subscribe({
       next: (categorias) => {
         this.categorias = categorias;
+      }
+    });
+  }
+
+  cargarOfertas(): void {
+    this.offerService.obtenerOfertas().subscribe({
+      next: (ofertas) => {
+        this.ofertas = ofertas;
       }
     });
   }
@@ -110,7 +126,9 @@ export class ProductListComponent implements OnInit {
       this.page,
       this.pageSize,
       this.categoriaSeleccionada !== '' ? Number(this.categoriaSeleccionada) : undefined,
-      this.ordenSeleccionado || undefined
+      this.ofertaSeleccionada !== '' ? Number(this.ofertaSeleccionada) : undefined,
+      this.ordenSeleccionado || undefined,
+    
     ).subscribe({
       next: (respuesta) => {
         this.productos = respuesta.productos;
@@ -137,6 +155,13 @@ export class ProductListComponent implements OnInit {
     this.obtenerProductos();
   }
 
+  onCambiarOferta(event: any): void {
+    const value = event.target.value;
+    this.ofertaSeleccionada = value ? String(value) : '';
+    this.page = 1;
+    this.obtenerProductos();
+  }
+
   onCambiarOrden(event: any): void {
     const value = event.target.value;
     this.ordenSeleccionado = value;
@@ -147,6 +172,7 @@ export class ProductListComponent implements OnInit {
   limpiarFiltros(): void {
     this.categoriaSeleccionada = '';
     this.ordenSeleccionado = '';
+    this.ofertaSeleccionada = '';
     this.page = 1;
     this.obtenerProductos();
   }

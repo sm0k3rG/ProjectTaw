@@ -13,13 +13,16 @@ export class ProductService {
 
   constructor(private http: HttpClient) { }
 
-  obtenerProductos(pagina: number = 1, tamanoPagina: number = 2, categoriaId?: number, orden?: string): Observable<{ total: number, totalPaginas: number, productos: Product[] }> {
+  obtenerProductos(pagina: number = 1, tamanoPagina: number = 2, categoriaId?: number, ofertaId?: number, orden?: string): Observable<{ total: number, totalPaginas: number, productos: Product[] }> {
     let params = new HttpParams()
       .set('page', pagina.toString())
       .set('limit', tamanoPagina.toString());
-      
+
     if (categoriaId) {
       params = params.set('categoriaId', categoriaId.toString());
+    }
+    if (ofertaId) {
+      params = params.set('ofertaId', ofertaId.toString());
     }
     if (orden) {
       params = params.set('orden', orden);

@@ -9,11 +9,15 @@ import { Observable } from 'rxjs';
 })
 export class OfferService {
   private apiUrl = environment.apiUrl;
-  private controller = 'ofertas'; 
+  private controller = 'ofertas';
 
   constructor(private http: HttpClient) { }
 
   obtenerOfertas(): Observable<Offer[]> {
     return this.http.get<Offer[]>(`${this.apiUrl}/${this.controller}`);
+  }
+
+  eliminarOferta(id: number): Observable<{mensaje: string}> {
+    return this.http.delete<{mensaje: string}>(`${this.apiUrl}/${this.controller}/${id}`);
   }
 }
