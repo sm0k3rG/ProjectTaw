@@ -9,22 +9,19 @@ export class OfertaService {
 
   async create(createOfertaDto: CreateOfertaDto) {
     const { productoId, ...rest } = createOfertaDto;
-    return this.prisma.oferta.create({
-      data: {
-        ...rest,
-        productos: {
-          connect: {
-            id: productoId,
-          },
-        },
-      },
-    });
+    const data: any = { ...rest };
+    if (productoId) {
+      data.productos = {
+        connect: { id: productoId },
+      };
+    }
+    return this.prisma.oferta.create({ data });
   }
 
   async findAll() {
     return this.prisma.oferta.findMany({
       include: {
-        productos: true, // Esto incluirá los detalles del producto
+        productos: true, 
       },
     });
   }
@@ -33,7 +30,7 @@ export class OfertaService {
     return this.prisma.oferta.findUnique({
       where: { id },
       include: {
-        productos: true, // Esto incluirá los detalles del producto
+        productos: true,
       },
     });
   }

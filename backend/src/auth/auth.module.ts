@@ -4,6 +4,7 @@ import { PassportModule } from '@nestjs/passport';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { PrismaModule } from '../prisma/prisma.module';
+import { DireccionModule } from '../direccion/direccion.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { PrismaModule } from '../prisma/prisma.module';
         expiresIn: process.env.JWT_EXPIRES_IN || '24h' 
       },
     }),
+    DireccionModule,
   ],
   controllers: [AuthController],
   providers: [AuthService],

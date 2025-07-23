@@ -35,6 +35,8 @@ export class SucursalController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.sucursalService.remove(+id);
+  }
+
   @Get('cercanas/:usuarioId')
   async getSucursalesCercanas(@Param('usuarioId') usuarioId: string) {
     const id = parseInt(usuarioId);
