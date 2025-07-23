@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Put, Delete, UseGuards, Query, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Put, Delete, UseGuards, Query, UsePipes, ValidationPipe, BadRequestException, ParseIntPipe } from '@nestjs/common';
 import { UpdateProductoDto } from './dto/update-producto.dto';
 import { ProductoService } from './productos.service';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
@@ -18,7 +18,7 @@ export class ProductoController {
     return this.productoService.agregarProducto(createProductoDto);
   }
 
-  @Get("Catalago")
+  @Get("catalogo")
   @UsePipes(new ValidationPipe({ transform: true }))
   async listar(@Query() params: GetProductosDto) {
     return this.productoService.findAll(params);
@@ -47,8 +47,8 @@ export class ProductoController {
 
 // @Roles(Rol.Admin)  // Usamos el enum Rol para definir los roles permitidos
 // @UseGuards(JwtAuthGuard, RolesGuard)  // Usamos ambos guards
-  @Delete(':id')
-  async eliminarProducto(@Param('id') id: number) {
-    return this.productoService.eliminarProducto(id);
-  }
+ @Delete(':id')
+async eliminarProducto(@Param('id', ParseIntPipe) id: number) {
+  return this.productoService.eliminarProducto(id);
+}
 }

@@ -30,16 +30,16 @@ export class ProductoSucursalController {
   }
 
   @Put(':productoId/:sucursalId')
-  @Roles(Rol.Admin)  // Usamos el enum Rol para definir los roles permitidos
-  @UseGuards(JwtAuthGuard, RolesGuard)  // Usamos ambos guards
-  async update(
-    @Param('productoId') productoId: number,
-    @Param('sucursalId') sucursalId: number,
-    @Body() updateDto: UpdateProductoSucursalDto,
-  ) {
-    return this.productoSucursalService.update(productoId, sucursalId, updateDto);
-  }
-   
+ // @Roles(Rol.Admin)  // Usamos el enum Rol para definir los roles permitidos
+  //@UseGuards(JwtAuthGuard, RolesGuard)  // Usamos ambos guards
+async update(
+  @Param('productoId', ParseIntPipe) productoId: number,
+  @Param('sucursalId', ParseIntPipe) sucursalId: number,
+  @Body() updateDto: UpdateProductoSucursalDto,
+) {
+  return this.productoSucursalService.update(productoId, sucursalId, updateDto);
+}
+  
 
   @Get('reposicion/:productoId/sucursal/:sucursalId')
   async predecirReposicionStockPorSucursal(
