@@ -22,7 +22,7 @@ export class ProductoController {
     return this.productoService.findAll(params);
   }
 
-    @Get('registrados')
+  @Get('registrados')
   // @Roles(Rol.Admin)  // Usamos el enum Rol para definir los roles permitidos
   // @UseGuards(JwtAuthGuard, RolesGuard)  // Usamos ambos guards
   async obtenerProductosConDetalles(

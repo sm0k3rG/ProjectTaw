@@ -19,7 +19,7 @@ async function main() {
   const categorias = await Promise.all(
     ['Tecnología', 'Hogar', 'Deportes'].map(nombre =>
       prisma.categoria.create({
-        data: { nombre, estado: 'ACTIVO' }
+        data: { nombre, estado: 'ACTIVA' }
       })
     )
   );

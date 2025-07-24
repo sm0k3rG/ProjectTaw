@@ -64,15 +64,6 @@ export class ProductListComponent implements OnInit {
   mostrarMensaje: boolean = false;
   tipoMensaje: 'success' | 'error' = 'success';
 
-  // Mapeo de colores para cada sucursal (stock)
-  sucursalStockColorMap: { [key: string]: string } = {
-    'Sucursal Centro': 'bg-warning bg-opacity-25 text-dark', // naranjo claro
-    'Sucursal Norte': 'bg-primary bg-opacity-25 text-primary', // azul claro
-  };
-
-  getSucursalStockColor(sucursalNombre: string): string {
-    return this.sucursalStockColorMap[sucursalNombre] || 'bg-secondary text-white';
-  }
 
   /**
    * Retorna la clase CSS para el color del estado del producto

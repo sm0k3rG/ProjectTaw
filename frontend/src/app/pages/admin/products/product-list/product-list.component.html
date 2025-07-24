@@ -36,14 +36,18 @@
       <select class="form-select rounded-3 w-auto" [(ngModel)]="categoriaSeleccionada" (change)="onCambiarCategoria($event)">
         <option value="">Todas las categorías</option>
         @for (cat of categorias; track cat.id) {
-          <option [value]="cat.id">{{ cat.nombre }}</option>
+          @if (cat.estado === 'ACTIVA') {
+            <option [value]="cat.id">{{ cat.nombre }}</option>
+          }
         }
       </select>
       <select class="form-select rounded-3 w-auto" [(ngModel)]="ofertaSeleccionada" (change)="onCambiarOferta($event)">
         <option value="">Todas las ofertas</option>
         @for (oferta of ofertas; track oferta.id) {
-          <option [value]="oferta.id">{{ oferta.porcentaje }}</option>
-        }
+          @if (oferta.estado === 'ACTIVA') {
+            <option [value]="oferta.id">{{ oferta.porcentaje }}</option>
+            }
+          }
       </select>
       <select class="form-select rounded-3 w-auto" [(ngModel)]="ordenSeleccionado" (change)="onCambiarOrden($event)">
         <option value="">Ordenar por</option>
@@ -88,7 +92,7 @@
           <!-- Estado vacío: no hay productos registrados -->
           @else if (productos.length === 0) {
             <tr>
-              <td colspan="8" class="text-center py-4">
+              <td colspan="9" class="text-center py-4">
                 <div class="text-muted">
                   <i class="bi bi-inbox fs-1 d-block mb-2"></i>
                   <p class="mb-0">No hay productos registrados</p>
@@ -118,7 +122,7 @@
                 </td>
                 <!-- Categoría del producto -->
                 <td class="align-middle">
-                  <span class="badge bg-secondary">{{ producto.categoria.nombre }}</span>
+                  {{ producto.categoria.nombre }}
                 </td>
                 <!-- Precio del producto -->
                 <td class="align-middle fw-bold text-success">${{ producto.precio | number:'1.0-0' }}</td>
@@ -134,7 +138,7 @@
                 <td class="align-middle fw-semibold" style="vertical-align: top;">
                   @for (productoSucursal of producto.sucursales; track productoSucursal) {
                     <div class="mb-1">
-                      <span class="badge me-1" [ngClass]="getSucursalStockColor(productoSucursal.sucursal.nombre)">
+                      <span class="badge me-1" style="color:black !important; font-size: 1rem;">
                         {{ productoSucursal.stock }}
                       </span>
                     </div>
@@ -144,7 +148,7 @@
                 <td class="align-middle" style="vertical-align: top;">
                   @for (productoSucursal of producto.sucursales; track productoSucursal) {
                     <div class="mb-1">
-                      <span class="badge me-1" [ngClass]="getSucursalStockColor(productoSucursal.sucursal.nombre)">
+                      <span class="badge me-1" style="color: black !important; font-size: 1rem;">
                         {{ productoSucursal.sucursal.nombre }}
                       </span>
                     </div>

@@ -3,6 +3,7 @@ import { CategoryService } from '../../../../core/services/category.service';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Category } from '../../../../core/models/category.interface';
+import Swal from 'sweetalert2';
 
 /**
  * Componente para la gestión de categorías de productos.
@@ -98,7 +99,7 @@ export class CategoryComponent implements OnInit {
     }
 
     this.loading = true;
-    this.categoryService.agregarCategoria({ nombre, estado: 'Activa' }).subscribe({
+    this.categoryService.agregarCategoria({ nombre, estado: 'ACTIVA' }).subscribe({
       next: (categoria) => {
         this.mensajeExito = '¡Categoría creada exitosamente!';
         this.categoriaForm.reset();
@@ -136,56 +137,35 @@ export class CategoryComponent implements OnInit {
   eliminarCategoria(id: number): void {
     this.mensajeExito = '';
     this.mensajeError = '';
-    if (!confirm('¿Estás seguro de que deseas eliminar esta categoría?')) {
-      return;
-    }
-    this.loading = true;
-    this.categoryService.eliminarCategoria(id).subscribe({
-      next: () => {
-        this.mensajeExito = '¡Categoría eliminada exitosamente!';
-        this.obtenerCategorias();
-        this.loading = false;
-      },
-      error: (err) => {
-        this.mensajeError = 'La categoría está en uso.';
-        this.loading = false;
+    Swal.fire({
+      title: '¿Estás seguro?',
+      text: '¿Estás seguro de que deseas eliminar esta categoría?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.loading = true;
+        this.categoryService.eliminarCategoria(id).subscribe({
+          next: () => {
+            this.mensajeExito = '¡Categoría eliminada exitosamente!';
+            this.obtenerCategorias();
+            this.loading = false;
+          },
+          error: (err) => {
+            if (err.error && err.error.message) {
+              this.mensajeError = err.error.message;
+            } else {
+              this.mensajeError = 'Error al eliminar la categoría.';
+            }
+            this.loading = false;
+          }
+        });
       }
     });
   }
 
-  /**
-   * Cambia el estado de una categoría entre 'Activa' e 'Inactiva'.
-   * Muestra una confirmación antes de proceder con el cambio.
-   */
-  cambiarEstado(categoria: Category): void {
-    this.mensajeExito = '';
-    this.mensajeError = '';
-    
-    const nuevoEstado = categoria.estado === 'Activa' ? 'Inactiva' : 'Activa';
-    const mensajeConfirmacion = `¿Estás seguro de que deseas cambiar el estado de "${categoria.nombre}" a ${nuevoEstado}?`;
-
-    if (!confirm(mensajeConfirmacion)) {
-      return;
-    }
-
-    this.loading = true;
-    this.categoryService.actualizarCategoria(categoria.id, { 
-      nombre: categoria.nombre, 
-      estado: nuevoEstado 
-    }).subscribe({
-      next: () => {
-        this.mensajeExito = `¡Estado de categoría cambiado exitosamente a ${nuevoEstado}!`;
-        this.obtenerCategorias();
-        this.loading = false;
-      },
-      error: (err) => {
-        this.mensajeError = 'Error al cambiar el estado de la categoría.';
-        this.loading = false;
-      }
-    });
-  }
-
-  onEditarCategoria(categoria: Category): void {
-    console.log('Editar categoría:', categoria);
-  }
 }
