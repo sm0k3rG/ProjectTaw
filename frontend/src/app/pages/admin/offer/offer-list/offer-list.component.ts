@@ -1,3 +1,4 @@
+import { Oferta } from './../../../../../../../backend/node_modules/.prisma/client/index.d';
 import { Component, OnInit } from '@angular/core';
 import { OfferService } from '../../../../core/services/offer.service';
 import { Offer } from '../../../../core/models/offer.interface';

@@ -5,7 +5,6 @@ import { ChileGeoService, Region, Comuna } from '../../../services/chile-geo.ser
 import { DeliveryService, DeliveryAddress } from '../../../services/delivery.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { Router } from '@angular/router';
-import { Store, StoresService } from '../stores/stores.service';
 
 interface StoreWithDistance {
   id: number;
@@ -58,7 +57,6 @@ export class DeliveryTypeSidebarComponent implements OnInit, OnChanges {
     private chileGeoService: ChileGeoService,
     private deliveryService: DeliveryService,
     private authService: AuthService,
-    private storesService: StoresService,
     private router: Router,
     private cdr: ChangeDetectorRef
   ) {
@@ -107,20 +105,9 @@ export class DeliveryTypeSidebarComponent implements OnInit, OnChanges {
   loadStores(): void {
     this.stores = [];
     this.filteredStores = [];
-    this.storesService.getStores().subscribe({
-      next: (stores: any[]) => {
-        this.stores = stores;
-        this.filteredStores = stores;
-        if (this.userLocation && this.stores.length > 0) {
-          this.calculateDistances();
-        }
-        console.log(this.stores);
-      },
-      error: () => {
-        this.stores = [];
-        this.filteredStores = [];
-      }
-    });
+    if (this.userLocation && this.stores.length > 0) {
+      this.calculateDistances();
+    }
   }
 
   getUserLocation(): void {

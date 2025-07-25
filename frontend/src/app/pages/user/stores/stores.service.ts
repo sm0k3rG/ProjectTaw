@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
 
 export interface Store {
   id: number;
@@ -61,8 +60,8 @@ export class StoresService {
     }
   ];
 
-  getStores(): Observable<Store[]> {
-    return this.stores as any;
+  getStores(): Store[] {
+    return this.stores;
   }
 
   getNearestStore(userLocation: { lat: number; lng: number }): Store {
