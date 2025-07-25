@@ -5,6 +5,7 @@ import { Offer } from '../../../../core/models/offer.interface';
 import { CommonModule, DatePipe } from '@angular/common';
 import { OfferAddComponent } from "../offer-add/offer-add.component";
 import { OfferEditComponent } from "../offer-edit/offer-edit.component";
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-offer-list',
@@ -81,31 +82,31 @@ export class OfferListComponent implements OnInit {
     }
   }
 
-  // Método para eliminar una oferta (lógica pendiente de implementar)
+  // Método para eliminar una oferta
   eliminarOferta(oferta: Offer): void {
-      const mensajeConfirmacion = `¿Estás seguro de que deseas eliminar la oferta ${oferta.porcentaje}% "${oferta.descripcion}"?`;
-
-      if (!confirm(mensajeConfirmacion)) {
-        return;
-      }
-
+    Swal.fire({
+      title: '¿Estás seguro?',
+      text: `¿Deseas eliminar la oferta ${oferta.porcentaje}% "${oferta.descripcion}"?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar',
+    }).then((result) => {
+      if (!result.isConfirmed) return;
+  
       this.offerService.eliminarOferta(oferta.id).subscribe({
-      next: () => {
-        this.mostrarMensajeUsuario('Oferta eliminada exitosamente', 'success');
-        this.obtenerOfertas(); // Recargar la lista de productos
-      },
+        next: () => {
+          Swal.fire('Eliminada', 'Oferta eliminada exitosamente.', 'success');
+          this.obtenerOfertas();
+        },
+        error: () => {
+          Swal.fire('Error', 'Hubo un error al eliminar la oferta.', 'error');
+        }
+      });
     });
-    }
-
-    mostrarMensajeUsuario(mensaje: string, tipo: 'success' | 'error'): void {
-      this.mensaje = mensaje;
-      this.tipoMensaje = tipo;
-      this.mostrarMensaje = true;
-
-      // Ocultar el mensaje después de 5 segundos
-      setTimeout(() => {
-        this.mostrarMensaje = false;
-      }, 5000);
   }
+  
 }
 
