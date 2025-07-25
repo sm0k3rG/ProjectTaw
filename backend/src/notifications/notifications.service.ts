@@ -11,6 +11,7 @@ export class NotificationsService {
   private readonly REFRESH_TOKEN: string;
   private readonly USER_EMAIL: string;
   private readonly oAuth2Client;
+  private transporter: nodemailer.Transporter;
 
   constructor(private readonly config: ConfigService) {
     this.CLIENT_ID = this.config.get<string>('GMAIL_CLIENT_ID')!;
@@ -28,17 +29,10 @@ export class NotificationsService {
     this.oAuth2Client.setCredentials({
       refresh_token: this.REFRESH_TOKEN,
     });
-  }
 
-  async notificarCreacionPedido(
-    usuarioEmail: string,
-    pedidoId: number,
-    total: number,
-  ): Promise<void> {
-    try {
-      const { token } = await this.oAuth2Client.getAccessToken();
-
-      const transporter = nodemailer.createTransport({
+    // 🚀 Generar el transporter una vez
+    this.oAuth2Client.getAccessToken().then(({ token }) => {
+      this.transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
           type: 'OAuth2',
@@ -49,20 +43,44 @@ export class NotificationsService {
           accessToken: token!,
         },
       });
+    });
+  }
 
-      const mailOptions = {
-        from: this.USER_EMAIL,
-        to: usuarioEmail,
-        subject: `Tu pedido #${pedidoId} fue creado con éxito`,
-        html: `
-          <h1>¡Gracias por tu compra!</h1>
-          <p>Tu pedido <strong>#${pedidoId}</strong> ha sido creado correctamente.</p>
-          <p>Total del pedido: <strong>$${total.toFixed(2)}</strong></p>
-          <p>Recibirás más información cuando el pedido cambie de estado.</p>
-        `,
-      };
+  async notificarStockRepuesto(usuarioEmail: string, productoNombre: string): Promise<void> {
+    const mailOptions = {
+      from: this.USER_EMAIL,
+      to: usuarioEmail,
+      subject: `¡El producto ${productoNombre} ha sido repuesto!`,
+      text: `Hola, el producto ${productoNombre} que visitaste anteriormente ha sido repuesto en stock. ¡No te lo pierdas!`,
+    };
 
-      await transporter.sendMail(mailOptions);
+    try {
+      await this.transporter.sendMail(mailOptions);
+      console.log(`📧 Correo enviado a ${usuarioEmail}`);
+    } catch (error) {
+      console.error('❌ Error al enviar correo:', error);
+    }
+  }
+
+  async notificarCreacionPedido(
+    usuarioEmail: string,
+    pedidoId: number,
+    total: number,
+  ): Promise<void> {
+    const mailOptions = {
+      from: this.USER_EMAIL,
+      to: usuarioEmail,
+      subject: `Tu pedido #${pedidoId} fue creado con éxito`,
+      html: `
+        <h1>¡Gracias por tu compra!</h1>
+        <p>Tu pedido <strong>#${pedidoId}</strong> ha sido creado correctamente.</p>
+        <p>Total del pedido: <strong>$${total.toFixed(2)}</strong></p>
+        <p>Recibirás más información cuando el pedido cambie de estado.</p>
+      `,
+    };
+
+    try {
+      await this.transporter.sendMail(mailOptions);
       console.log(`📧 Correo enviado a ${usuarioEmail}`);
     } catch (error) {
       console.error('❌ Error al enviar correo:', error);

@@ -32,12 +32,12 @@ export class ProductoSucursalController {
   @Put(':productoId/:sucursalId')
  // @Roles(Rol.Admin)  // Usamos el enum Rol para definir los roles permitidos
   //@UseGuards(JwtAuthGuard, RolesGuard)  // Usamos ambos guards
-async update(
+async actualizarNotificarStock(
   @Param('productoId', ParseIntPipe) productoId: number,
   @Param('sucursalId', ParseIntPipe) sucursalId: number,
   @Body() updateDto: UpdateProductoSucursalDto,
 ) {
-  return this.productoSucursalService.update(productoId, sucursalId, updateDto);
+  return this.productoSucursalService.actualizarNotificarStock(productoId, sucursalId, updateDto);
 }
   
 
