@@ -21,6 +21,7 @@ Cliente
 
 model Usuario {
 id         Int               @id @default(autoincrement())
+rut        String            @unique
 nombre     String
 email      String            @unique
 contrasena String

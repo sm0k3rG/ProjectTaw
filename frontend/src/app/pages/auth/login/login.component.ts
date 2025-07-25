@@ -47,11 +47,9 @@ export class LoginComponent implements OnInit {
         next: (response) => {
           this.isLoading = false;
 
-          // Decodificar token para obtener el rol
           const decodedToken = this.authService.getCurrentUser();
 
           if (decodedToken) {
-            // Redirigir según el rol
             const routesByRole: { [key: string]: string } = {
               'Administrator': '/admin/dashboard',
               'Client': '/client/dashboard'
@@ -59,7 +57,6 @@ export class LoginComponent implements OnInit {
 
             const route = routesByRole[decodedToken.role] || '/dashboard';
 
-            // Mostrar mensaje de bienvenida
             Swal.fire({
               icon: 'success',
               title: `¡Bienvenido ${decodedToken.name}!`,

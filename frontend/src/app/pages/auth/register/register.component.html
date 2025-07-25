@@ -91,7 +91,7 @@
               <option *ngFor="let comuna of comunasPorDireccion[i]" [value]="comuna">{{ comuna }}</option>
             </select>
             <input type="text" formControlName="calle" class="form-input" placeholder="Calle" />
-            <input type="text" formControlName="numero" class="form-input" placeholder="Número" />
+            <input type="number" formControlName="numero" class="form-input" placeholder="Número" />
           </div>
         </div>
         <button type="button" (click)="agregarDireccion()" class="add-direccion">+ Agregar dirección</button>

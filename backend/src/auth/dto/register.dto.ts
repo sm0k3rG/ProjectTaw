@@ -10,6 +10,4 @@ export class RegisterDto {
   @MinLength(8)
   contrasena: string;
 
-  @IsBoolean()
-  terminosAceptados: boolean;
 }

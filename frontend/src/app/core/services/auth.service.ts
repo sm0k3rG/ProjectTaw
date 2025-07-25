@@ -27,17 +27,37 @@ export interface DecodedToken {
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:3000'; // URL base del backend
+  private apiUrl = 'http://localhost:3000'; 
 
   constructor(private http: HttpClient) {}
 
   login(email: string, password: string): Observable<LoginResponse> {
-    return this.http.post<LoginResponse>(`${this.apiUrl}/auth/login`, { email, password }).pipe(
+    return this.http.post<{ token: string; tipoUsuario?: string; message?: string }>(`${this.apiUrl}/auth/login`, { email, contrasena: password }).pipe(
       map(response => {
-        // Guardar token en localStorage
         localStorage.setItem('token', response.token);
-        localStorage.setItem('user', JSON.stringify(response.user));
-        return response;
+        let userDecoded: any = null;
+        try {
+          userDecoded = jwtDecode(response.token);
+        } catch (e) {
+          userDecoded = null;
+        }
+        if (userDecoded) {
+          localStorage.setItem('user', JSON.stringify({
+            id: userDecoded.userId || userDecoded.id,
+            email: userDecoded.email,
+            role: userDecoded.role || response.tipoUsuario || 'Client',
+            name: userDecoded.name || userDecoded.nombre || 'Usuario'
+          }));
+        }
+        return {
+          token: response.token,
+          user: {
+            id: userDecoded?.userId || userDecoded?.id || 0,
+            email: userDecoded?.email || '',
+            role: userDecoded?.role || response.tipoUsuario || 'Client',
+            name: userDecoded?.name || userDecoded?.nombre || 'Usuario'
+          }
+        };
       }),
       catchError(error => {
         console.error('Error en login:', error);
@@ -93,23 +113,20 @@ export class AuthService {
   }
 
   register(data: any): Observable<any> {
+    console.log(data);
     return this.http.post(`${this.apiUrl}/auth/register`, data);
   }
 
   solicitarRecuperacionContraseña(email: string): Observable<any> {
-    // Simula una respuesta exitosa
     return of({ mensaje: 'Correo de recuperación enviado' });
   }
 
   restablecerContraseña(token: string, nuevaContraseña: string): Observable<any> {
-    // Simula una respuesta exitosa
     return of({ mensaje: 'Contraseña restablecida correctamente' });
   }
 
   getUserRole(): Observable<'Administrator' | 'Client' | null> {
     const user = this.getCurrentUser();
-    // Si no hay usuario, devuelve 'Client' por defecto para que se muestre el navbar de usuario.
-    // Si hay usuario, devuelve su rol.
     return of(user ? user.role : 'Client');
   }
 }

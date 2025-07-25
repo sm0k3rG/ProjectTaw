@@ -27,15 +27,10 @@ export class AuthController {
   }
 
   @Post('register')
-  async register(@Body() userData: {
-    nombre: string;
-    email: string;
-    password: string;
-    telefono: string;
-    tarjetas: string;
-  }) {
-    return await this.authService.register(userData);
+  async register(@Body() dto: RegisterAuthDto) {
+    return await this.authService.register(dto);
   }
+
 
   @Post('forgot-password')
   async forgotPassword(@Body() dto: ForgotPasswordDto) {

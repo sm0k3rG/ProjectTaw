@@ -1,8 +1,8 @@
 import { Component, AfterViewInit, ElementRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import Chart from 'chart.js/auto';
 import { MainNavbarComponent } from '../../../shared/main-navbar/main-navbar.component';
+import { Chart } from 'chart.js/auto';
 
 // Interfaces para los datos esperados del backend
 interface SucursalVentas {

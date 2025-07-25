@@ -191,11 +191,11 @@ export class RegisterComponent {
     const region = this.direcciones.at(index).get('region')?.value;
     const regionObj = this.regiones.find(r => r.nombre === region);
     this.comunasPorDireccion[index] = regionObj ? regionObj.comunas : [];
-    // Limpiar comuna seleccionada si cambia la región
     this.direcciones.at(index).get('comuna')?.setValue('');
   }
 
   enviarFormulario() {
+    console.log(this.registerForm.value);
     if (this.registerForm.invalid) {
       this.registerForm.markAllAsTouched();
       Swal.fire({ icon: 'error', title: 'Error', text: 'Completa todos los campos correctamente.' });
@@ -203,7 +203,7 @@ export class RegisterComponent {
     }
     this.isLoading = true;
     const { nombre, rut, email, password, telefono, tarjetas, direcciones } = this.registerForm.value;
-    this.authService.register({ nombre, rut, email, password, telefono, tarjetas, direcciones }).subscribe({
+    this.authService.register({ nombre, rut, email, contrasena: password, telefono, tarjetas, direcciones }).subscribe({
       next: () => {
         this.isLoading = false;
         Swal.fire({ icon: 'success', title: '¡Registro exitoso!', text: 'Ahora puedes iniciar sesión.', timer: 1500, showConfirmButton: false });
