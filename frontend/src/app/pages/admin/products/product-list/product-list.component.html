@@ -129,7 +129,7 @@
                 <!-- Oferta del producto -->
                 <td class="align-middle">
                   @if (producto.oferta) {
-                    <span class="badge bg-info" title="{{ producto.oferta.descripcion }}">{{ producto.oferta.porcentaje }}%</span>
+                    <span class="badge text-danger fs-6" title="{{ producto.oferta.descripcion }}">{{ producto.oferta.porcentaje }}%</span>
                   } @else {
                     <!-- Celda vacía si no hay oferta -->
                   }
@@ -138,7 +138,7 @@
                 <td class="align-middle fw-semibold" style="vertical-align: top;">
                   @for (productoSucursal of producto.sucursales; track productoSucursal) {
                     <div class="mb-1">
-                      <span class="badge me-1" style="color:black !important; font-size: 1rem;">
+                      <span class="badge me-1" style="color:black !important; font-size: 1rem;  font-weight: normal;">
                         {{ productoSucursal.stock }}
                       </span>
                     </div>
@@ -147,8 +147,8 @@
                 <!-- Nombre de la sucursal (badge por cada una) -->
                 <td class="align-middle" style="vertical-align: top;">
                   @for (productoSucursal of producto.sucursales; track productoSucursal) {
-                    <div class="mb-1">
-                      <span class="badge me-1" style="color: black !important; font-size: 1rem;">
+                    <div class="mb-1 ">
+                      <span class="badge me-1" style="color: black !important; font-size: 1rem;  font-weight: normal;">
                         {{ productoSucursal.sucursal.nombre }}
                       </span>
                     </div>
