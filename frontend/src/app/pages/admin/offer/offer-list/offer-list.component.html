@@ -140,19 +140,22 @@
     </div>
   </div>
 
-  <!-- Modal para editar oferta -->
-  <div class="modal fade" id="modalEditarOferta" tabindex="-1" aria-labelledby="modalEditarOfertaLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title fw-bold mb-0" id="modalEditarOfertaLabel" style="font-size: 2rem;">Editar Oferta</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-        </div>
-        <div class="modal-body">
-          <!-- Formulario para editar una oferta -->
-          <app-offer-edit></app-offer-edit>
-        </div>
-      </div>
-    </div>
-  </div>
+           <!-- Modal para editar oferta -->
+         <div class="modal fade" id="modalEditarOferta" tabindex="-1" aria-labelledby="modalEditarOfertaLabel" aria-hidden="true">
+           <div class="modal-dialog modal-lg">
+             <div class="modal-content">
+               <div class="modal-header">
+                 <h5 class="modal-title fw-bold mb-0" id="modalEditarOfertaLabel" style="font-size: 2rem;">Editar Oferta</h5>
+                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+               </div>
+               <div class="modal-body">
+                 <!-- Formulario para editar una oferta -->
+                 <app-offer-edit 
+                   [ofertaParaEditar]="ofertaSeleccionada"
+                   (ofertaEditada)="onOfertaEditada()">
+                 </app-offer-edit>
+               </div>
+             </div>
+           </div>
+         </div>
 </div>

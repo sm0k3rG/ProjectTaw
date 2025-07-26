@@ -38,6 +38,9 @@ export class OfferListComponent implements OnInit, OnDestroy {
   // Referencia al componente de agregar oferta
   @ViewChild(OfferAddComponent) offerAddComponent!: OfferAddComponent;
 
+  // Oferta seleccionada para editar
+  ofertaSeleccionada: Offer | null = null;
+
   // Suscripción para actualización automática
   private autoUpdateSubscription?: Subscription;
 
@@ -103,6 +106,14 @@ export class OfferListComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       this.mostrarMensajeExito = false;
     }, 3000); // Ocultar después de 3 segundos
+  }
+
+  /**
+   * Método para manejar cuando se edita una oferta exitosamente
+   */
+  onOfertaEditada(): void {
+    this.obtenerOfertasConActualizacion(); // Recargar la lista con actualización automática
+    this.ofertaSeleccionada = null; // Limpiar la oferta seleccionada
   }
 
   /**
@@ -231,7 +242,7 @@ export class OfferListComponent implements OnInit, OnDestroy {
 
   // Método para editar una oferta (lógica pendiente de implementar)
   editarOferta(oferta: Offer): void {
-    // Aquí en el futuro se podrá pasar la oferta a editar al componente hijo
+    this.ofertaSeleccionada = oferta;
     const modal = document.getElementById('modalEditarOferta');
     if (modal) {
       // Usando Bootstrap 5 para mostrar el modal
