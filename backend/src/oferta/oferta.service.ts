@@ -27,11 +27,14 @@ export class OfertaService {
     // Determinar el estado automáticamente si no se proporciona
     const estadoDeterminado = estado || this.determinarEstadoOferta(rest.fechaInicio, rest.fechaFin);
     
-    // Convertir las fechas a objetos Date completos
+    // Convertir las fechas a objetos Date completos y asegurar que se guarden en UTC
+    const fechaInicio = new Date(rest.fechaInicio);
+    const fechaFin = new Date(rest.fechaFin);
+    
     const data: any = { 
       ...rest,
-      fechaInicio: new Date(rest.fechaInicio),
-      fechaFin: new Date(rest.fechaFin),
+      fechaInicio: fechaInicio,
+      fechaFin: fechaFin,
       estado: estadoDeterminado 
     };
     
@@ -70,8 +73,14 @@ export class OfertaService {
     }
     
     const data: any = { ...rest };
-    if (fechaInicio) data.fechaInicio = new Date(fechaInicio);
-    if (fechaFin) data.fechaFin = new Date(fechaFin);
+    if (fechaInicio) {
+      const fechaInicioDate = new Date(fechaInicio);
+      data.fechaInicio = fechaInicioDate;
+    }
+    if (fechaFin) {
+      const fechaFinDate = new Date(fechaFin);
+      data.fechaFin = fechaFinDate;
+    }
     if (estadoDeterminado) data.estado = estadoDeterminado;
     
     return this.prisma.oferta.update({

@@ -6,20 +6,34 @@ import { OfferAddComponent } from "../offer-add/offer-add.component";
 import { OfferEditComponent } from "../offer-edit/offer-edit.component";
 import Swal from 'sweetalert2';
 import { interval, Subscription } from 'rxjs';
+import { FormsModule } from '@angular/forms';
+import { NgbPaginationConfig, NgbPaginationModule } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-offer-list',
   standalone: true,
-  imports: [DatePipe, OfferAddComponent, OfferEditComponent, CommonModule],
+  imports: [DatePipe, OfferAddComponent, OfferEditComponent, CommonModule, FormsModule, NgbPaginationModule],
+  providers: [NgbPaginationConfig],
   templateUrl: './offer-list.component.html',
   styleUrl: './offer-list.component.css'
 })
 export class OfferListComponent implements OnInit, OnDestroy {
+  // Propiedades de paginación
+  page = 1;
+  pageSize = 10; // Ofertas por página
+  totalItems = 0; // Total de ofertas (se actualizará dinámicamente)
+
   // Arreglo donde se almacenan las ofertas obtenidas del servicio
   ofertas: Offer[] = [];
   
+  // Arreglo filtrado de ofertas
+  ofertasFiltradas: Offer[] = [];
+  
   // Referencia al enum para usar en el template
   OfertaEstado = OfertaEstado;
+
+  // Filtro de estado
+  estadoSeleccionado: string = '';
 
   // Referencia al componente de agregar oferta
   @ViewChild(OfferAddComponent) offerAddComponent!: OfferAddComponent;
@@ -28,7 +42,13 @@ export class OfferListComponent implements OnInit, OnDestroy {
   private autoUpdateSubscription?: Subscription;
 
   // Inyección del servicio que permite obtener las ofertas
-  constructor(private offerService: OfferService) {}
+  constructor(
+    private offerService: OfferService,
+    config: NgbPaginationConfig
+  ) {
+    config.size = 'md';
+    config.boundaryLinks = true;
+  }
 
    /**
    * Indica si se están cargando los productos.
@@ -38,9 +58,7 @@ export class OfferListComponent implements OnInit, OnDestroy {
     /**
    * Mensaje de estado para mostrar al usuario.
    */
-  mensaje: string = '';
-  mostrarMensaje: boolean = false;
-  tipoMensaje: 'success' | 'error' = 'success';
+  mostrarMensajeExito: boolean = false;
 
   /**
    * Retorna la clase CSS para el color del estado de la oferta
@@ -79,6 +97,12 @@ export class OfferListComponent implements OnInit, OnDestroy {
    */
   onOfertaAgregada(): void {
     this.obtenerOfertasConActualizacion(); // Recargar la lista con actualización automática
+    
+    // Mostrar mensaje de éxito
+    this.mostrarMensajeExito = true;
+    setTimeout(() => {
+      this.mostrarMensajeExito = false;
+    }, 3000); // Ocultar después de 3 segundos
   }
 
   /**
@@ -96,6 +120,61 @@ export class OfferListComponent implements OnInit, OnDestroy {
       document.body.style.overflow = '';
       document.body.style.paddingRight = '';
     }, 100);
+  }
+
+  /**
+   * Método para formatear fechas correctamente sin problemas de zona horaria
+   */
+  formatearFecha(fecha: string | Date): string {
+    if (!fecha) return '';
+    
+    const date = new Date(fecha);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    
+    return `${year}-${month}-${day}`;
+  }
+
+  /**
+   * Método para aplicar filtros a las ofertas
+   */
+  aplicarFiltros(): void {
+    this.ofertasFiltradas = this.ofertas.filter(oferta => {
+      if (this.estadoSeleccionado && oferta.estado !== this.estadoSeleccionado) {
+        return false;
+      }
+      return true;
+    });
+    
+    // Actualizar el total de elementos para la paginación
+    this.totalItems = this.ofertasFiltradas.length;
+    
+    // Resetear a la primera página cuando se aplican filtros
+    this.page = 1;
+  }
+
+  /**
+   * Método para manejar el cambio de filtro de estado
+   */
+  onCambiarEstado(event: any): void {
+    this.estadoSeleccionado = event.target.value;
+    this.aplicarFiltros();
+  }
+
+  /**
+   * Método para limpiar todos los filtros
+   */
+  limpiarFiltros(): void {
+    this.estadoSeleccionado = '';
+    this.aplicarFiltros();
+  }
+
+  /**
+   * Método para manejar cambios de página
+   */
+  onCambiarPagina(page: number): void {
+    this.page = page;
   }
 
   // Al inicializar el componente, se obtienen las ofertas con actualización automática
@@ -121,6 +200,7 @@ export class OfferListComponent implements OnInit, OnDestroy {
     this.offerService.obtenerOfertas().subscribe({
       next: (ofertas: Offer[]) => {
         this.ofertas = ofertas;
+        this.aplicarFiltros();
         this.cargando = false;
       },
       error: (err) => {

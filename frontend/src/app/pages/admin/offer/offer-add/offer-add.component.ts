@@ -73,11 +73,15 @@ export class OfferAddComponent {
     this.loading = true;
     this.mensajeError = null;
 
+    // Convertir las fechas a formato ISO completo para evitar problemas de zona horaria
+    const fechaInicioISO = new Date(this.offerForm.value.fechaInicio + 'T00:00:00').toISOString();
+    const fechaFinISO = new Date(this.offerForm.value.fechaFin + 'T23:59:59').toISOString();
+
     const ofertaData: CreateOfferDto = {
       porcentaje: this.offerForm.value.porcentaje,
       descripcion: this.offerForm.value.descripcion,
-      fechaInicio: this.offerForm.value.fechaInicio,
-      fechaFin: this.offerForm.value.fechaFin
+      fechaInicio: fechaInicioISO,
+      fechaFin: fechaFinISO
     };
 
     this.offerService.crearOferta(ofertaData).subscribe({

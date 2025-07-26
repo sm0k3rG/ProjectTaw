@@ -1,16 +1,16 @@
 <!-- Contenedor principal con espaciado -->
 <div class="container-fluid px-2 px-md-4 py-3">
   <!-- Tarjeta visual para la gestión de ofertas -->
-    <!-- Alerta de mensaje de éxito o error (feedback al usuario) -->
-  @if (mostrarMensaje) {
-    <div class="alert alert-{{ tipoMensaje === 'success' ? 'success' : 'danger' }} alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3"
-         role="alert"
-         style="z-index: 1050; min-width: 300px;">
-      <i class="bi bi-{{ tipoMensaje === 'success' ? 'check-circle' : 'exclamation-triangle' }} me-2"></i>
-      {{ mensaje }}
-      <button type="button" class="btn-close" (click)="mostrarMensaje = false"></button>
-    </div>
-  }
+          <!-- Mensaje de éxito al agregar oferta -->
+      @if (mostrarMensajeExito) {
+        <div class="alert alert-success alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3"
+             role="alert"
+             style="z-index: 1050; min-width: 300px; background-color: #d4edda; border-color: #c3e6cb; color: #155724;">
+          <i class="bi bi-check-circle me-2"></i>
+          Oferta agregada exitosamente
+          <button type="button" class="btn-close" (click)="mostrarMensajeExito = false"></button>
+        </div>
+      }
   <div class="card shadow-sm rounded-4 p-4 w-100" style="background: #fff; min-width: 1000px;">
     <!-- Encabezado con título y botones -->
     <div class="d-flex justify-content-between align-items-center mb-3">
@@ -23,6 +23,17 @@
           <i class="bi bi-plus me-2"></i> Agregar Oferta
         </button>
       </div>
+    </div>
+
+    <!-- Filtros de búsqueda -->
+    <div class="d-flex align-items-center gap-3 mb-3 justify-content-start">
+      <select class="form-select rounded-3 w-auto" [(ngModel)]="estadoSeleccionado" (change)="onCambiarEstado($event)">
+        <option value="">Todos los estados</option>
+        <option value="ACTIVA">Activas</option>
+        <option value="INACTIVA">Inactivas</option>
+        <option value="EXPIRADA">Expiradas</option>
+      </select>
+      <button class="btn btn-outline-secondary rounded-3" (click)="limpiarFiltros()">Limpiar</button>
     </div>
 
     <!-- Tabla responsiva que muestra la información de cada oferta -->
@@ -51,33 +62,65 @@
               </td>
             </tr>
           }
-          <!-- Itera sobre el arreglo de ofertas y muestra cada una en una fila -->
-          @for (oferta of ofertas; track oferta.id) {
+          <!-- Estado vacío: no hay ofertas registradas o filtradas -->
+          @else if (ofertasFiltradas.length === 0) {
             <tr>
-              <td>{{ oferta.porcentaje }}%</td>
-              <td>{{ oferta.descripcion }}</td>
-              <td>{{ oferta.fechaInicio | date:'yyyy-MM-dd' }}</td>
-              <td>{{ oferta.fechaFin | date:'yyyy-MM-dd' }}</td>
-              <!-- <td>{{ oferta.estado }}</td> -->
-               <td class="align-middle">
-                  <span class="badge" [ngClass]="getEstadoColor(oferta.estado)">{{ oferta.estado }}</span>
-                </td>
-              <!-- Acciones: editar y eliminar oferta -->
-                <td class="align-middle">
-                  @if (oferta.estado !== OfertaEstado.EXPIRADA) {
-                    <button class="btn btn-outline-dark btn-sm rounded-2 me-1" title="Editar" (click)="editarOferta(oferta)"><i class="bi bi-pencil"></i></button>
-                    <button
-                      class="btn btn-outline-danger btn-sm rounded-2"
-                      title="Eliminar"
-                      (click)="eliminarOferta(oferta)">
-                      <i class="bi bi-trash"></i>
-                    </button>
+              <td colspan="6" class="text-center py-4">
+                <div class="text-muted">
+                  <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+                  @if (ofertas.length === 0) {
+                    <p class="mb-0">No hay ofertas registradas</p>
+                    <small>Las ofertas aparecerán aquí una vez que sean agregadas</small>
+                  } @else {
+                    <p class="mb-0">No hay ofertas que coincidan con el filtro</p>
+                    <small>Intenta cambiar los filtros o limpiarlos</small>
                   }
-                </td>
+                </div>
+              </td>
             </tr>
+          }
+                    <!-- Itera sobre el arreglo de ofertas filtradas de la página actual -->
+          @else {
+            @for (oferta of ofertasFiltradas.slice((page - 1) * pageSize, page * pageSize); track oferta.id) {
+              <tr>
+                <td>{{ oferta.porcentaje }}%</td>
+                <td>{{ oferta.descripcion }}</td>
+                <td>{{ formatearFecha(oferta.fechaInicio) }}</td>
+                <td>{{ formatearFecha(oferta.fechaFin) }}</td>
+                <!-- <td>{{ oferta.estado }}</td> -->
+                 <td class="align-middle">
+                    <span class="badge" [ngClass]="getEstadoColor(oferta.estado)">{{ oferta.estado }}</span>
+                  </td>
+                <!-- Acciones: editar y eliminar oferta -->
+                  <td class="align-middle">
+                    @if (oferta.estado !== OfertaEstado.EXPIRADA) {
+                      <button class="btn btn-outline-dark btn-sm rounded-2 me-1" title="Editar" (click)="editarOferta(oferta)"><i class="bi bi-pencil"></i></button>
+                      <button
+                        class="btn btn-outline-danger btn-sm rounded-2"
+                        title="Eliminar"
+                        (click)="eliminarOferta(oferta)">
+                        <i class="bi bi-trash"></i>
+                      </button>
+                    }
+                  </td>
+              </tr>
+            }
           }
         </tbody>
       </table>
+    </div>
+
+    <!-- Paginación -->
+    <div class="d-flex justify-content-center mt-4">
+      <ngb-pagination
+        [collectionSize]="totalItems"
+        [(page)]="page"
+        [pageSize]="pageSize"
+        [boundaryLinks]="true"
+        [maxSize]="5"
+        (pageChange)="onCambiarPagina($event)"
+        class="d-flex justify-content-center">
+      </ngb-pagination>
     </div>
   </div>
 
