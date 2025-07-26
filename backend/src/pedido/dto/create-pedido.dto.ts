@@ -1,4 +1,4 @@
-import { IsInt, IsNotEmpty, IsArray } from 'class-validator';
+import { IsInt, IsNotEmpty, IsArray, IsOptional } from 'class-validator';
 import { LineaDePedido } from '@prisma/client';  // Asegúrate de importar la entidad correctamente
 
 export class CreatePedidoDto {
@@ -9,6 +9,10 @@ export class CreatePedidoDto {
   @IsInt()
   @IsNotEmpty()
   direccionId: number;
+
+  @IsInt()
+  @IsOptional()
+  direccionRetiroId: number;
 
   @IsArray()
   @IsNotEmpty()

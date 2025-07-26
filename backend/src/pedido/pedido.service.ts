@@ -43,7 +43,7 @@ export class PedidoService {
   }
 
  async crearPedido(createPedidoDto: CreatePedidoDto): Promise<Pedido> {
-  const { usuarioId, direccionId, lineasDePedido } = createPedidoDto;
+  const { usuarioId, direccionId, direccionRetiroId, lineasDePedido } = createPedidoDto;
 
   // Verificar usuario y dirección
   const usuario = await this.prisma.usuario.findUnique({ where: { id: usuarioId } });
@@ -51,6 +51,14 @@ export class PedidoService {
 
   if (!usuario || !direccion) {
     throw new Error('Usuario o dirección no encontrados');
+  }
+
+  // Si se especifica una sucursal de retiro, verificar que exista
+  if (direccionRetiroId) {
+    const sucursal = await this.prisma.sucursal.findUnique({ where: { id: direccionRetiroId } });
+    if (!sucursal) {
+      throw new Error(`Sucursal con ID ${direccionRetiroId} no encontrada`);
+    }
   }
 
   // Preparar líneas de pedido con precio final
@@ -91,6 +99,7 @@ export class PedidoService {
     data: {
       usuarioId,
       direccionId,
+      direccionRetiroId: direccionRetiroId ?? null, // ← clave para valor opcional
       estado: 'PENDIENTE',
       fechaPedido: new Date(),
       total: totalPedido,
@@ -105,11 +114,12 @@ export class PedidoService {
     include: {
       usuario: true,
       direccion: true,
+      direccionRetiro: true,
       lineasDePedido: true,
     },
   });
 
-  // ✅ Enviar notificación por correo
+  // Enviar notificación por correo
   try {
     await this.notificationsService.notificarCreacionPedido(
       usuario.email,
@@ -122,7 +132,6 @@ export class PedidoService {
 
   return pedido;
 }
-
 
 
 

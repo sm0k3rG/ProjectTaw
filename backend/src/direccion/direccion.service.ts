@@ -1,26 +1,53 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
-import { UpdateDireccionDto } from '../auth/dto/update-direccion.dto';
+// src/direccion/direccion.service.ts
 
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { CreateDireccionDto } from './dto/create-direccion.dto';
 
 @Injectable()
 export class DireccionService {
   constructor(private prisma: PrismaService) {}
 
-  async actualizarDireccion(id: number, dto: UpdateDireccionDto) {
-    const direccion = await this.prisma.direccion.findUnique({ where: { id } });
-    if (!direccion) throw new NotFoundException('Dirección no encontrada');
+  async create(createDireccionDto: CreateDireccionDto) {
+    const { usuarioId, calle, numero, comuna, region } = createDireccionDto;
 
-    return this.prisma.direccion.update({
-      where: { id },
-      data: dto,
+    // Verificar que el usuario exista
+    const usuario = await this.prisma.usuario.findUnique({ where: { id: usuarioId } });
+    if (!usuario) {
+      throw new NotFoundException(`Usuario con ID ${usuarioId} no existe`);
+    }
+
+    // Crear la dirección
+    const nuevaDireccion = await this.prisma.direccion.create({
+      data: {
+        calle,
+        numero,
+        comuna,
+        region,
+        usuarioId,
+      },
     });
+    return nuevaDireccion;
   }
 
-  async eliminarDireccion(id: number) {
-    const direccion = await this.prisma.direccion.findUnique({ where: { id } });
-    if (!direccion) throw new NotFoundException('Dirección no encontrada');
+  // src/direccion/direccion.service.ts
 
-    return this.prisma.direccion.delete({ where: { id } });
+async obtenerDireccionesPorUsuario(usuarioId: number) {
+  // Verifica que el usuario exista
+  const usuario = await this.prisma.usuario.findUnique({
+    where: { id: usuarioId },
+  });
+
+  if (!usuario) {
+    throw new NotFoundException(`Usuario con ID ${usuarioId} no encontrado`);
   }
+
+  // Obtener direcciones del usuario
+  const direcciones = await this.prisma.direccion.findMany({
+    where: { usuarioId },
+  });
+  
+  return direcciones;
+}
+
 }
