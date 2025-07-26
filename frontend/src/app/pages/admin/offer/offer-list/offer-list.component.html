@@ -12,15 +12,17 @@
     </div>
   }
   <div class="card shadow-sm rounded-4 p-4 w-100" style="background: #fff; min-width: 1000px;">
-    <!-- Encabezado con título y botón para agregar nueva oferta -->
+    <!-- Encabezado con título y botones -->
     <div class="d-flex justify-content-between align-items-center mb-3">
       <div>
         <h2 class="fw-bold mb-0" style="font-size: 2rem;">Gestión de Ofertas</h2>
       </div>
-      <!-- Botón que abre el modal para agregar una nueva oferta -->
-      <button class="btn btn-dark rounded-3 px-4 fw-semibold" style="font-size: 1.1rem;" data-bs-toggle="modal" data-bs-target="#modalAgregarOferta">
-        <i class="bi bi-plus me-2"></i> Agregar Oferta
-      </button>
+      <div class="d-flex gap-2">
+        <!-- Botón que abre el modal para agregar una nueva oferta -->
+        <button class="btn btn-dark rounded-3 px-4 fw-semibold" style="font-size: 1.1rem;" data-bs-toggle="modal" data-bs-target="#modalAgregarOferta">
+          <i class="bi bi-plus me-2"></i> Agregar Oferta
+        </button>
+      </div>
     </div>
 
     <!-- Tabla responsiva que muestra la información de cada oferta -->
@@ -60,9 +62,9 @@
                <td class="align-middle">
                   <span class="badge" [ngClass]="getEstadoColor(oferta.estado)">{{ oferta.estado }}</span>
                 </td>
-              <!-- Acciones: editar y eliminar producto -->
+              <!-- Acciones: editar y eliminar oferta -->
                 <td class="align-middle">
-                  @if (oferta.estado !== 'ELIMINADO') {
+                  @if (oferta.estado !== OfertaEstado.EXPIRADA) {
                     <button class="btn btn-outline-dark btn-sm rounded-2 me-1" title="Editar" (click)="editarOferta(oferta)"><i class="bi bi-pencil"></i></button>
                     <button
                       class="btn btn-outline-danger btn-sm rounded-2"
@@ -80,7 +82,7 @@
   </div>
 
   <!-- Modal para agregar oferta -->
-  <div class="modal fade" id="modalAgregarOferta" tabindex="-1" aria-labelledby="modalAgregarOfertaLabel" aria-hidden="true">
+  <div class="modal fade" id="modalAgregarOferta" tabindex="-1" aria-labelledby="modalAgregarOfertaLabel" aria-hidden="true" (hidden.bs.modal)="onModalHidden()">
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
         <div class="modal-header">
@@ -89,7 +91,7 @@
         </div>
         <div class="modal-body">
           <!-- Formulario para agregar una nueva oferta -->
-          <app-offer-add></app-offer-add>
+          <app-offer-add (ofertaAgregada)="onOfertaAgregada()"></app-offer-add>
         </div>
       </div>
     </div>

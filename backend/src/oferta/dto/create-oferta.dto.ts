@@ -1,4 +1,10 @@
-import { IsString, IsDateString, IsInt, IsPositive, IsOptional } from 'class-validator';
+import { IsString, IsDateString, IsInt, IsPositive, IsOptional, IsEnum } from 'class-validator';
+
+export enum OfertaEstado {
+  ACTIVA = 'ACTIVA',
+  INACTIVA = 'INACTIVA',
+  EXPIRADA = 'EXPIRADA',
+}
 
 export class CreateOfertaDto {
   @IsPositive()
@@ -14,9 +20,7 @@ export class CreateOfertaDto {
   @IsDateString()
   fechaFin: Date;
 
-  @IsString()
-  estado: string;
-
-  @IsInt()
-  productoId: number;
+  @IsOptional()
+  @IsEnum(OfertaEstado)
+  estado?: OfertaEstado;
 }

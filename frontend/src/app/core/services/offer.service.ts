@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
-import { Offer } from '../models/offer.interface';
+import { Offer, CreateOfferDto } from '../models/offer.interface';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -17,7 +17,19 @@ export class OfferService {
     return this.http.get<Offer[]>(`${this.apiUrl}/${this.controller}`);
   }
 
+  crearOferta(oferta: CreateOfferDto): Observable<Offer> {
+    return this.http.post<Offer>(`${this.apiUrl}/${this.controller}`, oferta);
+  }
+
+  actualizarOferta(id: number, oferta: Partial<CreateOfferDto>): Observable<Offer> {
+    return this.http.patch<Offer>(`${this.apiUrl}/${this.controller}/${id}`, oferta);
+  }
+
   eliminarOferta(id: number): Observable<{mensaje: string}> {
     return this.http.delete<{mensaje: string}>(`${this.apiUrl}/${this.controller}/${id}`);
+  }
+
+  actualizarEstadosAutomaticamente(): Observable<{mensaje: string}> {
+    return this.http.post<{mensaje: string}>(`${this.apiUrl}/${this.controller}/actualizar-estados`, {});
   }
 }
