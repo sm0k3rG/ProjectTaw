@@ -48,11 +48,11 @@ export class ResetPasswordComponent {
     this.cargando = true;
     const nuevaContrasena = this.formularioReset.value.contrasena;
     // Simulación: reemplaza por llamada real al backend si es necesario
-    this.authService.restablecerContraseña(this.token, nuevaContrasena).subscribe({
+    this.authService.restablecerContrasena(this.token, nuevaContrasena).subscribe({
       next: () => {
         this.cargando = false;
         Swal.fire({ icon: 'success', title: '¡Contraseña restablecida!', text: 'Ahora puedes iniciar sesión.', timer: 1500, showConfirmButton: false });
-        this.router.navigate(['/']);
+        this.router.navigate(['/login']);
       },
       error: () => {
         this.cargando = false;

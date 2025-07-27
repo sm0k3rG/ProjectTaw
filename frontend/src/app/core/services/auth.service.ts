@@ -119,11 +119,11 @@ export class AuthService {
     return this.http.post(`${this.apiUrl}/auth/register`, data);
   }
 
-  solicitarRecuperacionContraseña(email: string): Observable<any> {
-    return of({ mensaje: 'Correo de recuperación enviado' });
+  solicitarRecuperacionContrasena(email: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/auth/forgot-password`, { email });
   }
 
-  restablecerContraseña(token: string, nuevaContraseña: string): Observable<any> {
+  restablecerContrasena(token: string, nuevaContraseña: string): Observable<any> {
     return of({ mensaje: 'Contraseña restablecida correctamente' });
   }
 

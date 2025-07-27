@@ -33,7 +33,7 @@ export class RecoverPasswordComponent {
       this.isLoading = true;
       const { email } = this.recuperarForm.value;
 
-      this.authService.solicitarRecuperacionContraseña(email).subscribe({
+      this.authService.solicitarRecuperacionContrasena(email).subscribe({
         next: () => {
           this.isLoading = false;
           this.emailEnviado = true;

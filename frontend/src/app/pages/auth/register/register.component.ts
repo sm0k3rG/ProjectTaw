@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormArray, AbstractControl, ValidationErrors } from '@angular/forms';
 import { AuthService } from '../../../core/services/auth.service';
 import Swal from 'sweetalert2';
+import { Router } from '@angular/router';
 
 function validarRut(control: AbstractControl): ValidationErrors | null {
   const rut = control.value;
@@ -145,7 +146,7 @@ export class RegisterComponent {
   regiones = REGIONES_COMUNAS;
   comunasPorDireccion: string[][] = [[...REGIONES_COMUNAS[0].comunas]];
 
-  constructor(private fb: FormBuilder, private authService: AuthService) {
+  constructor(private fb: FormBuilder, private authService: AuthService, private router:Router) {
     this.registerForm = this.fb.group({
       nombre: ['', Validators.required],
       rut: ['', [Validators.required, validarRut]],
@@ -197,7 +198,11 @@ export class RegisterComponent {
     console.log(this.registerForm.value);
     if (this.registerForm.invalid) {
       this.registerForm.markAllAsTouched();
-      Swal.fire({ icon: 'error', title: 'Error', text: 'Completa todos los campos correctamente.' });
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Completa todos los campos correctamente.'
+      });
       return;
     }
     this.isLoading = true;
@@ -205,12 +210,24 @@ export class RegisterComponent {
     this.authService.register({ nombre, rut, email, contrasena: password, telefono, tarjetas, direcciones }).subscribe({
       next: () => {
         this.isLoading = false;
-        Swal.fire({ icon: 'success', title: '¡Registro exitoso!', text: 'Ahora puedes iniciar sesión.', timer: 1500, showConfirmButton: false });
         this.registerForm.reset();
+        Swal.fire({
+          icon: 'success',
+          title: '¡Registro exitoso!',
+          text: 'Ahora puedes iniciar sesión.',
+          timer: 1500,
+          showConfirmButton: false
+        }).then(() => {
+          this.router.navigate(['/login']); // redirección al login
+        });
       },
       error: (err) => {
         this.isLoading = false;
-        Swal.fire({ icon: 'error', title: 'Error', text: 'No se pudo registrar el usuario.' });
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'No se pudo registrar el usuario.'
+        });
       }
     });
   }
