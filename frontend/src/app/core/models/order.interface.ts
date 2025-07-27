@@ -11,6 +11,13 @@ export interface Order {
     codigoPostal: string;
     referencia?: string;
   };
+  direccionRetiro?: {
+    id: number;
+    nombre: string;
+    direccion: string;
+    ciudad: string;
+    region: string;
+  };
   lineasPedido: Array<{
     id: number;
     cantidad: number;

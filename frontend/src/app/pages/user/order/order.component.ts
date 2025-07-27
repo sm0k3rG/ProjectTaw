@@ -31,23 +31,25 @@ export class OrderComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
+      const pedidoId = Number(params.get('pedidoId'));
       const usuarioId = Number(params.get('usuarioId'));
-      console.log('usuarioId:', usuarioId);
-      if (!usuarioId) return;
-      this.orderService.obtenerOrdenPorUsuarioId(usuarioId).subscribe({
-        next: (orders: any) => {
-          // Si es un array, tomar el primer pedido
-          const order = Array.isArray(orders) ? orders[0] : orders;
-          console.log('Order recibido:', order);
+
+      if (!pedidoId || !usuarioId) {
+        console.error('Faltan parámetros: pedidoId o usuarioId');
+        return;
+      }
+
+      this.orderService.obtenerPedidoPropio(pedidoId, usuarioId).subscribe({
+        next: (order: any) => {
           this.order = {
             id: order.id,
             estado: order.estado?.toLowerCase() || '',
             fecha: order.fechaPedido || order.fecha || '',
             direccion: order.direccion,
+            direccionRetiro: order.direccionRetiro,
             lineasPedido: order.lineasDePedido || order.lineasPedido || [],
-            total: order.lineasDePedido?.reduce((acc: number, l: any) => acc + (l.total || (l.cantidad * l.precioUnitario)), 0) || 0
+            total: order.total || 0
           };
-          console.log('Dirección recibida:', this.order?.direccion);
         },
         error: (err) => {
           console.error('Error al obtener la orden:', err);

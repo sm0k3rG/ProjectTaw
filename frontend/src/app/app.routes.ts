@@ -63,7 +63,7 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/user/purchase-history/purchase-history.component').then(m => m.PurchaseHistoryComponent)
   },
   {
-    path: 'user/order/:usuarioId',
+    path: 'user/order/:pedidoId/:usuarioId',
     loadComponent: () => import('./pages/user/order/order.component').then(m => m.OrderComponent)
   },
   {
