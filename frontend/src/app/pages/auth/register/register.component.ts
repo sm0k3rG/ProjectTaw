@@ -7,7 +7,6 @@ import Swal from 'sweetalert2';
 function validarRut(control: AbstractControl): ValidationErrors | null {
   const rut = control.value;
   if (!rut) return null;
-  // Validación básica de RUT chileno
   const rutClean = rut.replace(/[^0-9kK]/g, '').toUpperCase();
   if (!/^\d{7,8}[0-9K]$/.test(rutClean)) return { invalidRut: true };
   let body = rutClean.slice(0, -1);

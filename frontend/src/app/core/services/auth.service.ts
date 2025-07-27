@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 import { jwtDecode } from 'jwt-decode';
+import { Router } from '@angular/router';
 
 export interface LoginResponse {
   token: string;
@@ -27,9 +28,9 @@ export interface DecodedToken {
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:3000'; 
+  private apiUrl = 'http://localhost:3000';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private router:Router) {}
 
   login(email: string, password: string): Observable<LoginResponse> {
     return this.http.post<{ token: string; tipoUsuario?: string; message?: string }>(`${this.apiUrl}/auth/login`, { email, contrasena: password }).pipe(
@@ -89,6 +90,8 @@ export class AuthService {
     if (!token) return null;
 
     try {
+      const decoded = jwtDecode<DecodedToken>(token);
+      console.log('Token decodificado:', decoded);
       return jwtDecode<DecodedToken>(token);
     } catch {
       return null;
@@ -113,7 +116,6 @@ export class AuthService {
   }
 
   register(data: any): Observable<any> {
-    console.log(data);
     return this.http.post(`${this.apiUrl}/auth/register`, data);
   }
 
@@ -129,4 +131,24 @@ export class AuthService {
     const user = this.getCurrentUser();
     return of(user ? user.role : 'Client');
   }
+
+  redirectUserByRole(router: Router): void {
+    const user = this.getCurrentUser();
+
+    if (!user) {
+      router.navigate(['/login']);
+      return;
+    }
+
+    const role = user.role;
+
+    const routesByRole: { [key: string]: string } = {
+      'Administrator': '/admin/dashboard',
+      'Client': '/user/products'
+    };
+
+    const route = routesByRole[role] || '/login';
+    router.navigate([route]);
+  }
+
 }

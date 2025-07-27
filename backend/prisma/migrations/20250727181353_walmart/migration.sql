@@ -1,6 +1,7 @@
 -- CreateTable
 CREATE TABLE `Usuario` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `rut` VARCHAR(191) NOT NULL,
     `nombre` VARCHAR(191) NOT NULL,
     `email` VARCHAR(191) NOT NULL,
     `contrasena` VARCHAR(191) NOT NULL,
@@ -8,6 +9,7 @@ CREATE TABLE `Usuario` (
     `tarjetas` VARCHAR(191) NOT NULL,
     `rol` ENUM('Admin', 'Cliente') NOT NULL,
 
+    UNIQUE INDEX `Usuario_rut_key`(`rut`),
     UNIQUE INDEX `Usuario_email_key`(`email`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;

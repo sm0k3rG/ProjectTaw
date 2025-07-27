@@ -1,4 +1,6 @@
 import { Routes } from '@angular/router';
+import { AuthGuard } from './core/guards/auth.guard';
+import { RoleGuard } from './core/guards/role.guard';
 
 export const routes: Routes = [
   {
@@ -8,7 +10,8 @@ export const routes: Routes = [
   },
   {
     path: 'login',
-    loadComponent: () => import('./pages/auth/login/login.component').then(m => m.LoginComponent)
+    loadComponent: () => import('./pages/auth/login/login.component').then(m => m.LoginComponent),
+    canActivate: [AuthGuard]
   },
   {
     path: 'user/products',
@@ -36,27 +39,39 @@ export const routes: Routes = [
   },
   {
     path: 'admin/dashboard',
-    loadComponent: () => import('./pages/admin/dashboard/dashboard.component').then(m => m.DashboardComponent)
+    loadComponent: () => import('./pages/admin/dashboard/dashboard.component').then(m => m.DashboardComponent),
+    canActivate: [RoleGuard],
+    data: { role: 'admin' }
   },
   {
     path: 'admin/order-list',
-    loadComponent: () => import('./pages/admin/orders/order-list/order-list.component').then(m => m.OrderListComponent)
+    loadComponent: () => import('./pages/admin/orders/order-list/order-list.component').then(m => m.OrderListComponent),
+    canActivate: [RoleGuard],
+    data: { role: 'admin' }
   },
   {
     path: 'admin/products',
-    loadComponent: () => import('./pages/admin/products/product-list/product-list.component').then(m => m.ProductListComponent)
+    loadComponent: () => import('./pages/admin/products/product-list/product-list.component').then(m => m.ProductListComponent),
+    canActivate: [RoleGuard],
+    data: { role: 'admin' }
   },
   {
     path: 'admin/offers',
-    loadComponent: () => import('./pages/admin/offer/offer-list/offer-list.component').then(m => m.OfferListComponent)
+    loadComponent: () => import('./pages/admin/offer/offer-list/offer-list.component').then(m => m.OfferListComponent),
+    canActivate: [RoleGuard],
+    data: { role: 'admin' }
   },
   {
     path: 'admin/categories',
-    loadComponent: () => import('./pages/admin/products/category/category.component').then(m => m.CategoryComponent)
+    loadComponent: () => import('./pages/admin/products/category/category.component').then(m => m.CategoryComponent),
+    canActivate: [RoleGuard],
+    data: { role: 'admin' }
   },
   {
     path: 'admin/branches',
-    loadComponent: () => import('./pages/admin/branch/branch-list/branch-list.component').then(m => m.BranchListComponent)
+    loadComponent: () => import('./pages/admin/branch/branch-list/branch-list.component').then(m => m.BranchListComponent),
+    canActivate: [RoleGuard],
+    data: { role: 'admin' }
   },
   {
     path: 'user/purchase-history',

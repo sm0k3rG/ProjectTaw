@@ -9,10 +9,6 @@ import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { RegisterAuthDto  } from './dto/register-auth.dto';
 
-// Si tienes estos DTOs, descomenta e importa correctamente
-// import { LoginDto } from './dto/login.dto';
-// import { JwtPayload } from './dto/jwt-payload.dto';
-
 @Injectable()
 export class AuthService {
   constructor(private prisma: PrismaService) {}
@@ -77,12 +73,20 @@ export class AuthService {
     if (!secret) {
       throw new Error('Falta JWT_SECRET en el archivo .env');
     }
+    const roleNormalized = user.rol === 'Admin' ? 'Administrator' : 'Client';
+    const token = jwt.sign(
+      { 
+        userId: user.id, 
+        email: user.email,
+        role: roleNormalized,
+        name: user.nombre 
+      }, 
+      secret, 
+      {
+      expiresIn: '1h',}
+    );
 
-    const token = jwt.sign({ userId: user.id, email: user.email }, secret, {
-      expiresIn: '1h',
-    });
-
-    const tipoUsuario = 'cliente';
+    const tipoUsuario = user.rol.toLowerCase();
 
     console.log(`[AUDIT] Usuario inició sesión: ${user.id}, IP simulada: 127.0.0.1`);
     return {

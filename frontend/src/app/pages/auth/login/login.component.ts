@@ -31,12 +31,19 @@ export class LoginComponent implements OnInit {
     private router: Router
   ) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
+    if (this.authService.isAuthenticated()) {
+      this.authService.redirectUserByRole(this.router);
+      return;
+    }
+
     this.loginForm = this.formBuilder.group({
       email: ["", [Validators.required, validateEmail]],
       password: ["", [Validators.required, validatePassword]],
     });
   }
+
+
 
     enviarFormulario() {
     if (this.loginForm.valid) {
@@ -66,8 +73,17 @@ export class LoginComponent implements OnInit {
               timer: 1500,
               showConfirmButton: false
             }).then(() => {
+              const routesByRole: { [key: string]: string } = {
+                'Administrator': '/admin/products',
+                'Client': '/user/products',
+              };
+
+
+              const route = routesByRole[decodedToken.role] || '/user/products';
+
               this.router.navigate([route]);
             });
+
           }
         },
         error: (error) => {
