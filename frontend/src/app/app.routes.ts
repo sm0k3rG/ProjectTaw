@@ -67,7 +67,7 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/user/order/order.component').then(m => m.OrderComponent)
   },
   {
-    path: 'user/payment/:usuarioId',
+    path: 'user/payment/:pedidoId/:usuarioId',
     loadComponent: () => import('./pages/user/payment/payment.component').then(m => m.PaymentComponent)
   }
 ];
