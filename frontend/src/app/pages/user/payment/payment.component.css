@@ -1,67 +1,208 @@
+/* Estilos para el modal de pago */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1050;
+  padding: 1rem;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  max-width: 500px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 1.5rem 0 1.5rem;
+  border-bottom: 1px solid #dee2e6;
+  margin-bottom: 1rem;
+}
+
+.modal-title {
+  margin: 0;
+  color: #1565c0;
+  font-weight: 600;
+}
+
+.btn-close {
+  background: none;
+  border: none;
+  font-size: 1.25rem;
+  color: #6c757d;
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.btn-close:hover {
+  background-color: #f8f9fa;
+  color: #495057;
+}
+
+.modal-body {
+  padding: 0 1.5rem 1.5rem 1.5rem;
+}
+
+/* Estilos para los formularios */
+.form-control {
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  padding: 0.75rem;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+}
+
+.form-control:focus {
+  border-color: #1976d2;
+  box-shadow: 0 0 0 0.2rem rgba(25, 118, 210, 0.25);
+}
+
+.form-control.is-invalid {
+  border-color: #dc3545;
+}
+
+.invalid-feedback {
+  color: #dc3545;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+/* Estilos para los botones */
+.btn {
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
 /* Estilos para la boleta */
 .receipt-container {
-    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%) !important;
-    border: 2px solid #dee2e6 !important;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    position: relative;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border: 2px solid #dee2e6 !important;
+  border-radius: 12px;
+}
+
+/* Responsive */
+@media (max-width: 576px) {
+  .modal-content {
+    margin: 0.5rem;
+    max-width: calc(100% - 1rem);
   }
   
-  .receipt-container::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: linear-gradient(90deg, #4caf50, #45a049, #4caf50);
-    border-radius: 4px 4px 0 0;
+  .modal-header,
+  .modal-body {
+    padding-left: 1rem;
+    padding-right: 1rem;
   }
   
-  /* Animación para la boleta */
-  .receipt-container {
-    animation: slideInUp 0.5s ease-out;
+  .btn-lg {
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
   }
-  
-  @keyframes slideInUp {
-    from {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
   }
-  
-  /* Estilos para los badges */
-  .badge {
-    font-size: 0.75rem;
-    padding: 0.5rem 0.75rem;
+  to {
+    opacity: 1;
+    transform: scale(1);
   }
-  
-  /* Estilos para los inputs */
-  .form-control:focus {
-    border-color: #1976d2;
-    box-shadow: 0 0 0 0.2rem rgba(25, 118, 210, 0.25);
-  }
-  
-  /* Estilos para los botones */
-  .btn {
-    transition: all 0.3s ease;
-  }
-  
-  .btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-  }
-  
-  /* Estilos para las tarjetas */
-  .card {
-    transition: all 0.3s ease;
-  }
-  
-  .card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-  }
-  
+}
+
+.modal-content {
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* Estilos para los iconos */
+.fas {
+  font-size: 1.1em;
+}
+
+/* Estilos para los badges */
+.badge {
+  font-size: 0.75rem;
+  padding: 0.375rem 0.75rem;
+  border-radius: 6px;
+}
+
+/* Estilos para las alertas */
+.alert {
+  border-radius: 8px;
+  border: none;
+  padding: 1rem;
+}
+
+.alert-info {
+  background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%);
+  color: #0c5460;
+}
+
+/* Estilos para el texto */
+.text-muted {
+  color: #6c757d !important;
+}
+
+.text-success {
+  color: #28a745 !important;
+}
+
+.text-danger {
+  color: #dc3545 !important;
+}
+
+.text-primary {
+  color: #007bff !important;
+}
+
+/* Estilos para los gradientes de botones */
+.btn-primary {
+  background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+}
+
+.btn-success {
+  background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
+}
+
+.btn-danger {
+  background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+}
+
+.btn-outline-secondary {
+  border: 2px solid #6c757d;
+  color: #6c757d;
+  background: transparent;
+}
+
+.btn-outline-secondary:hover {
+  background: #6c757d;
+  color: white;
+} 

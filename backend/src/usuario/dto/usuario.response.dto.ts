@@ -5,11 +5,11 @@ import { Rol } from "@prisma/client";
 
 
 export class UsuarioResponseDto {
-  id: number;
+  id?: number;
   nombre: string;
   rut: string;
   email: string;
   telefono: string;
-  tarjetas: string;
-  rol: Rol;
+  tarjetas?: string;
+  rol?: Rol;
 }

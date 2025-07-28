@@ -1,26 +1,31 @@
 /**
- * Componente encargado de simular el proceso de pago con tarjeta.
+ * Componente modal encargado de simular el proceso de pago con tarjeta.
  * Permite ingresar los datos de la tarjeta, validarlos y simular el resultado del pago.
  * Si el pago es exitoso, muestra un comprobante; si falla, muestra un mensaje de error.
  * Obtiene la orden del usuario para mostrar el monto a pagar.
  */
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { OrderService } from '../../../core/services/order.service';
 import { Order } from '../../../core/models/order.interface';
-import { ActivatedRoute } from '@angular/router';
-import { MainNavbarComponent } from '../../../shared/main-navbar/main-navbar.component';
 
 @Component({
   selector: 'app-payment',
   standalone: true,
-  imports: [CommonModule, FormsModule, MainNavbarComponent],
+  imports: [CommonModule, FormsModule],
   providers: [OrderService],
   templateUrl: './payment.component.html',
   styleUrl: './payment.component.css'
 })
 export class PaymentComponent implements OnInit {
+  @Input() isOpen: boolean = false;
+  @Input() pedidoId?: number;
+  @Input() usuarioId?: number;
+  @Output() closeModal = new EventEmitter<void>();
+  @Output() paymentSuccess = new EventEmitter<any>();
+
   // Estados de la aplicación
   pasoActual: 'initial' | 'payment-form' | 'success' | 'error' = 'initial';
 
@@ -58,41 +63,79 @@ export class PaymentComponent implements OnInit {
     descripcion: 'Compra de productos varios'
   };
 
-  constructor(private orderService: OrderService, private route: ActivatedRoute) {}
+  constructor(private orderService: OrderService, private router: Router) {}
 
   ngOnInit(): void {
-    this.route.paramMap.subscribe(params => {
-      const pedidoId = Number(params.get('pedidoId'));
-      const usuarioId = Number(params.get('usuarioId'));
+    if (this.pedidoId && this.usuarioId) {
+      this.cargarPedido();
+    }
+  }
 
+  ngOnChanges(): void {
+    if (this.isOpen && this.pedidoId && this.usuarioId) {
+      this.cargarPedido();
+    }
+  }
 
-      if (!pedidoId || !usuarioId) {
-        console.error('Faltan parámetros: pedidoId o usuarioId');
-        return;
+  cargarPedido(): void {
+    if (!this.pedidoId || !this.usuarioId) {
+      console.error('Faltan parámetros: pedidoId o usuarioId');
+      return;
+    }
+
+    this.orderService.obtenerPedidoPropio(this.pedidoId, this.usuarioId).subscribe({
+      next: (order: any) => {
+        this.pedido = {
+          id: order.id,
+          estado: order.estado?.toLowerCase() || '',
+          fecha: order.fechaPedido || order.fecha || '',
+          direccion: order.direccion,
+          direccionRetiro: order.direccionRetiro,
+          lineasPedido: order.lineasDePedido || order.lineasPedido || [],
+          total: order.total || 0
+        };
+        this.totalPedido = this.pedido.total;
+        this.fechaPedido = new Date(this.pedido.fecha);
+
+        // Obtener los datos de la tarjeta del usuario desde la respuesta del pedido
+        this.obtenerDatosTarjetaUsuario(order.usuario);
+      },
+      error: (err) => {
+        console.error('Error al obtener la orden en payment:', err);
       }
-
-      this.orderService.obtenerPedidoPropio(pedidoId, usuarioId).subscribe({
-        next: (order: any) => {
-          this.pedido = {
-            id: order.id,
-            estado: order.estado?.toLowerCase() || '',
-            fecha: order.fechaPedido || order.fecha || '',
-            direccion: order.direccion,
-            direccionRetiro: order.direccionRetiro,
-            lineasPedido: order.lineasDePedido || order.lineasPedido || [],
-            total: order.total || 0
-          };
-          this.totalPedido = this.pedido.total;
-          this.fechaPedido = new Date(this.pedido.fecha);
-
-          // Obtener los datos de la tarjeta del usuario desde la respuesta del pedido
-          this.obtenerDatosTarjetaUsuario(order.usuario);
-        },
-        error: (err) => {
-          console.error('Error al obtener la orden en payment:', err);
-        }
-      });
     });
+  }
+
+  /**
+   * Cierra el modal
+   */
+  cerrarModal(): void {
+    this.closeModal.emit();
+    this.resetearEstado();
+  }
+
+  /**
+   * Redirige a la vista de órdenes
+   */
+  irAVistaOrdenes(): void {
+    this.router.navigate(['/pedidos', this.pedidoId, 'propio']);
+  }
+
+  /**
+   * Resetea el estado del modal
+   */
+  resetearEstado(): void {
+    this.pasoActual = 'initial';
+    this.datosTarjeta = {
+      numeroTarjeta: '',
+      cvv: '',
+      nombreTitular: ''
+    };
+    this.errores = {
+      numeroTarjeta: '',
+      cvv: '',
+      nombreTitular: ''
+    };
   }
 
   /**
@@ -304,6 +347,11 @@ export class PaymentComponent implements OnInit {
     if (random > 0.1) { // 80% de probabilidad de éxito
       this.generarDatosComprobante();
       this.pasoActual = 'success';
+      this.paymentSuccess.emit(this.datosComprobante);
+      // Redirigir a la vista de órdenes después de un breve delay
+      setTimeout(() => {
+        this.router.navigate(['/pedidos', this.pedidoId, 'propio']);
+      }, 2000); // 2 segundos de delay para mostrar el comprobante
     } else {
       this.pasoActual = 'error';
     }
@@ -323,6 +371,11 @@ export class PaymentComponent implements OnInit {
       // Usar los últimos 4 dígitos de la tarjeta guardada del usuario
       this.datosComprobante.ultimosDigitosTarjeta = this.ultimosDigitosTarjetaGuardada;
       this.pasoActual = 'success';
+      this.paymentSuccess.emit(this.datosComprobante);
+      // Redirigir a la vista de órdenes después de un breve delay
+      setTimeout(() => {
+        this.router.navigate(['/pedidos', this.pedidoId, 'propio']);
+      }, 2000); // 2 segundos de delay para mostrar el comprobante
     } else {
       this.pasoActual = 'error';
     }
@@ -394,4 +447,4 @@ export class PaymentComponent implements OnInit {
       event.preventDefault();
     }
   }
-}
+} 

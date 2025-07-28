@@ -1,38 +1,44 @@
-<nav class="lider-navbar navbar navbar-expand-lg w-100">
-  <div class="navbar-content d-flex align-items-center justify-content-between w-100">
-    <div class="d-flex align-items-center">
-      <a routerLink="/user/products">
-              <img src="https://i5.walmartimages.com/dfw/63fd9f59-14e2/9d304ce6-96de-4331-b8ec-c5191226d378/v1/spark-icon.svg" alt="Walmart Logo" style="height: 38px; width: 38px;" class="me-2" />     
-      </a>
-      <button class="btn btn-link text-white fw-bold d-flex align-items-center me-3 categories-btn">
-        <i class="bi bi-grid-3x3-gap-fill me-1"></i> Categorías
-      </button>
-    </div>
-    <form class="flex-grow-1 mx-3 search-form">
-      <div class="input-group rounded-pill overflow-hidden">
-        <input type="text" class="form-control border-0" placeholder="Busca en Supermercado">
-        <button class="btn search-btn" type="submit">
-          <i class="bi bi-search"></i>
+@if (user.role === 'Client') {
+  <nav class="lider-navbar navbar navbar-expand-lg w-100">
+    <div class="navbar-content d-flex align-items-center justify-content-between w-100">
+      <div class="d-flex align-items-center">
+        <a routerLink="/user/products">
+                <img src="https://i5.walmartimages.com/dfw/63fd9f59-14e2/9d304ce6-96de-4331-b8ec-c5191226d378/v1/spark-icon.svg" alt="Walmart Logo" style="height: 38px; width: 38px;" class="me-2" />     
+        </a>
+        <button class="btn btn-link text-white fw-bold d-flex align-items-center me-3 categories-btn">
+          <i class="bi bi-grid-3x3-gap-fill me-1"></i> Categorías
         </button>
       </div>
-    </form>
-    <!-- Selector de sucursal, login y carrito -->
-    <div class="d-flex align-items-center">
-      <button class="btn btn-white me-4 d-flex align-items-center shadow-sm border rounded-pill px-4 py-3 position-relative delivery-btn" (click)="showDeliverySidebar = true">
-        <i class="bi bi-geo-alt me-1"></i>
-        <span class="fw-bold text-truncate delivery-text">
-          <ng-container *ngIf="selectedDeliveryType === 'retiro'; else envio">
-            <ng-container *ngIf="selectedStore; else sinTienda">
-              Retira en {{ selectedStore.nombre }}
+      <form class="flex-grow-1 mx-3 search-form">
+        <div class="input-group rounded-pill overflow-hidden">
+          <input type="text" class="form-control border-0" placeholder="Busca en Supermercado">
+          <button class="btn search-btn" type="submit">
+            <i class="bi bi-search"></i>
+          </button>
+        </div>
+      </form>
+      <!-- Selector de sucursal, login y carrito -->
+      <div class="d-flex align-items-center">
+        <button class="btn btn-white me-4 d-flex align-items-center shadow-sm border rounded-pill px-4 py-3 position-relative delivery-btn" (click)="showDeliverySidebar = true">
+          <i class="bi bi-geo-alt me-1"></i>
+          <span class="fw-bold text-truncate delivery-text">
+            <ng-container *ngIf="selectedDeliveryType === 'retiro'; else envio">
+              <ng-container *ngIf="selectedStore; else sinTienda">
+                Retira en {{ selectedStore.nombre }}
+              </ng-container>
+              <ng-template #sinTienda>
+                Selecciona una tienda
+              </ng-template>
             </ng-container>
-            <ng-template #sinTienda>
-              Selecciona una tienda
-            </ng-template>
-          </ng-container>
-          <ng-template #envio>
+            <ng-template #envio>
               <ng-container *ngIf="deliveryAddress?.direccion; else sinDireccion">
                 Envío a {{ deliveryAddress.direccion }}
               </ng-container>
+              <ng-template #sinDireccion>
+                Ingresa dirección de entrega
+              </ng-template>
+            </ng-template>
+          </ng-container>
               <ng-template #sinDireccion>
                 Ingresa dirección de entrega
               </ng-template>
@@ -54,8 +60,70 @@
   </span>
 </ng-template>
     </div>
-  </div>
-</nav>
+  </nav>
+}
+
+@if (user.role === 'Administrator') {
+  <nav class="navbar navbar-expand-lg navbar-primary bg-primary shadow-sm mb-4">
+    <div class="container-fluid">
+      <a class="navbar-brand d-flex align-items-center" href="#">
+        <img src="https://i5.walmartimages.com/dfw/63fd9f59-14e2/9d304ce6-96de-4331-b8ec-c5191226d378/v1/spark-icon.svg" alt="Walmart Logo" style="height: 38px; width: 38px;" class="me-2" />
+      </a>
+      <div class="w-100 d-flex justify-content-center">
+        <div class="d-flex justify-content-center align-items-center" style="gap: 1.2rem;">
+            <a class="d-flex align-items-center px-2 py-0 rounded-3 fw-semibold text-decoration-none nav-link-navbar"
+               routerLink="/admin/dashboard" routerLinkActive="active-tab"
+               [routerLinkActiveOptions]="{ exact: true }"
+               style="font-size: 1rem; min-height: 32px;">
+              <i class="bi bi-house-door me-2" style="font-size: 1.2rem;"></i> Dashboard
+            </a>
+            <a class="d-flex align-items-center px-2 py-0 rounded-3 fw-semibold text-decoration-none nav-link-navbar"
+               routerLink="/admin/order-list" routerLinkActive="active-tab"
+               [routerLinkActiveOptions]="{ exact: true }"
+               style="font-size: 1rem; min-height: 32px;">
+              <i class="bi bi-list-ul me-2" style="font-size: 1.2rem;"></i> Pedidos
+            </a>
+            <a class="d-flex align-items-center px-2 py-0 rounded-3 fw-semibold text-decoration-none nav-link-navbar"
+               routerLink="/admin/products" routerLinkActive="active-tab"
+               style="font-size: 1rem; min-height: 32px;">
+              <i class="bi bi-box me-2" style="font-size: 1.2rem;"></i> Productos
+            </a>
+            <a class="d-flex align-items-center px-2 py-0 rounded-3 fw-semibold text-decoration-none nav-link-navbar"
+               routerLink="/admin/offers" routerLinkActive="active-tab"
+               style="font-size: 1rem; min-height: 32px;">
+              <i class="bi bi-percent me-2" style="font-size: 1.2rem;"></i> Ofertas
+            </a>
+            <a class="d-flex align-items-center px-2 py-0 rounded-3 fw-semibold text-decoration-none nav-link-navbar"
+               routerLink="/admin/branches" routerLinkActive="active-tab"
+               style="font-size: 1rem; min-height: 32px;">
+              <i class="bi bi-building me-2" style="font-size: 1.2rem;"></i> Sucursales
+            </a>
+            <a class="d-flex align-items-center px-2 py-0 rounded-3 fw-semibold text-decoration-none nav-link-navbar"
+               routerLink="/admin/users" routerLinkActive="active-tab"
+               style="font-size: 1rem; min-height: 32px;">
+              <i class="bi bi-people me-2" style="font-size: 1.2rem;"></i> Usuarios
+            </a>
+        </div>
+      </div>
+      <div class="d-flex align-items-center ms-auto">
+        <span class="rounded-circle bg-info text-white d-flex justify-content-center align-items-center" style="width: 40px; height: 40px; font-size: 1.2rem;">A</span>
+      </div>
+    </div>
+  </nav>
+  
+  <style>
+  .nav-link-navbar {
+    color: #fff !important;
+  }
+  .active-tab {
+    color: #fff !important;
+    background: #343a40 !important;
+    border-radius: 0.5rem;
+    font-weight: bold;
+    box-shadow: 0 2px 8px 0 rgba(0,0,0,0.03);
+  }
+  </style>
+}
 
 <app-delivery-type-sidebar
   [show]="showDeliverySidebar"

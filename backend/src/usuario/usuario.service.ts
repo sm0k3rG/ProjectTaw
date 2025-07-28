@@ -31,4 +31,16 @@ export class UsuariosService {
       rol: usuario.rol,
     };
   }
+
+  async findAll(): Promise<UsuarioResponseDto[]> {
+    const usuarios = await this.prisma.usuario.findMany({
+      where: { rol: 'Cliente' },
+    });
+    return usuarios.map(usuario => ({
+      rut: usuario.rut,
+      nombre: usuario.nombre,
+      email: usuario.email,
+      telefono: usuario.telefono,
+    }));
+  }
 }

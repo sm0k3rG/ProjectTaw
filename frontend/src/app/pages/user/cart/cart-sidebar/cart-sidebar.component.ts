@@ -6,11 +6,12 @@ import { filter } from 'rxjs/operators';
 import { CartService } from '../../../../services/cart.service';
 import { CartSidebarService, CartSidebarState } from '../../../../services/cart-sidebar.service';
 import { CartItem } from '../../../../models/cart-item.model';
+import { PaymentComponent } from '../../payment/payment.component';
 
 @Component({
   selector: 'app-cart-sidebar',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, PaymentComponent],
   templateUrl: './cart-sidebar.component.html',
   styleUrls: ['./cart-sidebar.component.css']
 })
@@ -27,6 +28,12 @@ export class CartSidebarComponent implements OnInit {
     private cartService: CartService,
     private router: Router
   ) {}
+  
+  // Variables para el modal de pago
+  showPaymentModal: boolean = false;
+  pedidoId?: number;
+  usuarioId: number = 1; // Por defecto, se puede obtener del servicio de autenticación
+
 
   ngOnInit(): void {
     this.cartSidebarService.getSidebarState().subscribe(state => {
@@ -136,15 +143,47 @@ export class CartSidebarComponent implements OnInit {
   }
 
   this.cartService.crearPedido(pedido).subscribe({
-    next: () => {
-      alert('¡Pedido creado con éxito!');
+    next: (response: any) => {
+      console.log('Pedido creado exitosamente:', response);
+      // Guardar el ID del pedido creado
+      this.pedidoId = response.id || response.pedidoId;
+      this.usuarioId = usuarioId;
+      // Abrir el modal de pago
+      this.showPaymentModal = true;
       this.cartService.clearCart();
     },
     error: () => {
       alert('Error al crear el pedido');
     }
-  });
+  })
+
+  
+  
+}
+
+/**
+   * Cierra el modal de pago
+   */
+cerrarModalPago(): void {
+  this.showPaymentModal = false;
+}
+
+/**
+ * Maneja el éxito del pago
+ */
+onPaymentSuccess(comprobante: any): void {
+  console.log('Pago exitoso:', comprobante);
+  // Limpiar el carrito después del pago exitoso
+  this.cartService.clearCart();
+  this.loadCartItems();
+  this.cerrarModalPago();
+  // Redirigir a la vista de órdenes
+  setTimeout(() => {
+    this.router.navigate(['/pedidos', this.pedidoId, 'propio']);
+  }, 1000); // 1 segundo de delay
+}
+
 }
 
 
-}
+
