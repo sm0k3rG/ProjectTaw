@@ -1,3 +1,4 @@
+import { StoreWithDistance } from './../../../models/store.model';
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -5,21 +6,8 @@ import { ChileGeoService, Region, Comuna } from '../../../services/chile-geo.ser
 import { DeliveryService, DeliveryAddress } from '../../../services/delivery.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { Router } from '@angular/router';
-
-interface StoreWithDistance {
-  id: number;
-  name: string;
-  address: string;
-  phone: string;
-  hours: string;
-  latitude: number;
-  longitude: number;
-  isActive: boolean;
-  region: string;
-  comuna: string;
-  distance?: number;
-}
-
+import { StoresService } from '../stores/stores.service';
+import { environment } from '../../../../environments/enviornment';
 @Component({
   selector: 'app-delivery-type-sidebar',
   standalone: true,
@@ -58,7 +46,8 @@ export class DeliveryTypeSidebarComponent implements OnInit, OnChanges {
     private deliveryService: DeliveryService,
     private authService: AuthService,
     private router: Router,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private storesService: StoresService
   ) {
     this.loadStores();
   }
@@ -103,11 +92,13 @@ export class DeliveryTypeSidebarComponent implements OnInit, OnChanges {
   }
 
   loadStores(): void {
-    this.stores = [];
-    this.filteredStores = [];
-    if (this.userLocation && this.stores.length > 0) {
-      this.calculateDistances();
-    }
+    this.storesService.getStores().subscribe(stores => {
+      this.stores = stores;
+      this.filteredStores = [];
+      if (this.userLocation && this.stores.length > 0) {
+        this.calculateDistances();
+      }
+    });
   }
 
   getUserLocation(): void {
@@ -144,25 +135,28 @@ export class DeliveryTypeSidebarComponent implements OnInit, OnChanges {
     if (!this.userLocation || this.stores.length === 0) return;
 
     this.stores.forEach(store => {
-      if (typeof store.latitude === 'number' && typeof store.longitude === 'number') {
-        store.distance = this.calculateDistance(
+      if (typeof store.latitud === 'number' && typeof store.longitud === 'number') {
+        store.distancia = this.calculateDistance(
           this.userLocation!.lat,
           this.userLocation!.lng,
-          store.latitude,
-          store.longitude
+          store.latitud,
+          store.longitud
         );
       } else {
-        store.distance = 999;
+        store.distancia = 999;
       }
     });
 
     this.filteredStores = [...this.stores].sort((a, b) =>
-      (a.distance || 999) - (b.distance || 999)
+      (a.distancia || 999) - (b.distancia || 999)
     );
 
     if (this.filteredStores.length > 0) {
       const nearestStore = this.filteredStores[0];
       this.selectStoreFromList(nearestStore);
+
+      localStorage.setItem('pickupStore', JSON.stringify(nearestStore));
+
       this.cdr.detectChanges();
       setTimeout(() => this.cdr.detectChanges(), 100);
     }
@@ -171,18 +165,20 @@ export class DeliveryTypeSidebarComponent implements OnInit, OnChanges {
   selectStoreFromList(store: StoreWithDistance): void {
     this.selectedStore = store;
     this.storeChange.emit(store);
+
+    localStorage.setItem('pickupStore', JSON.stringify(store));
   }
 
   filterStores(): void {
     const term = this.searchTerm.toLowerCase();
     this.filteredStores = this.stores
       .filter(store =>
-        store.name.toLowerCase().includes(term) ||
-        store.address.toLowerCase().includes(term) ||
+        store.nombre.toLowerCase().includes(term) ||
+        store.direccion.toLowerCase().includes(term) ||
         store.region.toLowerCase().includes(term) ||
-        store.comuna.toLowerCase().includes(term)
+        store.ciudad.toLowerCase().includes(term)
       )
-      .sort((a, b) => (a.distance || 999) - (b.distance || 999));
+      .sort((a, b) => (a.distancia || 999) - (b.distancia || 999));
   }
 
   onSearchChange(): void {
@@ -248,16 +244,11 @@ export class DeliveryTypeSidebarComponent implements OnInit, OnChanges {
         return;
       }
 
+      localStorage.setItem('deliveryAddress', JSON.stringify(this.address));
+
       this.closeSidebar.emit();
 
-      this.deliveryService.saveDeliveryAddress(this.address).subscribe({
-        next: (savedAddress) => {
-          this.addressChange.emit(this.address);
-        },
-        error: () => {
-          this.addressChange.emit(this.address);
-        }
-      });
+
     }
   }
 
@@ -296,5 +287,28 @@ export class DeliveryTypeSidebarComponent implements OnInit, OnChanges {
     if (value !== numericValue) {
       target.value = numericValue;
     }
+  }
+
+  async geocodeStores(): Promise<void> {
+const apiKey = environment.googleMapsApiKey;
+    for (const store of this.stores) {
+      const address = `${store.direccion}, ${store.region}`;
+      const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${apiKey}`;
+      try {
+        const response = await fetch(url);
+        const data = await response.json();
+        if (data.status === 'OK' && data.results.length > 0) {
+          store.latitud = data.results[0].geometry.location.lat;
+          store.longitud = data.results[0].geometry.location.lng;
+        } else {
+          store.latitud = null;
+          store.longitud = null;
+        }
+      } catch (error) {
+        store.latitud = null;
+        store.longitud = null;
+      }
+    }
+    this.calculateDistances();
   }
 }

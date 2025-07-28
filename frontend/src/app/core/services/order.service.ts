@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Order } from '../models/order.interface';
-import { environment } from '../../../environments/environment';
+import { environment } from '../../../environments/environment.development';
 
 @Injectable({
   providedIn: 'root',
@@ -15,4 +15,4 @@ export class OrderService {
   obtenerOrdenPorUsuarioId(usuarioId: number): Observable<Order> {
     return this.http.get<Order>(`${this.apiUrl}/pedido/${usuarioId}`);
   }
-} 
+}

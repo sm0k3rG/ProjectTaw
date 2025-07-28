@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { environment } from '../../../environments/environment';
+import { environment } from '../../../environments/environment.development';
 import { HttpClient } from '@angular/common/http';
 import { Category } from '../models/category.interface';
 import { Observable } from 'rxjs';
@@ -25,10 +25,10 @@ export class CategoryService {
   eliminarCategoria(id: number): Observable<any> {
     return this.http.delete(`${this.apiUrl}/${this.controller}/${id}`);
   }
-  
+
   actualizarCategoria(id: number, categoria: Partial<Category>): Observable<Category> {
     return this.http.patch<Category>(`${this.apiUrl}/${this.controller}/${id}`, categoria);
   }
-  
+
 
 }

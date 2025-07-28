@@ -2,8 +2,7 @@
   <div class="navbar-content d-flex align-items-center justify-content-between w-100">
     <!-- Logo -->
     <div class="d-flex align-items-center">
-      <img src="assets/walmart-chile-logo.png" alt="Walmart Chile" class="logo">
-      <button class="btn btn-link text-white fw-bold d-flex align-items-center me-3 categories-btn">
+      <img src="https://i5.walmartimages.com/dfw/63fd9f59-14e2/9d304ce6-96de-4331-b8ec-c5191226d378/v1/spark-icon.svg" alt="Walmart Logo" style="height: 38px; width: 38px;" class="me-2" />      <button class="btn btn-link text-white fw-bold d-flex align-items-center me-3 categories-btn">
         <i class="bi bi-grid-3x3-gap-fill me-1"></i> Categorías
       </button>
     </div>
@@ -23,7 +22,7 @@
         <span class="fw-bold text-truncate delivery-text">
           <ng-container *ngIf="selectedDeliveryType === 'retiro'; else envio">
             <ng-container *ngIf="selectedStore; else sinTienda">
-              Retira en {{ selectedStore.name }}
+              Retira en {{ selectedStore.nombre }}
             </ng-container>
             <ng-template #sinTienda>
               Selecciona una tienda

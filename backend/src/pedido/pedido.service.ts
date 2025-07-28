@@ -43,15 +43,24 @@ export class PedidoService {
   }
 
  async crearPedido(createPedidoDto: CreatePedidoDto): Promise<Pedido> {
-  const { usuarioId, direccionId, lineasDePedido } = createPedidoDto;
+  const { usuarioId, direccion, lineasDePedido } = createPedidoDto;
 
-  // Verificar usuario y dirección
+  // Verificar usuario
   const usuario = await this.prisma.usuario.findUnique({ where: { id: usuarioId } });
-  const direccion = await this.prisma.direccion.findUnique({ where: { id: direccionId } });
-
-  if (!usuario || !direccion) {
-    throw new Error('Usuario o dirección no encontrados');
+  if (!usuario) {
+    throw new Error('Usuario no encontrado');
   }
+
+  // Crear la dirección
+  const nuevaDireccion = await this.prisma.direccion.create({
+    data: {
+      usuarioId,
+      calle: direccion.calle,
+      numero: direccion.numero,
+      ciudad: direccion.ciudad,
+      region: direccion.region
+    }
+  });
 
   // Preparar líneas de pedido con precio final
   const lineasConTotales = await Promise.all(
@@ -90,7 +99,7 @@ export class PedidoService {
   const pedido = await this.prisma.pedido.create({
     data: {
       usuarioId,
-      direccionId,
+      direccionId: nuevaDireccion.id,
       estado: 'PENDIENTE',
       fechaPedido: new Date(),
       total: totalPedido,
@@ -109,7 +118,7 @@ export class PedidoService {
     },
   });
 
-  // ✅ Enviar notificación por correo
+  // Enviar notificación por correo
   try {
     await this.notificationsService.notificarCreacionPedido(
       usuario.email,

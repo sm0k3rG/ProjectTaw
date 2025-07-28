@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Product } from '../../../../models/product.model';
+import { cartProduct, Product } from '../../../../models/product.model';
 import { ProductsService } from '../../../../services/products.service';
 import { CartService } from '../../../../services/cart.service';
 import { MainNavbarComponent } from '../../../../shared/main-navbar/main-navbar.component';
@@ -34,10 +34,10 @@ export class ProductsListComponent implements OnInit {
     this.error = false;
 
     this.productsService.getAllProducts().subscribe({
-      next: (products) => {
-        this.products = products;
+      next: (response: any) => {
+        this.products = response.data;
         this.loading = false;
-        console.log('Productos cargados:', products);
+        console.log('Productos cargados:', response.data);
       },
       error: (error) => {
         console.error('Error cargando productos:', error);
@@ -49,6 +49,6 @@ export class ProductsListComponent implements OnInit {
 
   addToCart(product: Product): void {
     this.cartService.addToCart(product);
-    console.log('Producto agregado al carrito:', product.name);
+    console.log('Producto agregado al carrito:', product.nombre);
   }
 }
