@@ -4,10 +4,13 @@ import * as bcrypt from 'bcrypt';
 const prisma = new PrismaClient();
 
 async function main() {
-  // Crear usuarios de prueba
   const hashedPassword = await bcrypt.hash('password123', 10);
 
-  // Usuario administrador
+  // 🔄 Eliminar datos en orden para evitar conflictos
+  await prisma.lineaDePedido.deleteMany();
+  await prisma.historialVisita.deleteMany();
+  await prisma.productoSucursal.deleteMany();
+  await prisma.pedido.deleteMany();
   await prisma.producto.deleteMany();
   await prisma.categoria.deleteMany();
   await prisma.oferta.deleteMany();
@@ -15,16 +18,16 @@ async function main() {
   await prisma.usuario.deleteMany();
   await prisma.sucursal.deleteMany();
 
-  // Crear categorías
+  // ✅ Crear categorías
   const categorias = await Promise.all(
     ['Tecnología', 'Hogar', 'Deportes'].map(nombre =>
       prisma.categoria.create({
-        data: { nombre, estado: 'ACTIVO' }
+        data: { nombre, estado: 'ACTIVA' }
       })
     )
   );
 
-  // Crear ofertas
+  // ✅ Crear oferta
   const oferta = await prisma.oferta.create({
     data: {
       porcentaje: 10,
@@ -35,7 +38,7 @@ async function main() {
     }
   });
 
-  // Crear sucursales
+  // ✅ Crear sucursales
   const sucursales = await Promise.all([
     prisma.sucursal.create({
       data: {
@@ -55,13 +58,27 @@ async function main() {
     })
   ]);
 
-  // Crear usuarios y sus direcciones
+  // ✅ Crear usuario Admin
+  await prisma.usuario.create({
+    data: {
+      nombre: 'Admin',
+      rut: '210860533',
+      email: 'admin@mail.com',
+      contrasena: hashedPassword,
+      telefono: '912345670',
+      tarjetas: '0000-0000-0000-0000',
+      rol: Rol.Admin
+    }
+  });
+
+  // ✅ Crear usuarios con direcciones y pedidos
   for (let i = 1; i <= 5; i++) {
     const usuario = await prisma.usuario.create({
       data: {
         nombre: `Usuario${i}`,
+        rut: `212015164${i}-K`,
         email: `usuario${i}@mail.com`,
-        contrasena: 'contrasena123',
+        contrasena: hashedPassword,
         telefono: `91234567${i}`,
         tarjetas: `1111-2222-3333-${i.toString().padStart(4, '0')}`,
         rol: Rol.Cliente
@@ -78,14 +95,14 @@ async function main() {
       }
     });
 
-    // Crear pedido para el usuario
     const pedido = await prisma.pedido.create({
       data: {
         fechaPedido: new Date(),
         estado: PedidoEstado.PENDIENTE,
-        total: 0, // Se actualizará después
+        total: 0,
         usuarioId: usuario.id,
-        direccionId: direccion.id
+        direccionId: direccion.id,
+        direccionRetiroId: null
       }
     });
 
@@ -106,7 +123,7 @@ async function main() {
         }
       });
 
-      // Stock en sucursales
+      // Stock por sucursal
       for (const sucursal of sucursales) {
         await prisma.productoSucursal.create({
           data: {
@@ -119,7 +136,7 @@ async function main() {
 
       const cantidad = Math.floor(Math.random() * 3) + 1;
       const precio = producto.precio;
-      const total = precio * cantidad;
+      const total = cantidad * precio;
 
       await prisma.lineaDePedido.create({
         data: {
@@ -132,12 +149,18 @@ async function main() {
 
       totalPedido += total;
 
-      await prisma.historialVisita.create({
-        data: {
-          usuarioId: usuario.id,
-          productoId: producto.id
-        }
-      });
+      // Historial de visita
+      try {
+        await prisma.historialVisita.create({
+          data: {
+            usuarioId: usuario.id,
+            productoId: producto.id
+          }
+        });
+      } catch (err) {
+        // En caso de error por duplicado (por @@unique)
+        console.warn(`⚠️ Visita duplicada evitada para usuario ${usuario.id} y producto ${producto.id}`);
+      }
     }
 
     await prisma.pedido.update({

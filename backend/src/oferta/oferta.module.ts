@@ -8,4 +8,6 @@ import { OfertaController } from './oferta.controller';
   controllers: [OfertaController],
   providers: [OfertaService, PrismaService],
 })
-export class OfertaModule {}
+export class OfertaModule {
+  
+}

@@ -1,4 +1,5 @@
-import { IsString, IsDateString, IsInt, IsPositive, IsOptional } from 'class-validator';
+import { IsString, IsDateString, IsInt, IsPositive, IsOptional, IsEnum } from 'class-validator';
+import { OfertaEstado } from './create-oferta.dto';
 
 export class UpdateOfertaDto {
   @IsOptional()
@@ -19,10 +20,6 @@ export class UpdateOfertaDto {
   fechaFin?: Date;
 
   @IsOptional()
-  @IsString()
-  estado?: string;
-
-  @IsOptional()
-  @IsInt()
-  productoId?: number;
+  @IsEnum(OfertaEstado)
+  estado?: OfertaEstado;
 }

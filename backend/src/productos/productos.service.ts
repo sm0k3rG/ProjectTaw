@@ -4,10 +4,12 @@ import { UpdateProductoDto } from './dto/update-producto.dto';
 import { CreateProductDto } from './dto/create-producto.dto';
 import { GetProductosDto } from './dto/get-productos.dto';
 import { Producto, ProductoEstado } from '@prisma/client';
+import { AuditoriaService } from '../auditoria/auditoria.service';
 
 @Injectable()
 export class ProductoService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService, private readonly auditoria: AuditoriaService) {}
+
   
 async agregarProducto(createProductDto: CreateProductDto) {
     const { nombre, descripcion, precio, categoriaId, ofertaId, imagenUrl, sucursales } = createProductDto;
@@ -49,6 +51,38 @@ async agregarProducto(createProductDto: CreateProductDto) {
     });
     return product;
   }
+async actualizarProducto(
+  id: number,
+  dto: UpdateProductoDto,
+  usuarioId: number | null,
+) {
+  /* 1. Reglas de negocio */
+  if (dto.precio !== undefined && dto.precio < 0)
+    throw new BadRequestException('El precio debe ser ≥ 0');
+  if (dto.stock !== undefined && dto.stock < 0)
+    throw new BadRequestException('El stock debe ser ≥ 0');
+
+  /* 2. Original */
+  const original = await this.prisma.producto.findUnique({ where: { id } });
+  if (!original) throw new NotFoundException('Producto no encontrado');
+
+  /* 3. Update */
+  const actualizado = await this.prisma.producto.update({
+    where: { id },
+    data: dto,
+  });
+
+  /* 4. Detectar cambios */
+  const cambios: Record<string, { antes: any; despues: any }> = {};
+  for (const k of Object.keys(dto)) {
+    cambios[k] = { antes: (original as any)[k], despues: (actualizado as any)[k] };
+  }
+
+  /* 5. Auditar */
+  await this.auditoria.logCambio(id, usuarioId, cambios);
+
+  return actualizado;
+}
 
 
 async obtenerProductosConDetalles(

@@ -163,6 +163,7 @@ async cancelarPedidoPropio(pedidoId: number, usuarioId: number) {
   return pedidoCancelado;
 }
 
+
 async cancelarPedidoAdmin(pedidoId: number) {
   const pedido = await this.prisma.pedido.findUnique({
     where: { id: pedidoId },
