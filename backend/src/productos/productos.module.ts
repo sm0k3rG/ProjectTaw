@@ -2,10 +2,10 @@ import { Module } from '@nestjs/common';
 import { ProductoService } from './productos.service';
 import { ProductoController } from './productos.controller';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { AuditoriaModule } from '../auditoria/auditoria.module';
+import { NotificationsModule } from 'src/notifications/notifications.module';
 
 @Module({
-  imports: [AuditoriaModule], 
+  imports: [NotificationsModule],
   providers: [ProductoService,PrismaService],
   controllers: [ProductoController]
 })

@@ -4,12 +4,14 @@ import { UpdateProductoDto } from './dto/update-producto.dto';
 import { CreateProductDto } from './dto/create-producto.dto';
 import { GetProductosDto } from './dto/get-productos.dto';
 import { Producto, ProductoEstado } from '@prisma/client';
-import { AuditoriaService } from '../auditoria/auditoria.service';
+import { UpdateProductoConStockDto } from './dto/update-producto-con-stock.dto';
+import { NotificationsService } from 'src/notifications/notifications.service';
 
 @Injectable()
 export class ProductoService {
-  constructor(private readonly prisma: PrismaService, private readonly auditoria: AuditoriaService) {}
-
+  constructor(private readonly prisma: PrismaService,
+    private readonly notificationsService: NotificationsService,
+  ) {}
   
 async agregarProducto(createProductDto: CreateProductDto) {
     const { nombre, descripcion, precio, categoriaId, ofertaId, imagenUrl, sucursales } = createProductDto;
@@ -51,38 +53,6 @@ async agregarProducto(createProductDto: CreateProductDto) {
     });
     return product;
   }
-async actualizarProducto(
-  id: number,
-  dto: UpdateProductoDto,
-  usuarioId: number | null,
-) {
-  /* 1. Reglas de negocio */
-  if (dto.precio !== undefined && dto.precio < 0)
-    throw new BadRequestException('El precio debe ser ≥ 0');
-  if (dto.stock !== undefined && dto.stock < 0)
-    throw new BadRequestException('El stock debe ser ≥ 0');
-
-  /* 2. Original */
-  const original = await this.prisma.producto.findUnique({ where: { id } });
-  if (!original) throw new NotFoundException('Producto no encontrado');
-
-  /* 3. Update */
-  const actualizado = await this.prisma.producto.update({
-    where: { id },
-    data: dto,
-  });
-
-  /* 4. Detectar cambios */
-  const cambios: Record<string, { antes: any; despues: any }> = {};
-  for (const k of Object.keys(dto)) {
-    cambios[k] = { antes: (original as any)[k], despues: (actualizado as any)[k] };
-  }
-
-  /* 5. Auditar */
-  await this.auditoria.logCambio(id, usuarioId, cambios);
-
-  return actualizado;
-}
 
 
 async obtenerProductosConDetalles(
@@ -242,5 +212,65 @@ async obtenerProductosConDetalles(
     },
   });
 }
+  async actualizarProductoConStock(
+    
+    productoId: number,
+    datosProducto: UpdateProductoConStockDto['datosProducto'],
+    stockPorSucursal: UpdateProductoConStockDto['stockPorSucursal'],
+  ) {
+    // 1. Actualizar los datos del producto
+    console.log("Entro al backend del servicio")
+    const productoActualizado = await this.prisma.producto.update({
+      where: { id: productoId },
+      data: {
+        ...datosProducto, // Propiedades del producto a actualizar
+      },
+    });
+
+    // 2. Actualizar el stock en todas las sucursales
+    for (const { sucursalId, stock } of stockPorSucursal) {
+      await this.prisma.productoSucursal.upsert({
+        where: {
+          productoId_sucursalId: {
+            productoId,
+            sucursalId,
+          },
+        },
+        update: { stock }, // Actualizamos el stock
+        create: {
+          productoId,
+          sucursalId,
+          stock, // Si no existe la relación, la creamos
+        },
+      });
+    }
+
+    // 3. Comprobar si hay usuarios que visitaron el producto
+    const usuarios = await this.prisma.historialVisita.findMany({
+      where: { productoId: productoId },
+      select: { usuario: { select: { email: true } } },
+    });
+
+    // Solo proceder a enviar correos si hay usuarios
+    if (usuarios.length > 0) {
+      // Enviar el correo a los usuarios que visitaron el producto
+      for (const usuario of usuarios) {
+        await this.notificationsService.notificarStockRepuesto(
+          usuario.usuario.email,
+          productoActualizado.nombre || 'Producto'
+        );
+      }
+    }
+
+
+    // Retornar el producto actualizado con sus detalles de stock
+    return this.prisma.producto.findUnique({
+      where: { id: productoId },
+      include: {
+        sucursales: true, // Incluimos las sucursales y su stock
+      },
+    });
+}
+
 
 }
