@@ -7,7 +7,7 @@ async function main() {
   // Crear usuarios de prueba
   const hashedPassword = await bcrypt.hash('password123', 10);
 
-  // Usuario administrador
+  // Limpiar datos existentes
   await prisma.producto.deleteMany();
   await prisma.categoria.deleteMany();
   await prisma.oferta.deleteMany();
@@ -24,7 +24,7 @@ async function main() {
     )
   );
 
-  // Crear ofertas
+  // Crear oferta
   const oferta = await prisma.oferta.create({
     data: {
       porcentaje: 10,
@@ -55,13 +55,13 @@ async function main() {
     })
   ]);
 
-  // Crear usuarios y sus direcciones
+  // Crear usuarios, direcciones, pedidos, productos y líneas de pedido
   for (let i = 1; i <= 5; i++) {
     const usuario = await prisma.usuario.create({
       data: {
         nombre: `Usuario${i}`,
         email: `usuario${i}@mail.com`,
-        contrasena: 'contrasena123',
+        contrasena: hashedPassword,
         telefono: `91234567${i}`,
         tarjetas: `1111-2222-3333-${i.toString().padStart(4, '0')}`,
         rol: Rol.Cliente
@@ -78,12 +78,12 @@ async function main() {
       }
     });
 
-    // Crear pedido para el usuario
+    // Crear pedido inicial con total = 0
     const pedido = await prisma.pedido.create({
       data: {
         fechaPedido: new Date(),
         estado: PedidoEstado.PENDIENTE,
-        total: 0, // Se actualizará después
+        total: 0,
         usuarioId: usuario.id,
         direccionId: direccion.id
       }
@@ -91,6 +91,7 @@ async function main() {
 
     let totalPedido = 0;
 
+    // Crear 2 productos y líneas de pedido por usuario
     for (let j = 1; j <= 2; j++) {
       const categoria = categorias[j % categorias.length];
 
@@ -106,7 +107,7 @@ async function main() {
         }
       });
 
-      // Stock en sucursales
+      // Agregar stock aleatorio en cada sucursal
       for (const sucursal of sucursales) {
         await prisma.productoSucursal.create({
           data: {
@@ -121,10 +122,12 @@ async function main() {
       const precio = producto.precio;
       const total = precio * cantidad;
 
+      // Crear línea de pedido con el campo total
       await prisma.lineaDePedido.create({
         data: {
           cantidad,
           precioUnitario: precio,
+          total: total,
           productoId: producto.id,
           pedidoId: pedido.id
         }
@@ -132,6 +135,7 @@ async function main() {
 
       totalPedido += total;
 
+      // Registrar visita al producto
       await prisma.historialVisita.create({
         data: {
           usuarioId: usuario.id,
@@ -140,6 +144,7 @@ async function main() {
       });
     }
 
+    // Actualizar el total del pedido
     await prisma.pedido.update({
       where: { id: pedido.id },
       data: { total: totalPedido }

@@ -1,0 +1,44 @@
+<div class="detail-container">
+  <!-- Loading -->
+  <div *ngIf="loading" class="text-center py-5">
+    <div class="spinner-border" role="status"></div>
+    <p class="mt-3 text-muted">Cargando información…</p>
+  </div>
+
+  <!-- Error -->
+  <div *ngIf="error && !loading" class="text-center py-5">
+    <i class="bi bi-exclamation-triangle display-1 text-warning"></i>
+    <h4 class="text-warning mt-3">Error al cargar datos</h4>
+    <button class="btn btn-primary" (click)="ngOnInit()">
+      <i class="bi bi-arrow-clockwise me-1"></i>Reintentar
+    </button>
+  </div>
+
+  <!-- Detalle -->
+  <div *ngIf="user && !loading && !error" class="detail-card mx-auto shadow-sm">
+    <div class="card-header">
+      <h3>Información de Usuario</h3>
+    </div>
+    <div class="card-body">
+      <div class="detail-row">
+        <span class="label">ID:</span> <span>{{ user.id }}</span>
+      </div>
+      <div class="detail-row">
+        <span class="label">Nombre:</span> <span>{{ user.name }}</span>
+      </div>
+      <div class="detail-row">
+        <span class="label">Email:</span> <span>{{ user.email }}</span>
+      </div>
+      <div class="detail-row">
+        <span class="label">Rol:</span> <span>{{ user.role }}</span>
+      </div>
+      <div class="detail-row">
+        <span class="label">Activo:</span>
+        <span>{{ user.active ? "Sí" : "No" }}</span>
+      </div>
+      <button routerLink="/admin/users" class="btn btn-secondary mt-4">
+        ← Volver al listado
+      </button>
+    </div>
+  </div>
+</div>

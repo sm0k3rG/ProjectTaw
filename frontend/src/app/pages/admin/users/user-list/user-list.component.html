@@ -1,0 +1,29 @@
+<div class="user-list-container">
+  <div class="user-list-card">
+    <h2 class="card-title">Listado de Usuarios</h2>
+    <button class="view-button" (click)="onViewClick()" [disabled]="loading">
+      {{ loading ? "Cargando…" : "Ver listado de usuarios" }}
+    </button>
+  </div>
+
+  <div *ngIf="error" class="error-message">
+    Error al cargar usuarios. Intenta de nuevo.
+  </div>
+
+  <table *ngIf="showList && !loading" class="user-table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Nombre</th>
+        <th>Rol</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let u of users">
+        <td>{{ u.id }}</td>
+        <td>{{ u.name }}</td>
+        <td>{{ u.role }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

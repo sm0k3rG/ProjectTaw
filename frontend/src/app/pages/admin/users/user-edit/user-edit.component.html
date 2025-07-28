@@ -1,0 +1,82 @@
+<!-- Éxito -->
+<div *ngIf="success" class="alert alert-success position-fixed top-0 end-0 m-3">
+  ¡Usuario actualizado correctamente!
+</div>
+
+<!-- Cargando -->
+<div *ngIf="loading" class="text-center py-5">
+  <div class="spinner-border" role="status"></div>
+  <p class="mt-3 text-muted">Cargando datos…</p>
+</div>
+
+<!-- Error simples -->
+<div *ngIf="error && !loading" class="text-center py-5">
+  <p class="text-danger">Error al cargar o actualizar. Intenta nuevamente.</p>
+</div>
+
+<!-- Formulario -->
+<div *ngIf="!loading && !error" class="edit-container">
+  <div class="edit-card mx-auto shadow-sm">
+    <div class="card-header">
+      <h3>Editar Usuario</h3>
+    </div>
+    <div class="card-body">
+      <form [formGroup]="form" (ngSubmit)="onSubmit()">
+        <!-- Nombre -->
+        <div class="mb-3">
+          <label class="form-label">Nombre</label>
+          <input type="text" class="form-control" formControlName="name" />
+          <div
+            *ngIf="form.get('name')?.invalid && form.get('name')?.touched"
+            class="text-danger small"
+          >
+            Nombre es obligatorio.
+          </div>
+        </div>
+        <!-- Email -->
+        <div class="mb-3">
+          <label class="form-label">Correo electrónico</label>
+          <input type="email" class="form-control" formControlName="email" />
+          <div
+            *ngIf="
+              form.get('email')?.hasError('required') &&
+              form.get('email')?.touched
+            "
+            class="text-danger small"
+          >
+            El correo es obligatorio.
+          </div>
+          <div
+            *ngIf="
+              form.get('email')?.hasError('email') && form.get('email')?.touched
+            "
+            class="text-danger small"
+          >
+            Formato no válido.
+          </div>
+        </div>
+        <!-- Rol -->
+        <div class="mb-4">
+          <label class="form-label">Rol</label>
+          <select class="form-select" formControlName="role">
+            <option value="">– Selecciona –</option>
+            <option *ngFor="let r of roles" [value]="r">{{ r }}</option>
+          </select>
+          <div
+            *ngIf="form.get('role')?.invalid && form.get('role')?.touched"
+            class="text-danger small"
+          >
+            Rol es obligatorio.
+          </div>
+        </div>
+        <button
+          type="submit"
+          class="btn submit-button w-100"
+          [disabled]="form.invalid || loading"
+        >
+          {{ loading ? "Guardando…" : "Guardar cambios" }}
+        </button>
+      </form>
+    </div>
+  </div>
+</div>

@@ -1,73 +1,186 @@
 import { Routes } from '@angular/router';
 
 export const routes: Routes = [
-  {
-    path: '',
-    redirectTo: '/login',
-    pathMatch: 'full'
-  },
+  /* ---------- Público ---------- */
+  { path: '', redirectTo: '/user/products', pathMatch: 'full' },
+
   {
     path: 'login',
-    loadComponent: () => import('./pages/auth/login/login.component').then(m => m.LoginComponent)
-  },
-  {
-    path: 'user/products',
-    loadComponent: () => import('./pages/user/products/products-list/products-list.component').then(m => m.ProductsListComponent)
-  },
-  {
-    path: 'user/product/:id',
-    loadComponent: () => import('./pages/user/products/product/product.component').then(m => m.ProductComponent)
-  },
-  {
-    path: 'user/cart',
-    loadComponent: () => import('./pages/user/cart/cart/cart.component').then(m => m.CartComponent)
+    loadComponent: () =>
+      import('./pages/auth/login/login.component')
+        .then(m => m.LoginComponent)
   },
   {
     path: 'register',
-    loadComponent: () => import('./pages/auth/register/register.component').then(m => m.RegisterComponent)
+    loadComponent: () =>
+      import('./pages/auth/register/register.component')
+        .then(m => m.RegisterComponent)
   },
   {
     path: 'recover-password',
-    loadComponent: () => import('./pages/auth/recover-password/recover-password.component').then(m => m.RecoverPasswordComponent)
+    loadComponent: () =>
+      import('./pages/auth/recover-password/recover-password.component')
+        .then(m => m.RecoverPasswordComponent)
   },
   {
     path: 'reset-password',
-    loadComponent: () => import('./pages/auth/reset-password/reset-password.component').then(m => m.ResetPasswordComponent)
+    loadComponent: () =>
+      import('./pages/auth/reset-password/reset-password.component')
+        .then(m => m.ResetPasswordComponent)
+  },
+
+  /* ---------- Catálogo ---------- */
+  {
+    path: 'user/products',
+    loadComponent: () =>
+      import('./pages/user/products/products-list/products-list.component')
+        .then(m => m.ProductsListComponent)
   },
   {
-    path: 'admin/dashboard',
-    loadComponent: () => import('./pages/admin/dashboard/dashboard.component').then(m => m.DashboardComponent)
+    path: 'user/product/:id',
+    loadComponent: () =>
+      import('./pages/user/products/product/product.component')
+        .then(m => m.ProductComponent)
   },
   {
-    path: 'admin/order-list',
-    loadComponent: () => import('./pages/admin/orders/order-list/order-list.component').then(m => m.OrderListComponent)
+    path: 'user/cart',
+    loadComponent: () =>
+      import('./pages/user/cart/cart/cart.component')
+        .then(m => m.CartComponent)
+  },
+
+  /* ---------- Confirmación de pedido ---------- */
+  {
+    path: 'order-confirmation/:orderId',
+    loadComponent: () =>
+      import('./pages/user/order-confirmation/order-confirmation.component')
+        .then(m => m.OrderConfirmationComponent)
+  },
+
+  /* ---------- Cuenta de usuario ---------- */
+  {
+    path: 'account',
+    loadComponent: () =>
+      import('./pages/user/account/profile/profile.component')
+        .then(m => m.ProfileComponent)
   },
   {
-    path: 'admin/products',
-    loadComponent: () => import('./pages/admin/products/product-list/product-list.component').then(m => m.ProductListComponent)
+    path: 'account/additional-info',
+    loadComponent: () =>
+      import('./pages/user/account/additional-info/additional-info.component')
+        .then(m => m.AdditionalInfoComponent)
   },
   {
-    path: 'admin/offers',
-    loadComponent: () => import('./pages/admin/offer/offer-list/offer-list.component').then(m => m.OfferListComponent)
+    path: 'account/deactivate',
+    loadComponent: () =>
+      import('./pages/user/account/deactivate-account/deactivate-account.component')
+        .then(m => m.DeactivateAccountComponent)
   },
-  {
-    path: 'admin/categories',
-    loadComponent: () => import('./pages/admin/products/category/category.component').then(m => m.CategoryComponent)
-  },
-  {
-    path: 'admin/branches',
-    loadComponent: () => import('./pages/admin/branch/branch-list/branch-list.component').then(m => m.BranchListComponent)
-  },
+
+  /* ---------- Historial y pagos ---------- */
   {
     path: 'user/purchase-history',
-    loadComponent: () => import('./pages/user/purchase-history/purchase-history.component').then(m => m.PurchaseHistoryComponent)
+    loadComponent: () =>
+      import('./pages/user/purchase-history/purchase-history.component')
+        .then(m => m.PurchaseHistoryComponent)
   },
   {
     path: 'user/order/:usuarioId',
-    loadComponent: () => import('./pages/user/order/order.component').then(m => m.OrderComponent)
+    loadComponent: () =>
+      import('./pages/user/order/order.component')
+        .then(m => m.OrderComponent)
   },
   {
     path: 'user/payment/:usuarioId',
-    loadComponent: () => import('./pages/user/payment/payment.component').then(m => m.PaymentComponent)
-  }
+    loadComponent: () =>
+      import('./pages/user/payment/payment.component')
+        .then(m => m.PaymentComponent)
+  },
+
+  /* ---------- Administración ---------- */
+  {
+    path: 'admin/dashboard',
+    loadComponent: () =>
+      import('./pages/admin/dashboard/dashboard.component')
+        .then(m => m.DashboardComponent)
+  },
+  {
+    path: 'admin/order-list',
+    loadComponent: () =>
+      import('./pages/admin/orders/order-list/order-list.component')
+        .then(m => m.OrderListComponent)
+  },
+  {
+    path: 'admin/products',
+    loadComponent: () =>
+      import('./pages/admin/products/product-list/product-list.component')
+        .then(m => m.ProductListComponent)
+  },
+  {
+    path: 'admin/products/:id/edit',
+    loadComponent: () =>
+      import('./pages/admin/products/product-edit/product-edit.component')
+        .then(m => m.ProductEditComponent)
+  },
+
+  /* ----- Administración · Usuarios ----- */
+  {
+    path: 'admin/users',
+    loadComponent: () =>
+      import('./pages/admin/users/user-list/user-list.component')
+        .then(m => m.UserListComponent)
+  },
+  {
+    path: 'admin/users/new',
+    loadComponent: () =>
+      import('./pages/admin/users/user-create/user-create.component')
+        .then(m => m.UserCreateComponent)
+  },
+  {
+    path: 'admin/users/:id',
+    loadComponent: () =>
+      import('./pages/admin/users/user-detail/user-detail.component')
+        .then(m => m.UserDetailComponent)
+  },
+  {
+    path: 'admin/users/:id/edit',
+    loadComponent: () =>
+      import('./pages/admin/users/user-edit/user-edit.component')
+        .then(m => m.UserEditComponent)
+  },
+  {
+    path: 'admin/users/:id/deactivate',
+    loadComponent: () =>
+      import('./pages/admin/users/user-deactivate/user-deactivate.component')
+        .then(m => m.UserDeactivateComponent)
+  },
+  {
+    path: 'admin/users/:id/delete',
+    loadComponent: () =>
+      import('./pages/admin/users/user-delete/user-delete.component')
+        .then(m => m.UserDeleteComponent)
+  },
+
+  /* ---------- Administración · Otros ---------- */
+  {
+    path: 'admin/offers',
+    loadComponent: () =>
+      import('./pages/admin/offer/offer-list/offer-list.component')
+        .then(m => m.OfferListComponent)
+  },
+  {
+    path: 'admin/categories',
+    loadComponent: () =>
+      import('./pages/admin/products/category/category.component')
+        .then(m => m.CategoryComponent)
+  },
+  {
+    path: 'admin/branches',
+    loadComponent: () =>
+      import('./pages/admin/branch/branch-list/branch-list.component')
+        .then(m => m.BranchListComponent)
+  },
+
+  /* ---------- Ruta comodín (debe ir al final) ---------- */
+  { path: '**', redirectTo: '/user/products' }
 ];
