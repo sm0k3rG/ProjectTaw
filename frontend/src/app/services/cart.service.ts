@@ -114,7 +114,7 @@ export class CartService {
   }
 
   crearPedido(pedido: any): Observable<any> {
-    const url = 'http://localhost:3000/api/pedido';
+    const url = 'http://localhost:3000/pedidos';
     return this.http.post(url, pedido);
   }
 }

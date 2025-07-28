@@ -103,36 +103,48 @@ export class CartSidebarComponent implements OnInit {
   }
 
   procederAlPago(): void {
-    const usuarioId = 1; // puedes reemplazar esto por el ID real del usuario
+  const usuarioId = 1;
 
-    let direccion: any = null;
+  let direccionId: number;
+  let direccionRetiroId: number | undefined;
 
-    if (localStorage.getItem('deliveryAddress')) {
-      direccion = JSON.parse(localStorage.getItem('deliveryAddress')!);
-    } else if (localStorage.getItem('pickupStore')) {
-      const parsedStore = JSON.parse(localStorage.getItem('pickupStore')!);
-      direccion = parsedStore.id;
-    }
-
-    const lineasDePedido = this.cartItems.map(item => ({
-      productoId: item.product.id,
-      cantidad: item.quantity
-    }));
-
-    const pedido = {
-      usuarioId,
-      direccion,
-      lineasDePedido
-    };
-
-    this.cartService.crearPedido(pedido).subscribe({
-      next: () => {
-        alert('¡Pedido creado con éxito!');
-        this.cartService.clearCart();
-      },
-      error: () => {
-        alert('Error al crear el pedido');
-      }
-    });
+  if (localStorage.getItem('deliveryAddress')) {
+    const direccion = JSON.parse(localStorage.getItem('deliveryAddress')!);
+    direccionId = direccion.id; // Envío a domicilio
+  } else if (localStorage.getItem('pickupStore')) {
+    const store = JSON.parse(localStorage.getItem('pickupStore')!);
+    direccionId = 1; // Valor fijo para retiro
+    direccionRetiroId = store.id; // ID real de la sucursal
+  } else {
+    alert('No se ha seleccionado dirección ni tienda para retiro');
+    return;
   }
+
+  const lineasDePedido = this.cartItems.map(item => ({
+    productoId: item.product.id,
+    cantidad: item.quantity
+  }));
+
+  const pedido: any = {
+    usuarioId,
+    direccionId,
+    lineasDePedido
+  };
+
+  if (direccionRetiroId) {
+    pedido.direccionRetiroId = direccionRetiroId;
+  }
+
+  this.cartService.crearPedido(pedido).subscribe({
+    next: () => {
+      alert('¡Pedido creado con éxito!');
+      this.cartService.clearCart();
+    },
+    error: () => {
+      alert('Error al crear el pedido');
+    }
+  });
+}
+
+
 }
