@@ -29,9 +29,16 @@ export class ProductsService {
   }
 
   /** Actualizar producto existente */
-  updateProduct(id: number, data: Partial<Product>): Observable<Product> {
-    return this.http.put<Product>(`${this.apiUrl}/${id}`, data);
-  }
+  updateProduct(id: number, datosProducto: any, stockPorSucursal: any): Observable<any> {
+  const body = {
+    datosProducto,
+    stockPorSucursal
+  };
+
+  console.log('Request PUT:', body);
+
+  return this.http.put(`${this.apiUrl}producto/${id}/actualizar`, body);
+}
 
   /** Eliminar producto */
   deleteProduct(id: number): Observable<void> {
