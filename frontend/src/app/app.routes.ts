@@ -128,13 +128,10 @@ export const routes: Routes = [
         .then(m => m.PurchaseHistoryComponent)
   },
   {
-    path: 'user/order/:pedidoId/:usuarioId',
+    path: 'pedidos/:pedidoId/propio',
     loadComponent: () => import('./pages/user/order/order.component').then(m => m.OrderComponent)
   },
-  {
-    path: 'user/payment/:pedidoId/:usuarioId',
-    loadComponent: () => import('./pages/user/payment/payment.component').then(m => m.PaymentComponent)
-  },
+
 
   {
     path: 'admin/products/:id/edit',

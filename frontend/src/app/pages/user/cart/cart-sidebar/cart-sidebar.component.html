@@ -91,3 +91,12 @@
     </button>
   </div>
 </div>
+
+<!-- Modal de pago -->
+<app-payment
+  [isOpen]="showPaymentModal"
+  [pedidoId]="pedidoId"
+  [usuarioId]="usuarioId"
+  (closeModal)="cerrarModalPago()"
+  (paymentSuccess)="onPaymentSuccess($event)">
+</app-payment>

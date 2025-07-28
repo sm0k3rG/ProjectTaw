@@ -5,6 +5,7 @@
  */
 import { Component, OnInit } from '@angular/core';
 import { CommonModule, DatePipe, TitleCasePipe } from '@angular/common';
+import { Router } from '@angular/router';
 import { OrderService } from '../../../core/services/order.service';
 import { Order } from '../../../core/models/order.interface';
 import { ActivatedRoute } from '@angular/router';
@@ -27,7 +28,7 @@ export class OrderComponent implements OnInit {
   order?: Order;
   estados = ['pendiente', 'activo', 'completado', 'cancelado'];
 
-  constructor(private orderService: OrderService, private route: ActivatedRoute) {}
+  constructor(private orderService: OrderService, private route: ActivatedRoute, private router: Router) {}
 
   /**
    * Método del ciclo de vida que se ejecuta al inicializar el componente.
@@ -39,14 +40,17 @@ export class OrderComponent implements OnInit {
       const pedidoId = Number(params.get('pedidoId'));
       const usuarioId = Number(params.get('usuarioId'));
 
-      // Validar que los parámetros existan y sean válidos
-      if (!pedidoId || !usuarioId) {
-        console.error('Faltan parámetros: pedidoId o usuarioId');
+      // Si no hay usuarioId en la ruta, usar el usuario actual (por defecto 1)
+      const userId = usuarioId || 1;
+
+      // Validar que el pedidoId exista
+      if (!pedidoId) {
+        console.error('Falta el parámetro: pedidoId');
         return;
       }
 
       // Hacer petición HTTP para obtener el pedido
-      this.orderService.obtenerPedidoPropio(pedidoId, usuarioId).subscribe({
+      this.orderService.obtenerPedidoPropio(pedidoId, userId).subscribe({
         next: (order: any) => {
           // Mapear datos del backend al modelo local
           // Se usa mapeo flexible para manejar diferentes formatos de respuesta
@@ -77,5 +81,12 @@ export class OrderComponent implements OnInit {
    */
   get totalPedido(): number {
     return this.order?.total || 0;
+  }
+
+  /**
+   * Método para volver al catálogo de productos
+   */
+  volverAlCatalogo(): void {
+    this.router.navigate(['/user/products']);
   }
 }
