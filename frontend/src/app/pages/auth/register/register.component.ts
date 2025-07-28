@@ -154,7 +154,7 @@ export class RegisterComponent {
       password: ['', [Validators.required, Validators.minLength(6)]],
       confirmPassword: ['', Validators.required],
       telefono: ['', Validators.required],
-      tarjetas: ['', Validators.required],
+      tarjetas: ['', Validators.required, Validators.pattern(/^\d{16}$/)],
       direcciones: this.fb.array([
         this.fb.group({
           calle: ['', Validators.required],

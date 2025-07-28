@@ -73,7 +73,7 @@ export class AuthService {
     if (!secret) {
       throw new Error('Falta JWT_SECRET en el archivo .env');
     }
-    const roleNormalized = user.rol === 'Admin' ? 'Administrator' : 'Client';
+    const roleNormalized = user.rol.toLowerCase() === 'admin' ? 'Administrator' : 'Client';
     const token = jwt.sign(
       { 
         userId: user.id, 
