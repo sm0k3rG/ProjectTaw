@@ -48,9 +48,9 @@ export class UserEditComponent implements OnInit {
     this.usersService.getById(this.userId).subscribe({
       next: (u: User) => {
         this.form.patchValue({
-          name:  u.name,
+          name:  u.nombre,
           email: u.email,
-          role:  u.role
+          role:  u.rol
         });
         this.loading = false;
       },
@@ -69,9 +69,9 @@ export class UserEditComponent implements OnInit {
     this.loading = true;
     this.error   = false;
     const update: Partial<User> = {
-      name:  this.form.value.name,
+      nombre:  this.form.value.name,
       email: this.form.value.email,
-      role:  this.form.value.role
+      rol:  this.form.value.role
     };
     this.usersService.update(this.userId, update).subscribe({
       next: () => {

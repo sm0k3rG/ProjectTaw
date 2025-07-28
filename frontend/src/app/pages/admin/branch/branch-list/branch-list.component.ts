@@ -1,11 +1,12 @@
 import { BranchService } from '../../../../core/services/branch.service';
 import { Component, OnInit } from '@angular/core';
 import { Branch } from '../../../../core/models/branch.interface';
+import { MainNavbarComponent } from '../../../../shared/main-navbar/main-navbar.component';
 
 @Component({
   selector: 'app-branch-list',
   standalone: true,
-  imports: [],
+  imports: [MainNavbarComponent],
   templateUrl: './branch-list.component.html',
   styleUrl: './branch-list.component.css'
 })

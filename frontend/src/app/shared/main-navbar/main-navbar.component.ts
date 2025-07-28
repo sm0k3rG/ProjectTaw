@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { RouterLink, RouterLinkActive, RouterModule } from '@angular/router';
 import { AppStateService, AppState } from '../../services/app-state.service';
 import { DeliveryTypeSidebarComponent } from '../../pages/user/delivery-type-sidebar/delivery-type-sidebar.component';
 import { AuthService } from '../../core/services/auth.service';
@@ -8,7 +8,7 @@ import { UserSidebarComponent } from '../user-sidebar/user-sidebar.component';
 @Component({
   selector: 'app-main-navbar',
   standalone: true,
-  imports: [CommonModule, RouterLink, DeliveryTypeSidebarComponent, UserSidebarComponent ],
+  imports: [CommonModule, RouterLink, DeliveryTypeSidebarComponent, UserSidebarComponent, RouterLinkActive],
   templateUrl: './main-navbar.component.html',
   styleUrls: ['./main-navbar.component.css']
 })

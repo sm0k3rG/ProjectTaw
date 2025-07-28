@@ -5,10 +5,11 @@ import { Observable, of } from 'rxjs';
 /* ——— INTERFACES —————————— */
 export interface User {
   id: number;
-  name: string;
+  nombre: string;
   email: string;
-  role: 'ADMIN' | 'CLIENT' | 'BODEGUERO' | string;
+  rol: 'ADMIN' | 'CLIENT' | 'BODEGUERO' | string;
   active: boolean;
+  telefono: string;
 }
 
 export interface UserProfile {
@@ -30,7 +31,7 @@ export interface UserProfile {
 /* ——— SERVICIO —————————— */
 @Injectable({ providedIn: 'root' })
 export class UsersService {
-  private api = 'http://localhost:3000/api/users';
+  private api = 'http://localhost:3000/usuarios';
 
   constructor(private http: HttpClient) {}
 
