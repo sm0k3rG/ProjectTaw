@@ -35,9 +35,16 @@ Vista del simulador de pago:
             </div>
           }
 
-          <p class="card-text mb-4 text-muted">
-            Elija su método de pago preferido para finalizar la compra
-          </p>
+          <!-- Mensaje dinámico según si hay tarjeta guardada -->
+          @if (tieneTarjetaGuardada) {
+            <p class="card-text mb-4 text-muted">
+              Elija su método de pago preferido para finalizar la compra
+            </p>
+          } @else {
+            <p class="card-text mb-4 text-muted">
+              Ingrese los datos de su tarjeta para finalizar la compra
+            </p>
+          }
 
           <!-- Botón para pagar con tarjeta guardada -->
           @if (tieneTarjetaGuardada) {
@@ -53,7 +60,11 @@ Vista del simulador de pago:
                   (click)="mostrarFormularioPago()"
                   style="background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%); border: none; box-shadow: 0 4px 15px rgba(25, 118, 210, 0.3);">
             <i class="fas fa-credit-card me-2"></i>
-            Ingresar Nueva Tarjeta
+            @if (tieneTarjetaGuardada) {
+              Ingresar Nueva Tarjeta
+            } @else {
+              Continuar con el Pago
+            }
           </button>
         </div>
       </div>

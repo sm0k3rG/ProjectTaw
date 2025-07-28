@@ -65,8 +65,6 @@ export class PaymentComponent implements OnInit {
       const pedidoId = Number(params.get('pedidoId'));
       const usuarioId = Number(params.get('usuarioId'));
 
-      console.log('pedidoId:', pedidoId);
-      console.log('usuarioId:', usuarioId);
 
       if (!pedidoId || !usuarioId) {
         console.error('Faltan parámetros: pedidoId o usuarioId');
@@ -75,7 +73,6 @@ export class PaymentComponent implements OnInit {
 
       this.orderService.obtenerPedidoPropio(pedidoId, usuarioId).subscribe({
         next: (order: any) => {
-          console.log('Order recibido en payment:', order);
           this.pedido = {
             id: order.id,
             estado: order.estado?.toLowerCase() || '',
@@ -87,7 +84,6 @@ export class PaymentComponent implements OnInit {
           };
           this.totalPedido = this.pedido.total;
           this.fechaPedido = new Date(this.pedido.fecha);
-          console.log('Total del pedido:', this.totalPedido);
 
           // Obtener los datos de la tarjeta del usuario desde la respuesta del pedido
           this.obtenerDatosTarjetaUsuario(order.usuario);
@@ -228,7 +224,6 @@ export class PaymentComponent implements OnInit {
    * @param usuario - Datos del usuario que vienen en la respuesta del pedido
    */
   obtenerDatosTarjetaUsuario(usuario: any) {
-    console.log('Datos del usuario recibidos:', usuario);
 
     if (usuario && usuario.tarjetas) {
       // El campo tarjetas es un string, asumimos que contiene la información de la tarjeta
@@ -236,29 +231,25 @@ export class PaymentComponent implements OnInit {
       try {
         // Intentar parsear como JSON primero
         const tarjetasData = JSON.parse(usuario.tarjetas);
+        // JSON.parse() convierte ese string en un objeto JavaScript
         if (Array.isArray(tarjetasData) && tarjetasData.length > 0) {
           // Si es un array de tarjetas, tomar la primera
           const primeraTarjeta = tarjetasData[0];
           this.ultimosDigitosTarjetaGuardada = this.extraerUltimosDigitos(primeraTarjeta.numero || primeraTarjeta);
           this.tieneTarjetaGuardada = true;
-          console.log('Tarjeta guardada encontrada (JSON):', primeraTarjeta);
         } else if (tarjetasData.numero) {
           // Si es un objeto con número
           this.ultimosDigitosTarjetaGuardada = this.extraerUltimosDigitos(tarjetasData.numero);
           this.tieneTarjetaGuardada = true;
-          console.log('Tarjeta guardada encontrada (objeto):', tarjetasData);
         }
       } catch (e) {
         // Si no es JSON, tratar como string simple
         this.ultimosDigitosTarjetaGuardada = this.extraerUltimosDigitos(usuario.tarjetas);
         this.tieneTarjetaGuardada = true;
-        console.log('Tarjeta guardada encontrada (string):', usuario.tarjetas);
       }
 
-      console.log('Últimos 4 dígitos extraídos:', this.ultimosDigitosTarjetaGuardada);
     } else {
       this.tieneTarjetaGuardada = false;
-      console.log('No se encontró tarjeta guardada para el usuario');
     }
   }
 
@@ -323,7 +314,6 @@ export class PaymentComponent implements OnInit {
    * Simula un pago directo sin necesidad de ingresar datos
    */
   pagarConTarjetaGuardada() {
-    console.log('Procesando pago con tarjeta guardada...');
 
     // Simular procesamiento de pago con tarjeta guardada (95% éxito)
     const random = Math.random();
