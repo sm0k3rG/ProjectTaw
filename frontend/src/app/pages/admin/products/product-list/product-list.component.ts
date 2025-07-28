@@ -8,6 +8,7 @@ import { CategoryService } from '../../../../core/services/category.service';
 import { NgbPaginationConfig, NgbPaginationModule } from '@ng-bootstrap/ng-bootstrap';
 import { FormsModule } from '@angular/forms';
 import { ProductAddComponent } from "../product-add/product-add.component";
+import Swal from 'sweetalert2';
 
 
 /**
@@ -35,8 +36,6 @@ export class ProductListComponent implements OnInit {
   ofertaSeleccionada: string = '';
   ordenSeleccionado: string = '';
 
-
-
   constructor(
     private productService: ProductService,
     private categoryService: CategoryService,
@@ -63,16 +62,6 @@ export class ProductListComponent implements OnInit {
   mensaje: string = '';
   mostrarMensaje: boolean = false;
   tipoMensaje: 'success' | 'error' = 'success';
-
-  // Mapeo de colores para cada sucursal (stock)
-  sucursalStockColorMap: { [key: string]: string } = {
-    'Sucursal Centro': 'bg-warning bg-opacity-25 text-dark', // naranjo claro
-    'Sucursal Norte': 'bg-primary bg-opacity-25 text-primary', // azul claro
-  };
-
-  getSucursalStockColor(sucursalNombre: string): string {
-    return this.sucursalStockColorMap[sucursalNombre] || 'bg-secondary text-white';
-  }
 
   /**
    * Retorna la clase CSS para el color del estado del producto
@@ -204,23 +193,28 @@ export class ProductListComponent implements OnInit {
    * Muestra una confirmación antes de proceder con la eliminación.
    * @param producto - Producto a eliminar
    */
-  eliminarProducto(producto: Product): void {
-    const mensajeConfirmacion = `¿Estás seguro de que deseas eliminar el producto "${producto.nombre}"?`;
-
-    if (!confirm(mensajeConfirmacion)) {
-      return;
-    }
+eliminarProducto(producto: Product): void {
+  Swal.fire({
+    title: '¿Estás seguro?',
+    text: `¿Deseas eliminar el producto "${producto.nombre}"?`,
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#d33',
+    cancelButtonColor: '#3085d6',
+    confirmButtonText: 'Sí, eliminar',
+    cancelButtonText: 'Cancelar',
+  }).then((result) => {
+    if (!result.isConfirmed) return;
 
     this.productService.eliminarProducto(producto.id).subscribe({
       next: () => {
-        this.mostrarMensajeUsuario('Producto eliminado exitosamente', 'success');
-        this.obtenerProductos(); // Recargar la lista de productos
+        Swal.fire('Eliminado', 'Producto eliminado exitosamente.', 'success');
+        this.obtenerProductos();
       },
       error: (error) => {
         console.error('Error al eliminar producto:', error);
         let mensajeError = 'Error al eliminar el producto.';
 
-        // Manejar errores específicos del backend
         if (error.error?.message) {
           mensajeError = error.error.message;
         } else if (error.status === 404) {
@@ -229,10 +223,12 @@ export class ProductListComponent implements OnInit {
           mensajeError = 'No se puede eliminar el producto. Verifica que no tenga stock disponible o no esté asociado a pedidos activos.';
         }
 
-        this.mostrarMensajeUsuario(mensajeError, 'error');
+        Swal.fire('Error', mensajeError, 'error');
       }
     });
-  }
+  });
+}
+
 
   mostrarMensajeUsuario(mensaje: string, tipo: 'success' | 'error'): void {
     this.mensaje = mensaje;

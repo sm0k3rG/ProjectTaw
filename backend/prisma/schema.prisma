@@ -97,22 +97,36 @@ lineasDePedido LineaDePedido[]    // Relación 1\:N con LineaDePedido
 visitas        HistorialVisita[]   // Relación 1\:N con HistorialVisita
 }
 
-model Categoria {
-id         Int         @id @default(autoincrement())
-nombre     String
-estado     String
-productos  Producto[]  // Relación 1\:N con Producto
+enum CategoriaEstado {
+  ACTIVA
+  ELIMINADA
 }
 
+enum OfertaEstado {
+  ACTIVA
+  INACTIVA
+  EXPIRADA
+}
+
+model Categoria {
+  id         Int         @id @default(autoincrement())
+  nombre     String
+  estado     CategoriaEstado
+  productos  Producto[]  // Relación 1:N con Producto
+}
+
+
 model Oferta {
-id          Int        @id @default(autoincrement())
+id          Int          @id @default(autoincrement())
 porcentaje  Float
 descripcion String
 fechaInicio DateTime
 fechaFin    DateTime
-estado      String
-productos   Producto[] // Relación 1\:N con Producto
+estado      OfertaEstado
+productos   Producto[]   // Relación 1\:N con Producto
 }
+
+
 
 model Sucursal {
 id         Int                @id @default(autoincrement())

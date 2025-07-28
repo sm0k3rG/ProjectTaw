@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Order } from '../models/order.interface';
 import { environment } from '../../../environments/environment';
@@ -12,7 +12,32 @@ export class OrderService {
 
   constructor(private http: HttpClient) {}
 
+  // Obtener pedido específico por ID y usuario
+  obtenerPedidoPropio(pedidoId: number, usuarioId: number): Observable<Order> {
+    return this.http.post<Order>(`${this.apiUrl}/pedidos/${pedidoId}/propio`, {
+      usuarioId
+    });
+  }
+
+  // Obtener todos los pedidos de un usuario
+  obtenerPedidosPorUsuario(usuarioId: number): Observable<Order[]> {
+    return this.http.get<Order[]>(`${this.apiUrl}/pedidos/registrados`);
+  }
+
+  // Crear un nuevo pedido
+  crearPedido(pedidoData: any): Observable<Order> {
+    return this.http.post<Order>(`${this.apiUrl}/pedidos`, pedidoData);
+  }
+
+  // Cancelar pedido propio
+  cancelarPedidoPropio(pedidoId: number, usuarioId: number): Observable<any> {
+    return this.http.patch(`${this.apiUrl}/pedidos/${pedidoId}/cancelar/propio`, {
+      usuarioId
+    });
+  }
+
+  // Método para compatibilidad con payment component
   obtenerOrdenPorUsuarioId(usuarioId: number): Observable<Order> {
-    return this.http.get<Order>(`${this.apiUrl}/pedido/${usuarioId}`);
+    return this.http.get<Order>(`${this.apiUrl}/pedidos/registrados`);
   }
 } 

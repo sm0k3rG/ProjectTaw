@@ -29,33 +29,52 @@ export class OrderComponent implements OnInit {
 
   constructor(private orderService: OrderService, private route: ActivatedRoute) {}
 
+  /**
+   * Método del ciclo de vida que se ejecuta al inicializar el componente.
+   */
   ngOnInit(): void {
+    // Suscribirse a los cambios de parámetros de la URL
     this.route.paramMap.subscribe(params => {
+      // Extraer y convertir parámetros de la URL
+      const pedidoId = Number(params.get('pedidoId'));
       const usuarioId = Number(params.get('usuarioId'));
-      console.log('usuarioId:', usuarioId);
-      if (!usuarioId) return;
-      this.orderService.obtenerOrdenPorUsuarioId(usuarioId).subscribe({
-        next: (orders: any) => {
-          // Si es un array, tomar el primer pedido
-          const order = Array.isArray(orders) ? orders[0] : orders;
-          console.log('Order recibido:', order);
+
+      // Validar que los parámetros existan y sean válidos
+      if (!pedidoId || !usuarioId) {
+        console.error('Faltan parámetros: pedidoId o usuarioId');
+        return;
+      }
+
+      // Hacer petición HTTP para obtener el pedido
+      this.orderService.obtenerPedidoPropio(pedidoId, usuarioId).subscribe({
+        next: (order: any) => {
+          // Mapear datos del backend al modelo local
+          // Se usa mapeo flexible para manejar diferentes formatos de respuesta
           this.order = {
             id: order.id,
-            estado: order.estado?.toLowerCase() || '',
-            fecha: order.fechaPedido || order.fecha || '',
-            direccion: order.direccion,
-            lineasPedido: order.lineasDePedido || order.lineasPedido || [],
-            total: order.lineasDePedido?.reduce((acc: number, l: any) => acc + (l.total || (l.cantidad * l.precioUnitario)), 0) || 0
+            estado: order.estado?.toLowerCase() || '', // Normalizar estado a minúsculas
+            fecha: order.fechaPedido || order.fecha || '', // Manejar diferentes nombres de campo
+            direccion: order.direccion, // Para pedidos con delivery
+            direccionRetiro: order.direccionRetiro, // Para pedidos con retiro en tienda
+            lineasPedido: order.lineasDePedido || order.lineasPedido || [], // Manejar diferentes nombres
+            total: order.total || 0 // Valor por defecto si no existe
           };
-          console.log('Dirección recibida:', this.order?.direccion);
         },
         error: (err) => {
+          // Manejo de errores: log del error para debugging
           console.error('Error al obtener la orden:', err);
         }
       });
     });
   }
 
+  /**
+   * Getter que calcula el total del pedido.
+   * 
+   * RETORNA:
+   * - El total del pedido si existe
+   * - 0 si no hay pedido o no tiene total
+   */
   get totalPedido(): number {
     return this.order?.total || 0;
   }

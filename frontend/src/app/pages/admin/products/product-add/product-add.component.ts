@@ -225,6 +225,18 @@ export class ProductAddComponent {
     }
   }
 
+  validCharacters(event: KeyboardEvent) {
+    const caracteresBloqueados = ['e', 'E', '+', '-', '.'];
+    if (caracteresBloqueados.includes(event.key)) {
+      event.preventDefault();
+    }
+  }
 
+  pasteInvalid(event: ClipboardEvent) {
+    const contenidoPegado = event.clipboardData?.getData('text') || '';
+    if (/[-+eE.]/.test(contenidoPegado)) {
+      event.preventDefault();
+    }
+  }
 }
 

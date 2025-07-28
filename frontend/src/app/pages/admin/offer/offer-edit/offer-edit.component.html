@@ -35,7 +35,11 @@
       <input type="date" class="form-control" formControlName="fechaFin" [min]="offerForm.get('fechaInicio')?.value || hoy" />
       @if (offerForm.get('fechaFin')?.invalid && offerForm.get('fechaFin')?.touched) {
         <div class="text-danger mt-1">
-          La fecha de fin es obligatoria.
+          @if (offerForm.get('fechaFin')?.errors?.['fechaFinInvalida']) {
+            La fecha de fin debe ser posterior a la fecha de inicio.
+          } @else {
+            La fecha de fin es obligatoria.
+          }
         </div>
       }
     </div>

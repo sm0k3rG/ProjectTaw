@@ -79,6 +79,22 @@ Vista de detalle del pedido:
           </div>
         </div>
       </div>
+
+      <!-- Información de la Sucursal -->
+      @if (order.direccionRetiro) {
+        <div class="card border-0 shadow-sm mt-3">
+          <div class="card-body d-flex align-items-center">
+            <div class="bg-success bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 48px; height: 48px;">
+              <i class="bi bi-shop text-success fs-4"></i>
+            </div>
+            <div>
+              <div class="fw-bold mb-1">Sucursal de Retiro</div>
+              <div class="text-muted">{{ order.direccionRetiro.nombre }}</div>
+              <div class="small text-muted">{{ order.direccionRetiro.direccion }}, {{ order.direccionRetiro.ciudad }}</div>
+            </div>
+          </div>
+        </div>
+      }
     </div>
     <div class="col-12 col-lg-4 d-flex align-items-stretch">
       <div class="card border-0 shadow-sm w-100">

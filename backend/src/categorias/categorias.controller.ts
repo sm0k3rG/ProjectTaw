@@ -30,7 +30,7 @@ export class CategoriaController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: number) {
-    return this.categoriaService.remove(id);
+  remove(@Param('id') id: string) {
+    return this.categoriaService.remove(Number(id));
   }
 }
