@@ -9,13 +9,13 @@ import { RolesGuard } from 'src/auth/roles.guard';
 export class PedidoController {
   constructor(private readonly pedidoService: PedidoService) {}
   
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @Post()
   create(@Body() createPedidoDto: CreatePedidoDto): Promise<Pedido> {
     return this.pedidoService.crearPedido(createPedidoDto);
   }
 
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @Get(':id/propio')
   async getPedidoPropio(
     @Param('id', ParseIntPipe) pedidoId: number,
@@ -25,7 +25,7 @@ export class PedidoController {
     return this.pedidoService.verPedidoPropio(pedidoId, usuarioId);
   }
 
-    @UseGuards(JwtAuthGuard)
+    // @UseGuards(JwtAuthGuard)
     @Patch(':id/cancelar/propio')
     async cancelarPedidoPropio(
       @Param('id', ParseIntPipe) pedidoId: number,
@@ -33,8 +33,8 @@ export class PedidoController {
       ) {
     return this.pedidoService.cancelarPedidoPropio(pedidoId, usuarioId);
   }
-  @UseGuards(RolesGuard)
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(RolesGuard)
+  // @UseGuards(JwtAuthGuard)
     @Patch(':id/cancelar/admin')
     async cancelarPedidoAdmin(
       @Param('id', ParseIntPipe) pedidoId: number,
