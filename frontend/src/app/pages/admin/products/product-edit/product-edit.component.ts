@@ -51,10 +51,10 @@ export class ProductEditComponent implements OnInit {
     this.productsService.getProductById(this.id).subscribe({
       next: (p: Product) => {
         this.form.patchValue({
-          name:        p.name,
-          image:       p.image,
-          price:       p.price,
-          description: p.description ?? ''
+          name:        p.nombre,
+          image:       p.imagenUrl,
+          price:       p.precio,
+          description: p.descripcion ?? ''
         });
         this.loading = false;
       },

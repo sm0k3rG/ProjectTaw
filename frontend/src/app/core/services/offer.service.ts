@@ -1,6 +1,6 @@
+import { environment } from './../../../environments/enviornment';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { environment } from '../../../environments/environment';
 import { Offer, CreateOfferDto } from '../models/offer.interface';
 import { Observable } from 'rxjs';
 

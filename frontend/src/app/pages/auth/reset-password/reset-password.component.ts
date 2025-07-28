@@ -47,7 +47,6 @@ export class ResetPasswordComponent {
     }
     this.cargando = true;
     const nuevaContrasena = this.formularioReset.value.contrasena;
-    // Simulación: reemplaza por llamada real al backend si es necesario
     this.authService.restablecerContrasena(this.token, nuevaContrasena).subscribe({
       next: () => {
         this.cargando = false;

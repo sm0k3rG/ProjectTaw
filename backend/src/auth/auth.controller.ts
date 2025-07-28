@@ -50,17 +50,4 @@ export class AuthController {
     return this.authService.editarUsuario(id, dto);
   }
 
-  @Patch('direccion/:id')
-  actualizarDireccion(
-    @Param('id', ParseIntPipe) id: number,
-    @Body() dto: UpdateDireccionDto
-  ) {
-    return this.direccionService.actualizarDireccion(id, dto);
-  }
-
-  @Delete('direccion/:id')
-  eliminarDireccion(@Param('id', ParseIntPipe) id: number) {
-    return this.direccionService.eliminarDireccion(id);
-  }
-
 }

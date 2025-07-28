@@ -91,8 +91,8 @@ export const routes: Routes = [
   {
     path: 'user/cart',
     loadComponent: () =>
-      import('./pages/user/cart/cart/cart.component')
-        .then(m => m.CartComponent)
+      import('./pages/user/cart/cart-sidebar/cart-sidebar.component')
+        .then(m => m.CartSidebarComponent)
   },
 
   {
