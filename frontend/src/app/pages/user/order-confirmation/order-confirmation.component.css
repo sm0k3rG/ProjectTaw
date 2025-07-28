@@ -1,0 +1,60 @@
+.confirmation-container {
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+.confirmation-card {
+  background: #fff;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+}
+
+.confirmation-card .card-header {
+  background: linear-gradient(90deg, #28a745 0%, #217a35 100%);
+  padding: 16px;
+  color: #fff;
+}
+
+.confirmation-card .card-body {
+  padding: 24px;
+  text-align: center;
+}
+
+.confirmation-card .card-body p {
+  font-size: 1.2rem;
+  margin-bottom: 1.5rem;
+}
+
+.primary-button {
+  background: linear-gradient(135deg, #0071ce 0%, #004c91 100%);
+  color: #fff;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.3s, box-shadow 0.3s;
+  margin: 0.5rem;
+}
+
+.primary-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 113, 206, 0.3);
+}
+
+.secondary-button {
+  background: #f0f0f0;
+  color: #004c91;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s;
+  margin: 0.5rem;
+}
+
+.secondary-button:hover {
+  background: #e0e0e0;
+}

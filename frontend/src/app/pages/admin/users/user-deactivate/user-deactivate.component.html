@@ -1,0 +1,59 @@
+<div class="deactivate-container">
+  <!-- Loading -->
+  <div *ngIf="loading" class="text-center py-5">
+    <div class="spinner-border" role="status"></div>
+    <p class="mt-3 text-muted">Cargando usuario…</p>
+  </div>
+
+  <!-- Error al cargar -->
+  <div *ngIf="error && !loading" class="text-center py-5">
+    <i class="bi bi-exclamation-triangle display-1 text-warning"></i>
+    <h4 class="text-warning mt-3">Error al cargar datos</h4>
+    <button class="btn btn-primary" (click)="loadUser()">
+      <i class="bi bi-arrow-clockwise me-1"></i>Reintentar
+    </button>
+  </div>
+
+  <!-- Success message -->
+  <div *ngIf="success" class="alert alert-success text-center">
+    Usuario desactivado con éxito. Volviendo al listado…
+  </div>
+
+  <!-- Deactivation form -->
+  <div
+    *ngIf="user && !loading && !error"
+    class="deactivate-card mx-auto shadow-sm"
+  >
+    <div class="card-header">
+      <h3>Desactivar Usuario</h3>
+    </div>
+    <div class="card-body">
+      <p><strong>ID:</strong> {{ user.id }}</p>
+      <p><strong>Nombre:</strong> {{ user.name }}</p>
+      <p>
+        <strong>Estado actual:</strong>
+        <span [class.active]="user.active" [class.inactive]="!user.active">
+          {{ user.active ? "Activo" : "Inactivo" }}
+        </span>
+      </p>
+
+      <button
+        class="btn deactivate-button w-100"
+        (click)="onDeactivate()"
+        [disabled]="!user.active || processing"
+      >
+        <ng-container *ngIf="!processing; else sp">
+          Desactivar usuario
+        </ng-container>
+        <ng-template #sp>
+          <span class="spinner-border spinner-border-sm"></span>
+          Desactivando…
+        </ng-template>
+      </button>
+
+      <button routerLink="/admin/users" class="btn btn-secondary w-100 mt-2">
+        ← Volver al listado
+      </button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,83 @@
+/* Contenedor centrado y con padding */
+.user-list-container {
+  padding: 40px 20px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/* Tarjeta con sombra, bordes redondeados y gradiente superior */
+.user-list-card {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 20px 40px rgba(0, 76, 145, 0.1);
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 24px;
+}
+
+.user-list-card::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #ffc220 0%, #ffb000 100%);
+}
+
+.card-title {
+  margin: 0 0 16px;
+  font-size: 1.5rem;
+  color: #004c91;
+}
+
+/* Botón idéntico al de login */
+.view-button {
+  background: linear-gradient(135deg, #0071ce 0%, #004c91 100%);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.view-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 113, 206, 0.3);
+}
+
+.view-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Tabla simple y limpia */
+.user-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.user-table th,
+.user-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid #e1e5e9;
+  text-align: left;
+}
+
+.user-table th {
+  background-color: #f8f9fa;
+  font-weight: 600;
+}
+
+.user-table tr:hover {
+  background-color: #fafbfc;
+}
+
+/* Mensaje de error alineado con estilo de login */
+.error-message {
+  color: #e53e3e;
+  text-align: center;
+  margin-bottom: 16px;
+}

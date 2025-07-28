@@ -1,0 +1,18 @@
+<div class="confirmation-container">
+  <div class="confirmation-card">
+    <div class="card-header">
+      <h3>¡Pedido Confirmado!</h3>
+    </div>
+    <div class="card-body">
+      <p>
+        Tu pedido <strong>#{{ orderId }}</strong> se ha creado con éxito.
+      </p>
+      <button class="primary-button" (click)="viewOrders()">
+        Ver historial de compras
+      </button>
+      <button class="secondary-button" (click)="backToShop()">
+        Seguir comprando
+      </button>
+    </div>
+  </div>
+</div>
