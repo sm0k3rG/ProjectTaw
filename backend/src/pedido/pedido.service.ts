@@ -205,4 +205,37 @@ async cancelarPedidoAdmin(pedidoId: number) {
     });
   }
 
+  async obtenerHistorialPedidos(usuarioId: number) {
+  const pedidos = await this.prisma.pedido.findMany({
+    where: { usuarioId },
+    include: {
+      lineasDePedido: {
+        include: {
+          producto: true
+        }
+      },
+      direccion: true
+    }
+  });
+
+  return pedidos.map(pedido => {
+    const total = pedido.lineasDePedido.reduce((acc, linea) => {
+      return acc + (linea.cantidad * linea.precioUnitario);
+    }, 0);
+
+    return {
+      id: pedido.id,
+      fecha: pedido.fechaPedido,
+      estado: pedido.estado,
+      total,
+      productos: pedido.lineasDePedido.map(linea => ({
+        nombre: linea.producto.nombre,
+        cantidad: linea.cantidad,
+        precio: linea.precioUnitario
+      }))
+    };
+  });
+}
+
+
 }

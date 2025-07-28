@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, ParseIntPipe, UseGuards, Request, ForbiddenException, Patch } from '@nestjs/common';
+import { Controller, Get, Post, Body, Req, Param, ParseIntPipe, UseGuards, Request, Patch } from '@nestjs/common';
 import { CreatePedidoDto } from './dto/create-pedido.dto';
 import { Pedido } from '@prisma/client';
 import { PedidoService } from './pedido.service';
@@ -46,4 +46,14 @@ export class PedidoController {
   async verPedidosRegistrados() {
     return this.pedidoService.verPedidosRegistrados();
   }
+
+
+    @Get('historial')
+    // @UseGuards(JwtAuthGuard)
+    async obtenerHistorial(@Req() req) {
+      const userId = req.user.userId;
+      console.log("entro al backend jaja")
+      return this.pedidoService.obtenerHistorialPedidos(userId);
+    }
+
 }

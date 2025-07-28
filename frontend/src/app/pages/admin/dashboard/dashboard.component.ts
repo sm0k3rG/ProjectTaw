@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MainNavbarComponent } from '../../../shared/main-navbar/main-navbar.component';
 import { Chart } from 'chart.js/auto';
+import { DashboardService } from '../../../core/services/dashboard.service';
 
 // Interfaces para los datos esperados del backend
 interface SucursalVentas {
@@ -29,6 +30,7 @@ interface UsuariosPorRegion {
 })
 export class DashboardComponent implements AfterViewInit {
   esAdministrador = true; // Simulación, luego se reemplazará por la validación real
+
 
   // Menú de selección de vista
   vistas = [
@@ -63,31 +65,40 @@ export class DashboardComponent implements AfterViewInit {
     { region: 'Biobío', cantidad: 30 },
     { region: 'Araucanía', cantidad: 20 }
   ];
-  top10Productos: ProductoVentas[] = [
-    { producto: 'Producto 1', cantidad: 50 },
-    { producto: 'Producto 2', cantidad: 45 },
-    { producto: 'Producto 3', cantidad: 40 },
-    { producto: 'Producto 4', cantidad: 38 },
-    { producto: 'Producto 5', cantidad: 35 },
-    { producto: 'Producto 6', cantidad: 33 },
-    { producto: 'Producto 7', cantidad: 30 },
-    { producto: 'Producto 8', cantidad: 28 },
-    { producto: 'Producto 9', cantidad: 25 },
-    { producto: 'Producto 10', cantidad: 22 }
-  ];
-  bottom10Productos: ProductoVentas[] = [
-    { producto: 'Producto 91', cantidad: 2 },
-    { producto: 'Producto 92', cantidad: 3 },
-    { producto: 'Producto 93', cantidad: 4 },
-    { producto: 'Producto 94', cantidad: 5 },
-    { producto: 'Producto 95', cantidad: 6 },
-    { producto: 'Producto 96', cantidad: 7 },
-    { producto: 'Producto 97', cantidad: 8 },
-    { producto: 'Producto 98', cantidad: 9 },
-    { producto: 'Producto 99', cantidad: 10 },
-    { producto: 'Producto 100', cantidad: 11 }
-  ];
+  // top10Productos: ProductoVentas[] = [
+  //   { producto: 'Producto 1', cantidad: 50 },
+  //   { producto: 'Producto 2', cantidad: 45 },
+  //   { producto: 'Producto 3', cantidad: 40 },
+  //   { producto: 'Producto 4', cantidad: 38 },
+  //   { producto: 'Producto 5', cantidad: 35 },
+  //   { producto: 'Producto 6', cantidad: 33 },
+  //   { producto: 'Producto 7', cantidad: 30 },
+  //   { producto: 'Producto 8', cantidad: 28 },
+  //   { producto: 'Producto 9', cantidad: 25 },
+  //   { producto: 'Producto 10', cantidad: 22 }
+  // ];
+  // bottom10Productos: ProductoVentas[] = [
+  //   { producto: 'Producto 91', cantidad: 2 },
+  //   { producto: 'Producto 92', cantidad: 3 },
+  //   { producto: 'Producto 93', cantidad: 4 },
+  //   { producto: 'Producto 94', cantidad: 5 },
+  //   { producto: 'Producto 95', cantidad: 6 },
+  //   { producto: 'Producto 96', cantidad: 7 },
+  //   { producto: 'Producto 97', cantidad: 8 },
+  //   { producto: 'Producto 98', cantidad: 9 },
+  //   { producto: 'Producto 99', cantidad: 10 },
+  //   { producto: 'Producto 100', cantidad: 11 }
+  // ];
 
+  top10Productos: ProductoVentas[] = [];
+  bottom10Productos: ProductoVentas[] = [];
+
+  constructor(private dashboardService: DashboardService) {}
+
+  ngOnInit() {
+    this.cargarProductosMasVendidos();
+    this.cargarProductosMenosVendidos();
+  }
   // Utilidad para formatear CLP
   formatCLP(value: number): string {
     return value.toLocaleString('es-CL', { style: 'currency', currency: 'CLP', maximumFractionDigits: 0 });
@@ -95,6 +106,20 @@ export class DashboardComponent implements AfterViewInit {
 
   ngAfterViewInit() {
     this.renderAllCharts();
+  }
+
+  cargarProductosMasVendidos() {
+    this.dashboardService.getProductosMasVendidos().subscribe(data => {
+      this.top10Productos = data;
+      this.renderAllCharts();
+    });
+  }
+
+  cargarProductosMenosVendidos() {
+    this.dashboardService.getProductosMenosVendidos().subscribe(data => {
+      this.bottom10Productos = data;
+      this.renderAllCharts();
+    });
   }
 
   renderAllCharts() {

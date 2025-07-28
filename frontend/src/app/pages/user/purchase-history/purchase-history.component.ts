@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { OrderService } from './../../../core/services/order.service';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MainNavbarComponent } from '../../../shared/main-navbar/main-navbar.component';
 interface Compra {
@@ -16,7 +17,7 @@ interface Compra {
   templateUrl: './purchase-history.component.html',
   styleUrl: './purchase-history.component.css'
 })
-export class PurchaseHistoryComponent {
+export class PurchaseHistoryComponent implements OnInit {
   historial: Compra[] = [
     { id: 1, fecha: '2024-07-07', total: 25990, estado: 'Entregado', productos: [ { nombre: 'Leche', cantidad: 2, precio: 1200 }, { nombre: 'Pan', cantidad: 1, precio: 1500 } ] },
     { id: 2, fecha: '2024-07-01', total: 18990, estado: 'Entregado', productos: [ { nombre: 'Arroz', cantidad: 3, precio: 1000 }, { nombre: 'Aceite', cantidad: 1, precio: 3500 } ] },
@@ -35,6 +36,21 @@ export class PurchaseHistoryComponent {
   pagina: number = 1;
   cantidadPorPagina: number = 10;
   compraSeleccionada: Compra | null = null;
+
+  constructor(private orderService: OrderService) {}
+
+  ngOnInit(): void {
+    this.orderService.getHistorialPedidos().subscribe({
+      next: (data) => {
+        this.historial = data;
+        console.log("llego al frontend jaja")
+        console.log(this.historial + "llego al historial")
+      },
+      error: () => {
+        console.error('Error al cargar historial');
+      }
+    });
+  }
 
   get totalPaginas(): number {
     return Math.ceil(this.historial.length / this.cantidadPorPagina);

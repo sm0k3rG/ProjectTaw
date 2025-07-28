@@ -24,6 +24,12 @@ export class OrderService {
     return this.http.get<Order[]>(`${this.apiUrl}/pedidos/registrados`);
   }
 
+  getHistorialPedidos(): Observable<any[]> {
+    console.log("entro al servicio")
+  return this.http.get<any[]>(`${this.apiUrl}/pedidos/historial`);
+  } 
+
+
   // Crear un nuevo pedido
   crearPedido(pedidoData: any): Observable<Order> {
     return this.http.post<Order>(`${this.apiUrl}/pedidos`, pedidoData);

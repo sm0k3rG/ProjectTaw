@@ -1,3 +1,4 @@
+import { DireccionModule } from './direccion/direccion.module';
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -29,7 +30,8 @@ import { AuditoriaModule }         from './auditoria/auditoria.module';
     PedidoModule, 
     NotificationsModule, 
     EstadisticasModule,
-    AuditoriaModule
+    AuditoriaModule,
+    DireccionModule
   ],
   controllers: [AppController],
   providers: [AppService],
