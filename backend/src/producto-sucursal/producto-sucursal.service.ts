@@ -60,46 +60,7 @@ export class ProductoSucursalService {
       },
     });
   }
-
-  // Actualizar el stock de un ProductoSucursal
-  async actualizarNotificarStock(productoId: number, sucursalId: number, stockNuevo: UpdateProductoSucursalDto): Promise<void> {
-    // Actualizamos el stock del producto en la sucursal
-    const productoSucursal = await this.prisma.productoSucursal.update({
-      where: {
-        productoId_sucursalId: {
-          productoId,
-          sucursalId,
-        },
-      },
-      data: {
-        stock: stockNuevo.stock,
-      },
-    });
-
-    // Si el stock es repuesto (por ejemplo, si el stock es mayor que cero), notificamos
-    if (productoSucursal.stock > 0) {
-      const producto = await this.prisma.producto.findUnique({
-        where: { id: productoId },
-        select: { nombre: true },
-      });
-
-    if(producto != null){
-      // Notificar a través de WebSocket (notificación en tiempo real)
-      this.notificationsGateway.emitirNotificacion(sucursalId, producto.nombre);}
-
-      // Enviar un correo electrónico al usuario
-      const usuarios = await this.prisma.historialVisita.findMany({
-        where: { productoId: productoId },
-        select: { usuario: { select: { email: true } } },
-      });
-
-      // Enviar el correo a los usuarios que visitaron el producto
-      for (const usuario of usuarios) {
-        await this.notificationsService.notificarStockRepuesto(usuario.usuario.email, producto?.nombre || 'Producto');
-      }
-    }
-  }
-
+  
   // Eliminar un ProductoSucursal
   async remove(
     productoId: number,

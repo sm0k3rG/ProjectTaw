@@ -212,62 +212,62 @@ async obtenerProductosConDetalles(
     },
   });
 }
-async actualizarProductoConStock(
-  productoId: number,
-  datosProducto: UpdateProductoConStockDto['datosProducto'],
-  stockPorSucursal: UpdateProductoConStockDto['stockPorSucursal'],
-) {
-  // 1. Actualizar los datos del producto
-  const productoActualizado = await this.prisma.producto.update({
-    where: { id: productoId },
-    data: {
-      ...datosProducto, // Propiedades del producto a actualizar
-    },
-  });
-
-  // 2. Actualizar el stock en todas las sucursales
-  for (const { sucursalId, stock } of stockPorSucursal) {
-    await this.prisma.productoSucursal.upsert({
-      where: {
-        productoId_sucursalId: {
-          productoId,
-          sucursalId,
-        },
-      },
-      update: { stock }, // Actualizamos el stock
-      create: {
-        productoId,
-        sucursalId,
-        stock, // Si no existe la relación, la creamos
+  async actualizarProductoConStock(
+    productoId: number,
+    datosProducto: UpdateProductoConStockDto['datosProducto'],
+    stockPorSucursal: UpdateProductoConStockDto['stockPorSucursal'],
+  ) {
+    // 1. Actualizar los datos del producto
+    const productoActualizado = await this.prisma.producto.update({
+      where: { id: productoId },
+      data: {
+        ...datosProducto, // Propiedades del producto a actualizar
       },
     });
-  }
 
-  // 3. Comprobar si hay usuarios que visitaron el producto
-  const usuarios = await this.prisma.historialVisita.findMany({
-    where: { productoId: productoId },
-    select: { usuario: { select: { email: true } } },
-  });
-
-  // Solo proceder a enviar correos si hay usuarios
-  if (usuarios.length > 0) {
-    // Enviar el correo a los usuarios que visitaron el producto
-    for (const usuario of usuarios) {
-      await this.notificationsService.notificarStockRepuesto(
-        usuario.usuario.email,
-        productoActualizado.nombre || 'Producto'
-      );
+    // 2. Actualizar el stock en todas las sucursales
+    for (const { sucursalId, stock } of stockPorSucursal) {
+      await this.prisma.productoSucursal.upsert({
+        where: {
+          productoId_sucursalId: {
+            productoId,
+            sucursalId,
+          },
+        },
+        update: { stock }, // Actualizamos el stock
+        create: {
+          productoId,
+          sucursalId,
+          stock, // Si no existe la relación, la creamos
+        },
+      });
     }
-  }
+
+    // 3. Comprobar si hay usuarios que visitaron el producto
+    const usuarios = await this.prisma.historialVisita.findMany({
+      where: { productoId: productoId },
+      select: { usuario: { select: { email: true } } },
+    });
+
+    // Solo proceder a enviar correos si hay usuarios
+    if (usuarios.length > 0) {
+      // Enviar el correo a los usuarios que visitaron el producto
+      for (const usuario of usuarios) {
+        await this.notificationsService.notificarStockRepuesto(
+          usuario.usuario.email,
+          productoActualizado.nombre || 'Producto'
+        );
+      }
+    }
 
 
-  // Retornar el producto actualizado con sus detalles de stock
-  return this.prisma.producto.findUnique({
-    where: { id: productoId },
-    include: {
-      sucursales: true, // Incluimos las sucursales y su stock
-    },
-  });
+    // Retornar el producto actualizado con sus detalles de stock
+    return this.prisma.producto.findUnique({
+      where: { id: productoId },
+      include: {
+        sucursales: true, // Incluimos las sucursales y su stock
+      },
+    });
 }
 
 
