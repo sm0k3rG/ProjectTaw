@@ -38,13 +38,8 @@
                 Ingresa dirección de entrega
               </ng-template>
             </ng-template>
-          </ng-container>
-              <ng-template #sinDireccion>
-                Ingresa dirección de entrega
-              </ng-template>
-            </ng-template>
+          </span>
 
-        </span>
         <i class="bi bi-chevron-down position-absolute end-0 me-3"></i>
       </button>
       <a *ngIf="!user; else loggedIn" routerLink="/login" class="btn btn-link text-white me-3 d-flex align-items-center login-btn">
@@ -59,6 +54,7 @@
     <i class="bi bi-person me-1"></i> {{ user.nombre || user.name || user.email }}
   </span>
 </ng-template>
+    </div>
     </div>
   </nav>
 }
