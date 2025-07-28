@@ -77,97 +77,95 @@
 
     <!-- Tab de Delivery a Domicilio -->
     <ng-container *ngIf="deliveryType==='delivery'">
-      <ng-container *ngIf="isAuthenticated && userAddresses.length > 0">
-        <h6 class="mb-2 fw-bold">Direcciones registradas</h6>
-        <div class="list-group mb-3">
-          <button *ngFor="let addr of userAddresses"
-                  class="list-group-item list-group-item-action"
-                  [class.active]="address.id === addr.id"
-                  (click)="selectSavedAddress(addr)">
-            {{ addr.direccion }}, {{ addr.numero }}{{ addr.depto ? ', ' + addr.depto : '' }} - {{ addr.comuna }}, {{ addr.region }}
-          </button>
-        </div>
-        <h6 class="mb-2">O agrega una nueva dirección:</h6>
-      </ng-container>
+  <ng-container *ngIf="isAuthenticated && userAddresses.length > 0 && !showAddressForm">
+    <h6 class="mb-2 fw-bold">Direcciones registradas</h6>
+    <div class="list-group mb-3">
+      <button *ngFor="let addr of userAddresses"
+              class="list-group-item list-group-item-action"
+              [class.active]="address?.id === addr.id"
+              (click)="selectSavedAddress(addr)">
+        {{ addr.calle }}, {{ addr.numero }} -  {{ addr.comuna }}, Región {{ addr.region }}
+      </button>
+    </div>
+    <button class="btn btn-outline-primary w-100 mb-3" (click)="showAddressForm = true">
+      <i class="bi bi-plus-lg me-2"></i>Agregar dirección
+    </button>
+  </ng-container>
 
-      <ng-container *ngIf="!isAuthenticated || userAddresses.length === 0">
-        <h6 class="mb-2">Ingresa la dirección de entrega:</h6>
-      </ng-container>
+  <ng-container *ngIf="showAddressForm || !isAuthenticated || userAddresses.length === 0">
+    <h6 class="mb-2">Ingresa la dirección de entrega:</h6>
+    <form #deliveryForm="ngForm" (ngSubmit)="saveAddress(); $event.preventDefault()">
+      <div class="mb-1">
+        <label class="form-label">Dirección</label>
+        <input class="form-control" [(ngModel)]="address.direccion" name="direccion" required>
+      </div>
+      <div class="mb-1">
+        <label class="form-label">Número</label>
+        <input class="form-control"
+               [(ngModel)]="address.numero"
+               name="numero"
+               type="number"
+               pattern="[0-9]*"
+               (keypress)="onlyNumbers($event)"
+               (input)="validateNumber($event)"
+               required>
+      </div>
+      <div class="mb-1">
+        <label class="form-label">Depto, Casa, Oficina (opcional)</label>
+        <input class="form-control" [(ngModel)]="address.depto" name="depto">
+      </div>
+      <div class="mb-1">
+        <label class="form-label">Región</label>
+        <select class="form-control"
+                name="region"
+                (change)="onRegionChange($any($event.target).value)"
+                required>
+          <option value="">Selecciona una región</option>
+          <option *ngFor="let region of regiones" [value]="region.id">
+            {{ region.nombre }}
+          </option>
+        </select>
+        <div *ngIf="loadingRegiones" class="text-muted small mt-1">
+          <i class="bi bi-arrow-clockwise me-1"></i>Cargando regiones...
+        </div>
+      </div>
+      <div class="mb-1">
+        <label class="form-label">Comuna</label>
+        <select class="form-control"
+                name="comuna"
+                (change)="onComunaChange($any($event.target).value)"
+                [disabled]="!selectedRegion || loadingComunas"
+                required>
+          <option value="">Selecciona una comuna</option>
+          <option *ngFor="let comuna of comunas" [value]="comuna.id">
+            {{ comuna.nombre }}
+          </option>
+        </select>
+        <div *ngIf="loadingComunas" class="text-muted small mt-1">
+          <i class="bi bi-arrow-clockwise me-1"></i>Cargando comunas...
+        </div>
+        <div *ngIf="!selectedRegion && !loadingComunas" class="text-muted small mt-1">
+          Primero selecciona una región
+        </div>
+      </div>
+      <div class="mb-1">
+        <label class="form-label">Referencias (opcional)</label>
+        <input class="form-control" [(ngModel)]="address.referencias" name="referencias">
+      </div>
+      <button class="btn btn-success w-100 mt-1"
+              type="submit"
+              [disabled]="!deliveryForm.valid">
+        <i class="bi bi-check-lg me-2"></i>Confirmar Dirección
+      </button>
+      <button *ngIf="showAddressForm" type="button" class="btn btn-secondary w-100 mt-2">
+        Cancelar
+      </button>
+      <div *ngIf="!deliveryForm.valid && deliveryForm.touched" class="text-danger small text-center">
+        Por favor completa todos los campos requeridos
+      </div>
+    </form>
+  </ng-container>
+</ng-container>
 
-      <form #deliveryForm="ngForm" (ngSubmit)="saveAddress(); $event.preventDefault()">
-        <div class="mb-1">
-          <label class="form-label">Dirección</label>
-          <input class="form-control" [(ngModel)]="address.direccion" name="direccion" required>
-        </div>
-        <div class="mb-1">
-          <label class="form-label">Número</label>
-          <input class="form-control"
-                 [(ngModel)]="address.numero"
-                 name="numero"
-                 type="number"
-                 pattern="[0-9]*"
-                 (keypress)="onlyNumbers($event)"
-                 (input)="validateNumber($event)"
-                 required>
-        </div>
-        <div class="mb-1">
-          <label class="form-label">Depto, Casa, Oficina (opcional)</label>
-          <input class="form-control" [(ngModel)]="address.depto" name="depto">
-        </div>
-
-        <!-- Selector de Región -->
-        <div class="mb-1">
-          <label class="form-label">Región</label>
-          <select class="form-control"
-                  name="region"
-                  (change)="onRegionChange($any($event.target).value)"
-                  required>
-            <option value="">Selecciona una región</option>
-            <option *ngFor="let region of regiones" [value]="region.id">
-              {{ region.nombre }}
-            </option>
-          </select>
-          <div *ngIf="loadingRegiones" class="text-muted small mt-1">
-            <i class="bi bi-arrow-clockwise me-1"></i>Cargando regiones...
-          </div>
-        </div>
-
-        <!-- Selector de Comuna -->
-        <div class="mb-1">
-          <label class="form-label">Comuna</label>
-          <select class="form-control"
-                  name="comuna"
-                  (change)="onComunaChange($any($event.target).value)"
-                  [disabled]="!selectedRegion || loadingComunas"
-                  required>
-            <option value="">Selecciona una comuna</option>
-            <option *ngFor="let comuna of comunas" [value]="comuna.id">
-              {{ comuna.nombre }}
-            </option>
-          </select>
-          <div *ngIf="loadingComunas" class="text-muted small mt-1">
-            <i class="bi bi-arrow-clockwise me-1"></i>Cargando comunas...
-          </div>
-          <div *ngIf="!selectedRegion && !loadingComunas" class="text-muted small mt-1">
-            Primero selecciona una región
-          </div>
-        </div>
-
-        <div class="mb-1">
-          <label class="form-label">Referencias (opcional)</label>
-          <input class="form-control" [(ngModel)]="address.referencias" name="referencias">
-        </div>
-
-        <button class="btn btn-success w-100 mt-1"
-                type="button"
-                (click)="saveAddress()"
-                [disabled]="!deliveryForm.valid">
-          <i class="bi bi-check-lg me-2"></i>Confirmar Dirección
-        </button>
-        <div *ngIf="!deliveryForm.valid && deliveryForm.touched" class="text-danger small text-center">
-          Por favor completa todos los campos requeridos
-        </div>
-      </form>
-    </ng-container>
   </div>
 </div>

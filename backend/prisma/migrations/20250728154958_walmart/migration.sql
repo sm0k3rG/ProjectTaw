@@ -34,6 +34,7 @@ CREATE TABLE `Pedido` (
     `total` DOUBLE NOT NULL,
     `usuarioId` INTEGER NOT NULL,
     `direccionId` INTEGER NOT NULL,
+    `direccionRetiroId` INTEGER NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -67,7 +68,7 @@ CREATE TABLE `Producto` (
 CREATE TABLE `Categoria` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `nombre` VARCHAR(191) NOT NULL,
-    `estado` VARCHAR(191) NOT NULL,
+    `estado` ENUM('ACTIVA', 'ELIMINADA') NOT NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -79,7 +80,7 @@ CREATE TABLE `Oferta` (
     `descripcion` VARCHAR(191) NOT NULL,
     `fechaInicio` DATETIME(3) NOT NULL,
     `fechaFin` DATETIME(3) NOT NULL,
-    `estado` VARCHAR(191) NOT NULL,
+    `estado` ENUM('ACTIVA', 'INACTIVA', 'EXPIRADA') NOT NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -123,6 +124,9 @@ ALTER TABLE `Pedido` ADD CONSTRAINT `Pedido_usuarioId_fkey` FOREIGN KEY (`usuari
 
 -- AddForeignKey
 ALTER TABLE `Pedido` ADD CONSTRAINT `Pedido_direccionId_fkey` FOREIGN KEY (`direccionId`) REFERENCES `Direccion`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `Pedido` ADD CONSTRAINT `Pedido_direccionRetiroId_fkey` FOREIGN KEY (`direccionRetiroId`) REFERENCES `Sucursal`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `LineaDePedido` ADD CONSTRAINT `LineaDePedido_productoId_fkey` FOREIGN KEY (`productoId`) REFERENCES `Producto`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;

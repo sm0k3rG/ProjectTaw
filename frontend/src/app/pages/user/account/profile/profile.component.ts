@@ -7,11 +7,14 @@ import {
 } from '@angular/forms';
 import { UsersService }               from '../../../../services/users.service';
 import { UserProfile }                from '../../../../models/user-profile.model';
+import { MainNavbarComponent } from "../../../../shared/main-navbar/main-navbar.component";
+import { RouterModule } from '@angular/router';
+
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, MainNavbarComponent, RouterModule],
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.css']
 })

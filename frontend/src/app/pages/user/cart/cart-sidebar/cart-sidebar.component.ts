@@ -1,9 +1,11 @@
-import { UsersService } from './../../../../../../../backend/src/users/users.service';
-import { CartService } from './../../../../services/cart.service';
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { CartItem } from '../../../../models/cart-item.model';
+import { Router, NavigationEnd } from '@angular/router';
+import { filter } from 'rxjs/operators';
+
+import { CartService } from '../../../../services/cart.service';
 import { CartSidebarService, CartSidebarState } from '../../../../services/cart-sidebar.service';
+import { CartItem } from '../../../../models/cart-item.model';
 
 @Component({
   selector: 'app-cart-sidebar',
@@ -13,15 +15,18 @@ import { CartSidebarService, CartSidebarState } from '../../../../services/cart-
   styleUrls: ['./cart-sidebar.component.css']
 })
 export class CartSidebarComponent implements OnInit {
-
   cartItems: CartItem[] = [];
   total: number = 0;
   isOpen: boolean = false;
   sidebarState: CartSidebarState = { isOpen: false, totalItems: 0, totalAmount: 0 };
-  UsersService: any;
   deliveryType: string = 'delivery';
+  showCartButton: boolean = false;
 
-  constructor(private cartSidebarService: CartSidebarService, private cartService: CartService) { }
+  constructor(
+    private cartSidebarService: CartSidebarService,
+    private cartService: CartService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     this.cartSidebarService.getSidebarState().subscribe(state => {
@@ -30,6 +35,16 @@ export class CartSidebarComponent implements OnInit {
     });
 
     this.loadCartItems();
+
+    this.router.events
+      .pipe(filter(event => event instanceof NavigationEnd))
+      .subscribe(() => {
+        const currentUrl = this.router.url;
+        this.showCartButton =
+          currentUrl.startsWith('/user/products') &&
+          !currentUrl.includes('/purchase-history') &&
+          !currentUrl.includes('/profile');
+      });
   }
 
   loadCartItems(): void {
@@ -40,7 +55,6 @@ export class CartSidebarComponent implements OnInit {
           quantity: item.quantity
         }));
         this.updateTotals();
-        console.log('Items del carrito cargados desde el backend:', this.cartItems);
       },
       error: (error) => {
         console.error('Error cargando items del carrito:', error);
@@ -61,13 +75,11 @@ export class CartSidebarComponent implements OnInit {
     }
 
     this.cartService.updateQuantity(productId, quantity);
-    console.log('Cantidad actualizada exitosamente');
     this.loadCartItems();
   }
 
   removeFromCart(productId: number): void {
     this.cartService.removeFromCart(productId);
-    console.log('Item removido exitosamente');
     this.loadCartItems();
   }
 
@@ -78,7 +90,6 @@ export class CartSidebarComponent implements OnInit {
   updateTotals(): void {
     this.total = this.cartItems.reduce((sum, item) => sum + this.getSubtotal(item), 0);
     this.cartSidebarService.updateSidebarState(this.cartItems.length, this.total);
-    console.log('Totales actualizados:', { items: this.cartItems.length, total: this.total });
   }
 
   onQuantityChange(event: Event, productId: number): void {
@@ -92,22 +103,15 @@ export class CartSidebarComponent implements OnInit {
   }
 
   procederAlPago(): void {
-    const usuarioId = 1
-    // const usuarioId = this.UsersService.getCurrentUserId();
+    const usuarioId = 1; // puedes reemplazar esto por el ID real del usuario
 
     let direccion: any = null;
 
     if (localStorage.getItem('deliveryAddress')) {
-      const address = localStorage.getItem('deliveryAddress');
-      if (address) {
-        direccion = JSON.parse(address);
-      }
-    } else {
-      const store = localStorage.getItem('pickupStore');
-      if (store) {
-        const parsedStore = JSON.parse(store);
-        direccion = parsedStore.id;
-      }
+      direccion = JSON.parse(localStorage.getItem('deliveryAddress')!);
+    } else if (localStorage.getItem('pickupStore')) {
+      const parsedStore = JSON.parse(localStorage.getItem('pickupStore')!);
+      direccion = parsedStore.id;
     }
 
     const lineasDePedido = this.cartItems.map(item => ({
@@ -120,8 +124,6 @@ export class CartSidebarComponent implements OnInit {
       direccion,
       lineasDePedido
     };
-
-    console.log('Pedido a crear:', pedido);
 
     this.cartService.crearPedido(pedido).subscribe({
       next: () => {

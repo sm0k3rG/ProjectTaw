@@ -30,13 +30,14 @@
             </ng-template>
           </ng-container>
           <ng-template #envio>
-            <ng-container *ngIf="deliveryAddress?.direccion; else sinDireccion">
-              Envío a {{ deliveryAddress.direccion }}
-            </ng-container>
-            <ng-template #sinDireccion>
-              Ingresa dirección de entrega
+              <ng-container *ngIf="deliveryAddress?.direccion; else sinDireccion">
+                Envío a {{ deliveryAddress.direccion }}
+              </ng-container>
+              <ng-template #sinDireccion>
+                Ingresa dirección de entrega
+              </ng-template>
             </ng-template>
-          </ng-template>
+
         </span>
         <i class="bi bi-chevron-down position-absolute end-0 me-3"></i>
       </button>

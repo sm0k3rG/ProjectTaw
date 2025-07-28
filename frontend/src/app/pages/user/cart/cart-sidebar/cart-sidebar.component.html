@@ -1,5 +1,5 @@
 <!-- Botón flotante para abrir el carrito -->
-<div *ngIf="!isOpen" class="cart-toggle-btn cart-toggle-btn-bottom" (click)="toggleSidebar()">
+<div *ngIf="!isOpen && showCartButton" class="cart-toggle-btn cart-toggle-btn-bottom" (click)="toggleSidebar()">
   <i class="bi bi-cart3"></i>
   <span *ngIf="cartItems.length > 0" class="cart-badge">{{ cartItems.length }}</span>
 </div>
