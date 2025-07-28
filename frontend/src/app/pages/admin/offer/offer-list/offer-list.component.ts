@@ -8,11 +8,12 @@ import Swal from 'sweetalert2';
 import { interval, Subscription } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { NgbPaginationConfig, NgbPaginationModule } from '@ng-bootstrap/ng-bootstrap';
+import { MainNavbarComponent } from '../../../../shared/main-navbar/main-navbar.component';
 
 @Component({
   selector: 'app-offer-list',
   standalone: true,
-  imports: [DatePipe, OfferAddComponent, OfferEditComponent, CommonModule, FormsModule, NgbPaginationModule],
+  imports: [DatePipe, OfferAddComponent, OfferEditComponent, CommonModule, FormsModule, NgbPaginationModule, MainNavbarComponent],
   providers: [NgbPaginationConfig],
   templateUrl: './offer-list.component.html',
   styleUrl: './offer-list.component.css'

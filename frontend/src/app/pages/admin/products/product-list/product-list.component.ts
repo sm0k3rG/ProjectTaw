@@ -9,6 +9,7 @@ import { NgbPaginationConfig, NgbPaginationModule } from '@ng-bootstrap/ng-boots
 import { FormsModule } from '@angular/forms';
 import { ProductAddComponent } from "../product-add/product-add.component";
 import Swal from 'sweetalert2';
+import { MainNavbarComponent } from '../../../../shared/main-navbar/main-navbar.component';
 
 
 /**
@@ -18,7 +19,7 @@ import Swal from 'sweetalert2';
 @Component({
   selector: 'app-product-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, CategoryComponent, ProductAddComponent, NgbPaginationModule, ProductAddComponent],
+  imports: [CommonModule, FormsModule, CategoryComponent, ProductAddComponent, NgbPaginationModule, ProductAddComponent, MainNavbarComponent],
   providers: [ProductService, CategoryService, NgbPaginationConfig],
   templateUrl: './product-list.component.html',
   styleUrl: './product-list.component.css'
