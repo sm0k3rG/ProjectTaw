@@ -27,7 +27,7 @@ export interface CartItemBackend {
   providedIn: 'root'
 })
 export class CartSidebarService {
-  private apiUrl = 'http://localhost:3000/api';
+  private apiUrl = 'http://localhost:3000';
   private sidebarState = new BehaviorSubject<CartSidebarState>({
     isOpen: false,
     totalItems: 0,
