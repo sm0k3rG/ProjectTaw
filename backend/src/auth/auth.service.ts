@@ -49,7 +49,7 @@ export class AuthService {
     return { message: 'Registro exitoso. Verifica tu correo (simulado).' };
   }
 
-  // ✅ Login
+  //Login
   async login(dto: any) {
     const { email, contrasena } = dto;
 
@@ -85,7 +85,7 @@ export class AuthService {
     };
   }
 
-  // ✅ Recuperar contraseña
+  // Recuperar contraseña
   async solicitarRecuperacionContrasena(dto: ForgotPasswordDto) {
     const user = await this.prisma.usuario.findUnique({
       where: { email: dto.email },
@@ -126,7 +126,7 @@ export class AuthService {
     return { message: 'Correo de recuperación enviado correctamente' };
   }
 
-  // ✅ Restablecer contraseña
+  //  Restablecer contraseña
   async restablecerContrasena(dto: ResetPasswordDto) {
     let payload: any;
 

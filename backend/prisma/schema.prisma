@@ -19,6 +19,12 @@ Admin
 Cliente
 }
 
+enum EstadoUsuario {
+  ACTIVO
+  DESACTIVADO
+  ELIMINADO
+}
+
 model Usuario {
 id         Int               @id @default(autoincrement())
 nombre     String
@@ -29,6 +35,7 @@ tarjetas   String
 direccion  Direccion[]       // Relación 1\:N con Direccion
 pedidos    Pedido[]          // Relación 1\:N con Pedido
 rol        Rol               // Atributo 'rol' con tipo enum
+estado     EstadoUsuario     @default(ACTIVO) 
 visitas    HistorialVisita[] // Relación 1\:N con HistorialVisita
 }
 

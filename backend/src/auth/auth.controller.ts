@@ -33,6 +33,7 @@ export class AuthController {
     password: string;
     telefono: string;
     tarjetas: string;
+    rol: string;
   }) {
     return await this.authService.register(userData);
   }
