@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink, RouterLinkActive, RouterModule } from '@angular/router';
+import { RouterLink, RouterLinkActive, RouterModule, Router } from '@angular/router';
 import { AppStateService, AppState } from '../../services/app-state.service';
 import { DeliveryTypeSidebarComponent } from '../../pages/user/delivery-type-sidebar/delivery-type-sidebar.component';
 import { AuthService } from '../../core/services/auth.service';
@@ -21,7 +21,8 @@ export class MainNavbarComponent implements OnInit {
 
   constructor(
     private appStateService: AppStateService,
-    private authService: AuthService
+    private authService: AuthService,
+    private router: Router
   ) {
     this.appState = this.appStateService.getCurrentState();
     this.user = this.authService.getCurrentUser();
@@ -64,6 +65,12 @@ export class MainNavbarComponent implements OnInit {
     return this.appState.deliveryAddress;
   }
 
+  cerrarSesion() {
+    this.authService.logout();
+    this.router.navigate(['/login']);
+    window.location.reload();
+  }
+
   onDeliveryTypeChange(tipo: 'retiro' | 'delivery') {
     this.appStateService.updateDeliveryType(tipo);
     this.showDeliverySidebar = false;
@@ -81,5 +88,16 @@ export class MainNavbarComponent implements OnInit {
 
   toggleUserSidebar() {
     this.showUserSidebar = !this.showUserSidebar;
+  }
+
+  get isUserProductsRoute(): boolean {
+    return this.router.url === '/user/products';
+  }
+
+  get shouldShowNavbar(): boolean {
+    // Mostrar navbar si es cliente, administrador, o si está en la ruta /user/products
+    return this.user?.role === 'Client' || 
+           this.user?.role === 'Administrator' || 
+           this.isUserProductsRoute;
   }
 }
