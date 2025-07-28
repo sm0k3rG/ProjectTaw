@@ -1,4 +1,4 @@
-  import { Controller, Get, Post, Body, Param, Put, Delete, UseGuards, Query, UsePipes, ValidationPipe, BadRequestException, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Put, Delete, UseGuards, Query, UsePipes, ValidationPipe, BadRequestException, ParseIntPipe } from '@nestjs/common';
 import { UpdateProductoDto } from './dto/update-producto.dto';
 import { ProductoService } from './productos.service';
 import { Producto, Rol } from '@prisma/client';
@@ -21,19 +21,8 @@ export class ProductoController {
   async listar(@Query() params: GetProductosDto) {
     return this.productoService.findAll(params);
   }
-  @Put(':id')
-update(
-  @Param('id', ParseIntPipe) id: number,
-  @Body() dto: UpdateProductoDto,
-) {
-  return this.productoService.actualizarProducto(
-    id,
-    dto,
-    null,          // ← sin userId por ahora
-  );
-}
 
-  @Get('registrados')
+    @Get('registrados')
   // @Roles(Rol.Admin)  // Usamos el enum Rol para definir los roles permitidos
   // @UseGuards(JwtAuthGuard, RolesGuard)  // Usamos ambos guards
   async obtenerProductosConDetalles(

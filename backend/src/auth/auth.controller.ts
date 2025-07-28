@@ -27,10 +27,15 @@ export class AuthController {
   }
 
   @Post('register')
-  async register(@Body() dto: RegisterAuthDto) {
-    return await this.authService.register(dto);
+  async register(@Body() userData: {
+    nombre: string;
+    email: string;
+    password: string;
+    telefono: string;
+    tarjetas: string;
+  }) {
+    return await this.authService.register(userData);
   }
-
 
   @Post('forgot-password')
   async forgotPassword(@Body() dto: ForgotPasswordDto) {
@@ -48,6 +53,19 @@ export class AuthController {
     @Body() dto: UpdateUserDto
   ) {
     return this.authService.editarUsuario(id, dto);
+  }
+
+  @Patch('direccion/:id')
+  actualizarDireccion(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: UpdateDireccionDto
+  ) {
+    return this.direccionService.actualizarDireccion(id, dto);
+  }
+
+  @Delete('direccion/:id')
+  eliminarDireccion(@Param('id', ParseIntPipe) id: number) {
+    return this.direccionService.eliminarDireccion(id);
   }
 
 }

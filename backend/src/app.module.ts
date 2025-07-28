@@ -13,7 +13,6 @@ import { PedidoModule } from './pedido/pedido.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { ConfigModule } from '@nestjs/config';
 import { EstadisticasModule } from './estadisticas/estadisticas.module';
-import { AuditoriaModule }         from './auditoria/auditoria.module';
 
 @Module({
   imports: [
@@ -28,8 +27,7 @@ import { AuditoriaModule }         from './auditoria/auditoria.module';
     UsuarioModule, 
     PedidoModule, 
     NotificationsModule, 
-    EstadisticasModule,
-    AuditoriaModule
+    EstadisticasModule
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -27,11 +27,6 @@ export class OfertaController {
     return this.ofertaService.update(+id, updateOfertaDto);
   }
 
-  @Post('actualizar-estados')
-  actualizarEstadosAutomaticamente() {
-    return this.ofertaService.actualizarEstadosAutomaticamente();
-  }
-
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.ofertaService.remove(+id);

@@ -7,52 +7,49 @@ import * as jwt from 'jsonwebtoken';
 import * as nodemailer from 'nodemailer';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
-import { RegisterAuthDto  } from './dto/register-auth.dto';
+
+// Si tienes estos DTOs, descomenta e importa correctamente
+// import { LoginDto } from './dto/login.dto';
+// import { JwtPayload } from './dto/jwt-payload.dto';
 
 @Injectable()
 export class AuthService {
   constructor(private prisma: PrismaService) {}
 
-  async register(dto: RegisterAuthDto) {
-    const { nombre, email, rut, contrasena, telefono, tarjetas, direcciones } = dto;
-  
+  // ✅ Registro
+  async register(dto: any) {
+    const { nombre, email, contrasena, terminosAceptados } = dto;
+
+    if (!terminosAceptados) {
+      throw new BadRequestException('Debes aceptar los términos y condiciones');
+    }
+
     const existingUser = await this.prisma.usuario.findUnique({
       where: { email },
     });
-  
+
     if (existingUser) {
       throw new BadRequestException('El correo ya está registrado');
     }
-  
+
     const hashedPassword = await bcrypt.hash(contrasena, 12);
-    
+
     const user = await this.prisma.usuario.create({
       data: {
         nombre,
         email,
-        rut,
         contrasena: hashedPassword,
-        telefono,
-        tarjetas,
+        telefono: '',
+        tarjetas: '',
         rol: 'Cliente',
-        direccion: {
-          create: direcciones.map((dir) => ({
-            calle: dir.calle,
-            numero: Number(dir.numero),
-            comuna: dir.comuna,
-            region: dir.region,
-          })),
-        },
-      },
-      include: {
-        direccion: true,
       },
     });
-  
-    console.log(`[AUDIT] Usuario registrado: ${user.id}`);
-    return { message: 'Registro exitoso', user };
+
+    console.log(`[AUDIT] Usuario registrado: ${user.id}, IP simulada: 127.0.0.1`);
+    return { message: 'Registro exitoso. Verifica tu correo (simulado).' };
   }
 
+  // ✅ Login
   async login(dto: any) {
     const { email, contrasena } = dto;
 
@@ -73,20 +70,12 @@ export class AuthService {
     if (!secret) {
       throw new Error('Falta JWT_SECRET en el archivo .env');
     }
-    const roleNormalized = user.rol === 'Admin' ? 'Administrator' : 'Client';
-    const token = jwt.sign(
-      { 
-        userId: user.id, 
-        email: user.email,
-        role: roleNormalized,
-        name: user.nombre 
-      }, 
-      secret, 
-      {
-      expiresIn: '1h',}
-    );
 
-    const tipoUsuario = user.rol.toLowerCase();
+    const token = jwt.sign({ userId: user.id, email: user.email }, secret, {
+      expiresIn: '1h',
+    });
+
+    const tipoUsuario = 'cliente';
 
     console.log(`[AUDIT] Usuario inició sesión: ${user.id}, IP simulada: 127.0.0.1`);
     return {
@@ -96,6 +85,7 @@ export class AuthService {
     };
   }
 
+  // ✅ Recuperar contraseña
   async solicitarRecuperacionContrasena(dto: ForgotPasswordDto) {
     const user = await this.prisma.usuario.findUnique({
       where: { email: dto.email },
@@ -136,6 +126,7 @@ export class AuthService {
     return { message: 'Correo de recuperación enviado correctamente' };
   }
 
+  // ✅ Restablecer contraseña
   async restablecerContrasena(dto: ResetPasswordDto) {
     let payload: any;
 
@@ -171,6 +162,7 @@ export class AuthService {
 
     const { nombre, email, telefono, tarjetas, direccion } = dto;
 
+    // Actualiza usuario
     await this.prisma.usuario.update({
       where: { id },
       data: {
@@ -181,6 +173,7 @@ export class AuthService {
       },
     });
 
+    // Si se proporciona una nueva dirección, agregarla
     if (direccion) {
       await this.prisma.direccion.create({
         data: {
@@ -193,4 +186,5 @@ export class AuthService {
     return { message: 'Usuario actualizado correctamente' };
   }
 
+  // Puedes agregar aquí más métodos según lo necesites
 } 

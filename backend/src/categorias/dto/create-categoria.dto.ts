@@ -1,14 +1,9 @@
-import { IsString, IsEnum } from 'class-validator';
-
-export enum CategoriaEstado {
-  ACTIVA = 'ACTIVA',
-  ELIMINADA = 'ELIMINADA'
-}
+import { IsString } from 'class-validator';
 
 export class CreateCategoriaDto {
   @IsString()
   readonly nombre: string;
 
-  @IsEnum(CategoriaEstado)
-  readonly estado: CategoriaEstado;
+  @IsString()
+  readonly estado: string;
 }

@@ -1,12 +1,9 @@
-import { IsEnum, IsOptional, IsString } from 'class-validator';
-import { CategoriaEstado } from './create-categoria.dto';
+import { IsString } from 'class-validator';
 
 export class UpdateCategoriaDto {
-  @IsOptional()
   @IsString()
   readonly nombre?: string;
 
-  @IsOptional()
-  @IsEnum(CategoriaEstado)
-  readonly estado?: CategoriaEstado;
+  @IsString()
+  readonly estado?: string;
 }

@@ -11,9 +11,6 @@ export class CreateUsuarioDto {
   @IsNotEmpty()
   email: string;
 
-  @IsNotEmpty()
-  rut: string;
-
   @IsString()
   @IsNotEmpty()
   @MinLength(4)

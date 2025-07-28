@@ -1,7 +1,6 @@
 -- CreateTable
 CREATE TABLE `Usuario` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
-    `rut` VARCHAR(191) NOT NULL,
     `nombre` VARCHAR(191) NOT NULL,
     `email` VARCHAR(191) NOT NULL,
     `contrasena` VARCHAR(191) NOT NULL,
@@ -9,7 +8,6 @@ CREATE TABLE `Usuario` (
     `tarjetas` VARCHAR(191) NOT NULL,
     `rol` ENUM('Admin', 'Cliente') NOT NULL,
 
-    UNIQUE INDEX `Usuario_rut_key`(`rut`),
     UNIQUE INDEX `Usuario_email_key`(`email`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -34,6 +32,7 @@ CREATE TABLE `Pedido` (
     `total` DOUBLE NOT NULL,
     `usuarioId` INTEGER NOT NULL,
     `direccionId` INTEGER NOT NULL,
+    `direccionRetiroId` INTEGER NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -123,6 +122,9 @@ ALTER TABLE `Pedido` ADD CONSTRAINT `Pedido_usuarioId_fkey` FOREIGN KEY (`usuari
 
 -- AddForeignKey
 ALTER TABLE `Pedido` ADD CONSTRAINT `Pedido_direccionId_fkey` FOREIGN KEY (`direccionId`) REFERENCES `Direccion`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `Pedido` ADD CONSTRAINT `Pedido_direccionRetiroId_fkey` FOREIGN KEY (`direccionRetiroId`) REFERENCES `Sucursal`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `LineaDePedido` ADD CONSTRAINT `LineaDePedido_productoId_fkey` FOREIGN KEY (`productoId`) REFERENCES `Producto`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;

@@ -9,7 +9,7 @@ async function bootstrap() {
   app.enableCors({
     origin: 'http://localhost:4200', // URL del frontend Angular
     credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
   });
   

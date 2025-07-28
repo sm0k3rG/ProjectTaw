@@ -1,21 +1,26 @@
-import { IsOptional, IsString, IsNumber, Min, IsNotEmpty } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsNumber, isNotEmpty } from 'class-validator';
 
 export class UpdateProductoDto {
-  @IsOptional() @IsString() @IsNotEmpty()
+  @IsOptional()
+  @IsNotEmpty()
   nombre?: string;
 
-  @IsOptional() @IsString() @IsNotEmpty()
+  @IsOptional()
+  @IsNotEmpty()
   descripcion?: string;
 
-  @IsOptional() @IsNumber() @Min(0, { message: 'El precio debe ser ≥ 0' })
+  @IsOptional()
+  @IsNumber()
   precio?: number;
 
-  @IsOptional() @IsNumber() @Min(0, { message: 'El stock debe ser ≥ 0' })
-  stock?: number;                 // quítalo si no expones «stock»
-
-  @IsOptional() @IsNumber() 
+  @IsOptional()
+  @IsNumber()
   categoriaId?: number;
 
-  @IsOptional() @IsString()
-  imagenUrl?: string;
+  @IsOptional()
+  imagenUrl?: string
+
+  @IsOptional()
+  @IsNumber()
+  ofertaId?: number;
 }
