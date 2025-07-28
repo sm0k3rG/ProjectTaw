@@ -14,8 +14,6 @@ import { PedidoModule } from './pedido/pedido.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { ConfigModule } from '@nestjs/config';
 import { EstadisticasModule } from './estadisticas/estadisticas.module';
-import { AuditoriaModule }         from './auditoria/auditoria.module';
-import { DireccionModule } from './direccion/direccion.module';
 
 
 @Module({
@@ -32,7 +30,6 @@ import { DireccionModule } from './direccion/direccion.module';
     PedidoModule, 
     NotificationsModule, 
     EstadisticasModule,
-    AuditoriaModule,
     DireccionModule
   ],
   controllers: [AppController],
