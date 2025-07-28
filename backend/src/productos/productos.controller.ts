@@ -1,28 +1,30 @@
 import { Controller, Get, Post, Body, Param, Put, Delete, UseGuards, Query, UsePipes, ValidationPipe, BadRequestException, ParseIntPipe } from '@nestjs/common';
-import { UpdateProductoDto } from './dto/update-producto.dto';
 import { ProductoService } from './productos.service';
 import { Producto, Rol } from '@prisma/client';
-
 import { CreateProductDto } from './dto/create-producto.dto';
 import { GetProductosDto } from './dto/get-productos.dto';
+import { UpdateProductoConStockDto } from './dto/update-producto-con-stock.dto';
+
 
 @Controller('producto')
 export class ProductoController {
   constructor(private readonly productoService: ProductoService) {}
-   // @Roles(Rol.Admin)  // Usamos el enum Rol para definir los roles permitidos
-  // @UseGuards(JwtAuthGuard, RolesGuard)  // Usamos ambos guards
+   
+
   @Post()
   agregarProducto(@Body() createProductoDto: CreateProductDto) {
     return this.productoService.agregarProducto(createProductoDto);
   }
 
+// @Roles(Rol.Admin)  // Usamos el enum Rol para definir los roles permitidos
+// @UseGuards(JwtAuthGuard, RolesGuard)  // Usamos ambos guards
   @Get("catalogo")
   @UsePipes(new ValidationPipe({ transform: true }))
   async listar(@Query() params: GetProductosDto) {
     return this.productoService.findAll(params);
   }
 
-    @Get('registrados')
+  @Get('registrados')
   // @Roles(Rol.Admin)  // Usamos el enum Rol para definir los roles permitidos
   // @UseGuards(JwtAuthGuard, RolesGuard)  // Usamos ambos guards
   async obtenerProductosConDetalles(
@@ -40,8 +42,20 @@ export class ProductoController {
     total,
     totalPaginas,
     productos,
-  };
+  }; 
 }
+
+ @Put(':id/actualizar')
+  async actualizarProducto(
+    @Param('id', ParseIntPipe) productoId: number, // Usamos ParseIntPipe para convertir el 'id' en número
+    @Body() body: UpdateProductoConStockDto, // Usamos el DTO
+  ) {
+    return this.productoService.actualizarProductoConStock(
+      productoId,
+      body.datosProducto,
+      body.stockPorSucursal,
+    );
+  }
 
 
 // @Roles(Rol.Admin)  // Usamos el enum Rol para definir los roles permitidos

@@ -1,12 +1,15 @@
-import { IsNotEmpty, IsOptional, IsNumber, isNotEmpty } from 'class-validator';
+import { IsOptional, IsString, IsNumber, IsEnum, IsArray, ValidateNested } from 'class-validator';
+import { Type } from 'class-transformer';
+import { ProductoEstado } from '@prisma/client';  // Si usas enums
 
+// DTO para los datos del producto
 export class UpdateProductoDto {
   @IsOptional()
-  @IsNotEmpty()
+  @IsString()
   nombre?: string;
 
   @IsOptional()
-  @IsNotEmpty()
+  @IsString()
   descripcion?: string;
 
   @IsOptional()
@@ -14,13 +17,10 @@ export class UpdateProductoDto {
   precio?: number;
 
   @IsOptional()
-  @IsNumber()
-  categoriaId?: number;
+  @IsEnum(ProductoEstado)
+  estado?: ProductoEstado;
 
   @IsOptional()
-  imagenUrl?: string
-
-  @IsOptional()
-  @IsNumber()
-  ofertaId?: number;
+  @IsString()
+  imagenUrl?: string;
 }

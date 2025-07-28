@@ -4,10 +4,14 @@ import { UpdateProductoDto } from './dto/update-producto.dto';
 import { CreateProductDto } from './dto/create-producto.dto';
 import { GetProductosDto } from './dto/get-productos.dto';
 import { Producto, ProductoEstado } from '@prisma/client';
+import { UpdateProductoConStockDto } from './dto/update-producto-con-stock.dto';
+import { NotificationsService } from 'src/notifications/notifications.service';
 
 @Injectable()
 export class ProductoService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService,
+    private readonly notificationsService: NotificationsService,
+  ) {}
   
 async agregarProducto(createProductDto: CreateProductDto) {
     const { nombre, descripcion, precio, categoriaId, ofertaId, imagenUrl, sucursales } = createProductDto;
@@ -208,5 +212,63 @@ async obtenerProductosConDetalles(
     },
   });
 }
+async actualizarProductoConStock(
+  productoId: number,
+  datosProducto: UpdateProductoConStockDto['datosProducto'],
+  stockPorSucursal: UpdateProductoConStockDto['stockPorSucursal'],
+) {
+  // 1. Actualizar los datos del producto
+  const productoActualizado = await this.prisma.producto.update({
+    where: { id: productoId },
+    data: {
+      ...datosProducto, // Propiedades del producto a actualizar
+    },
+  });
+
+  // 2. Actualizar el stock en todas las sucursales
+  for (const { sucursalId, stock } of stockPorSucursal) {
+    await this.prisma.productoSucursal.upsert({
+      where: {
+        productoId_sucursalId: {
+          productoId,
+          sucursalId,
+        },
+      },
+      update: { stock }, // Actualizamos el stock
+      create: {
+        productoId,
+        sucursalId,
+        stock, // Si no existe la relación, la creamos
+      },
+    });
+  }
+
+  // 3. Comprobar si hay usuarios que visitaron el producto
+  const usuarios = await this.prisma.historialVisita.findMany({
+    where: { productoId: productoId },
+    select: { usuario: { select: { email: true } } },
+  });
+
+  // Solo proceder a enviar correos si hay usuarios
+  if (usuarios.length > 0) {
+    // Enviar el correo a los usuarios que visitaron el producto
+    for (const usuario of usuarios) {
+      await this.notificationsService.notificarStockRepuesto(
+        usuario.usuario.email,
+        productoActualizado.nombre || 'Producto'
+      );
+    }
+  }
+
+
+  // Retornar el producto actualizado con sus detalles de stock
+  return this.prisma.producto.findUnique({
+    where: { id: productoId },
+    include: {
+      sucursales: true, // Incluimos las sucursales y su stock
+    },
+  });
+}
+
 
 }
