@@ -1,3 +1,5 @@
+import { UsersService } from './../../../../../../../backend/src/users/users.service';
+import { CartService } from './../../../../services/cart.service';
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CartItem } from '../../../../models/cart-item.model';
@@ -11,26 +13,27 @@ import { CartSidebarService, CartSidebarState } from '../../../../services/cart-
   styleUrls: ['./cart-sidebar.component.css']
 })
 export class CartSidebarComponent implements OnInit {
+
   cartItems: CartItem[] = [];
   total: number = 0;
   isOpen: boolean = false;
   sidebarState: CartSidebarState = { isOpen: false, totalItems: 0, totalAmount: 0 };
+  UsersService: any;
+  deliveryType: string = 'delivery';
 
-  constructor(private cartSidebarService: CartSidebarService) { }
+  constructor(private cartSidebarService: CartSidebarService, private cartService: CartService) { }
 
   ngOnInit(): void {
-    // Suscribirse al estado del sidebar
     this.cartSidebarService.getSidebarState().subscribe(state => {
       this.sidebarState = state;
       this.isOpen = state.isOpen;
     });
 
-    // Cargar items del carrito (asumiendo userId = 1 por ahora)
-    this.loadCartItems(1);
+    this.loadCartItems();
   }
 
-  loadCartItems(userId: number): void {
-    this.cartSidebarService.getCartItems(userId).subscribe({
+  loadCartItems(): void {
+    this.cartService.getCartItems().subscribe({
       next: (items) => {
         this.cartItems = items.map(item => ({
           product: item.product,
@@ -57,37 +60,19 @@ export class CartSidebarComponent implements OnInit {
       return;
     }
 
-    // Asumiendo userId = 1 por ahora
-    this.cartSidebarService.updateItemQuantity(1, productId, quantity).subscribe({
-      next: (updatedItem) => {
-        console.log('Cantidad actualizada exitosamente:', updatedItem);
-        this.loadCartItems(1); // Recargar items
-      },
-      error: (error) => {
-        console.error('Error actualizando cantidad:', error);
-        // Recargar items para asegurar sincronización
-        this.loadCartItems(1);
-      }
-    });
+    this.cartService.updateQuantity(productId, quantity);
+    console.log('Cantidad actualizada exitosamente');
+    this.loadCartItems();
   }
 
   removeFromCart(productId: number): void {
-    // Asumiendo userId = 1 por ahora
-    this.cartSidebarService.removeFromCart(1, productId).subscribe({
-      next: () => {
-        console.log('Item removido exitosamente');
-        this.loadCartItems(1); // Recargar items
-      },
-      error: (error) => {
-        console.error('Error removiendo item:', error);
-        // Recargar items para asegurar sincronización
-        this.loadCartItems(1);
-      }
-    });
+    this.cartService.removeFromCart(productId);
+    console.log('Item removido exitosamente');
+    this.loadCartItems();
   }
 
   getSubtotal(item: CartItem): number {
-    return item.product.price * item.quantity;
+    return item.product.precio * item.quantity;
   }
 
   updateTotals(): void {
@@ -104,5 +89,48 @@ export class CartSidebarComponent implements OnInit {
         this.updateQuantity(productId, quantity);
       }
     }
+  }
+
+  procederAlPago(): void {
+    const usuarioId = 1
+    // const usuarioId = this.UsersService.getCurrentUserId();
+
+    let direccion: any = null;
+
+    if (localStorage.getItem('deliveryAddress')) {
+      const address = localStorage.getItem('deliveryAddress');
+      if (address) {
+        direccion = JSON.parse(address);
+      }
+    } else {
+      const store = localStorage.getItem('pickupStore');
+      if (store) {
+        const parsedStore = JSON.parse(store);
+        direccion = parsedStore.id;
+      }
+    }
+
+    const lineasDePedido = this.cartItems.map(item => ({
+      productoId: item.product.id,
+      cantidad: item.quantity
+    }));
+
+    const pedido = {
+      usuarioId,
+      direccion,
+      lineasDePedido
+    };
+
+    console.log('Pedido a crear:', pedido);
+
+    this.cartService.crearPedido(pedido).subscribe({
+      next: () => {
+        alert('¡Pedido creado con éxito!');
+        this.cartService.clearCart();
+      },
+      error: () => {
+        alert('Error al crear el pedido');
+      }
+    });
   }
 }

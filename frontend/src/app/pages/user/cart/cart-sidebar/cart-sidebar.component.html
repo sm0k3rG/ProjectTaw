@@ -1,5 +1,5 @@
 <!-- Botón flotante para abrir el carrito -->
-<div class="cart-toggle-btn cart-toggle-btn-bottom" (click)="toggleSidebar()">
+<div *ngIf="!isOpen" class="cart-toggle-btn cart-toggle-btn-bottom" (click)="toggleSidebar()">
   <i class="bi bi-cart3"></i>
   <span *ngIf="cartItems.length > 0" class="cart-badge">{{ cartItems.length }}</span>
 </div>
@@ -32,15 +32,10 @@
     <!-- Lista de productos -->
     <div *ngIf="cartItems.length > 0" class="cart-items">
       <div *ngFor="let item of cartItems" class="cart-item">
-        <div class="item-image">
-          <img [src]="item.product.image"
-               [alt]="item.product.name"
-               class="img-fluid">
-        </div>
 
         <div class="item-details">
-          <h6 class="item-title">{{ item.product.name }}</h6>
-          <p class="item-price">${{ item.product.price | number:'1.2-2' }}</p>
+          <h6 class="item-title">{{ item.product.nombre }}</h6>
+          <p class="item-price">${{ item.product.precio | number:'1.2-2' }}</p>
 
           <div class="quantity-controls">
             <button class="btn btn-sm btn-outline-secondary"
@@ -89,7 +84,8 @@
       </div>
     </div>
 
-    <button class="btn btn-success w-100">
+    <button class="btn btn-success w-100" style="background-color: #FFC220; border-color: #FFC220; color: black"
+            (click)="procederAlPago()">
       <i class="bi bi-credit-card me-2"></i>
       Proceder al Pago
     </button>

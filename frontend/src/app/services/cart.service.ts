@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Product } from '../models/product.model';
 import { CartItem } from '../models/cart-item.model';
+import { HttpClient } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
@@ -11,7 +12,7 @@ export class CartService {
   private cartSubject = new BehaviorSubject<CartItem[]>([]);
   private readonly CART_STORAGE_KEY = 'shopping_cart';
 
-  constructor() {
+  constructor(private http: HttpClient) {
     this.loadCartFromStorage();
   }
 
@@ -89,7 +90,7 @@ export class CartService {
   // Calcular total del carrito
   getTotal(): number {
     return this.cartItems.reduce((total, item) => {
-      return total + (item.product.price * item.quantity);
+      return total + (item.product.precio * item.quantity);
     }, 0);
   }
 
@@ -110,5 +111,10 @@ export class CartService {
     this.cartItems = [];
     this.cartSubject.next([]);
     localStorage.removeItem(this.CART_STORAGE_KEY);
+  }
+
+  crearPedido(pedido: any): Observable<any> {
+    const url = 'http://localhost:3000/api/pedido';
+    return this.http.post(url, pedido);
   }
 }

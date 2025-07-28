@@ -56,7 +56,7 @@ export class ProductComponent implements OnInit {
       next: (availability) => {
         if (availability.available) {
           this.cartService.addToCart(this.product!);
-          console.log('Producto agregado al carrito:', this.product!.name);
+          console.log('Producto agregado al carrito:', this.product!.nombre);
         } else {
           alert(`No hay suficiente stock. Disponible: ${availability.stock}`);
         }
