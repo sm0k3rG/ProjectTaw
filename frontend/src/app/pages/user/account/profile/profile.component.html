@@ -1,3 +1,5 @@
+<app-main-navbar type="user"></app-main-navbar>
+
 <div *ngIf="profile && !loading && !error" class="profile-container">
   <div class="profile-card shadow-sm">
     <h2>Mi Perfil</h2>
@@ -47,8 +49,16 @@
       <button type="submit" class="btn btn-primary" [disabled]="loading">
         Guardar información adicional
       </button>
+      
     </form>
+
+    <button
+      class="btn btn-danger ml-1"
+      [routerLink]="['/account/deactivate']">
+      Desactivar cuenta
+    </button>
   </div>
+  
 </div>
 
 <div *ngIf="loading" class="text-center py-5">

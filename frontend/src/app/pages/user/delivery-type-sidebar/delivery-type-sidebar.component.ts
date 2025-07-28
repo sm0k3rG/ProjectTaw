@@ -40,6 +40,8 @@ export class DeliveryTypeSidebarComponent implements OnInit, OnChanges {
 
   userAddresses: DeliveryAddress[] = [];
   isAuthenticated = false;
+  editAddress = false;
+    showAddressForm = false;
 
   constructor(
     private chileGeoService: ChileGeoService,
@@ -53,18 +55,27 @@ export class DeliveryTypeSidebarComponent implements OnInit, OnChanges {
   }
 
   ngOnInit(): void {
-    this.getUserLocation();
-    this.loadRegiones();
-    this.loadStores();
+  console.log('ngOnInit ejecutado');
+  this.getUserLocation();
+  this.loadRegiones();
+  this.loadStores();
 
-    this.isAuthenticated = this.authService.isAuthenticated();
-    if (this.isAuthenticated) {
-      this.deliveryService.userAddresses$.subscribe(addresses => {
-        this.userAddresses = addresses;
-      });
-      this.deliveryService.loadUserAddresses();
-    }
+  this.isAuthenticated = this.authService.isAuthenticated();
+  console.log('isAuthenticated:', this.isAuthenticated);
+
+  if (this.isAuthenticated) {
+    this.deliveryService.userAddresses$.subscribe(addresses => {
+      this.userAddresses = addresses;
+      console.log('Direcciones del usuario:', addresses);
+      this.editAddress = this.userAddresses.length === 0;
+      this.cdr.detectChanges();
+    });
+
+    this.deliveryService.loadUserAddresses();
   }
+}
+
+
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['selectedDeliveryType']) {
@@ -76,8 +87,14 @@ export class DeliveryTypeSidebarComponent implements OnInit, OnChanges {
   }
 
   selectSavedAddress(addr: DeliveryAddress): void {
-    this.address = { ...addr };
-  }
+  this.address = { ...addr };
+
+  localStorage.setItem('deliveryAddress', JSON.stringify(this.address));
+
+  this.addressChange.emit(this.address);
+
+  this.closeSidebar.emit();
+}
 
   handleOverlayClick(event: MouseEvent) {
     const sidebar = document.querySelector('.delivery-sidebar');
@@ -162,6 +179,8 @@ export class DeliveryTypeSidebarComponent implements OnInit, OnChanges {
     }
   }
 
+  
+
   selectStoreFromList(store: StoreWithDistance): void {
     this.selectedStore = store;
     this.storeChange.emit(store);
@@ -237,20 +256,36 @@ export class DeliveryTypeSidebarComponent implements OnInit, OnChanges {
     }
   }
 
-  saveAddress(): void {
-    if (this.deliveryType === 'delivery') {
-      if (!this.address.direccion || !this.address.numero || !this.address.comuna) {
-        alert('Por favor completa todos los campos requeridos');
-        return;
-      }
-
-      localStorage.setItem('deliveryAddress', JSON.stringify(this.address));
-
-      this.closeSidebar.emit();
-
-
+ saveAddress(): void {
+  if (this.deliveryType === 'delivery') {
+    if (!this.address.direccion || !this.address.numero || !this.address.comuna) {
+      alert('Por favor completa todos los campos requeridos');
+      return;
     }
+
+    if (this.isAuthenticated) {
+      const user = this.authService.getCurrentUser();
+      this.address.usuarioId = user?.userId;
+    }
+
+    let payload = { ...this.address, calle: this.address.direccion };
+    delete payload.direccion;
+
+    this.deliveryService.saveDeliveryAddress(payload).subscribe({
+      next: (saved) => {
+        this.deliveryService.loadUserAddresses();
+        this.showAddressForm = false;
+      },
+      error: (err) => {
+        console.error('Error al guardar dirección:', err);
+      },
+    });
   }
+}
+
+
+
+
 
   getDistanceText(distance: number | undefined): string {
     if (distance === undefined || distance === null) return '';

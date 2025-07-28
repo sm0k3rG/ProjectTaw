@@ -15,6 +15,8 @@ import { NotificationsModule } from './notifications/notifications.module';
 import { ConfigModule } from '@nestjs/config';
 import { EstadisticasModule } from './estadisticas/estadisticas.module';
 import { AuditoriaModule }         from './auditoria/auditoria.module';
+import { DireccionModule } from './direccion/direccion.module';
+
 
 @Module({
   imports: [

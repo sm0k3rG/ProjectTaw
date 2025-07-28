@@ -1,12 +1,13 @@
 <nav class="lider-navbar navbar navbar-expand-lg w-100">
   <div class="navbar-content d-flex align-items-center justify-content-between w-100">
-    <!-- Logo -->
     <div class="d-flex align-items-center">
-      <img src="https://i5.walmartimages.com/dfw/63fd9f59-14e2/9d304ce6-96de-4331-b8ec-c5191226d378/v1/spark-icon.svg" alt="Walmart Logo" style="height: 38px; width: 38px;" class="me-2" />      <button class="btn btn-link text-white fw-bold d-flex align-items-center me-3 categories-btn">
+      <a routerLink="/user/products">
+              <img src="https://i5.walmartimages.com/dfw/63fd9f59-14e2/9d304ce6-96de-4331-b8ec-c5191226d378/v1/spark-icon.svg" alt="Walmart Logo" style="height: 38px; width: 38px;" class="me-2" />     
+      </a>
+      <button class="btn btn-link text-white fw-bold d-flex align-items-center me-3 categories-btn">
         <i class="bi bi-grid-3x3-gap-fill me-1"></i> Categorías
       </button>
     </div>
-    <!-- Buscador -->
     <form class="flex-grow-1 mx-3 search-form">
       <div class="input-group rounded-pill overflow-hidden">
         <input type="text" class="form-control border-0" placeholder="Busca en Supermercado">
@@ -29,19 +30,29 @@
             </ng-template>
           </ng-container>
           <ng-template #envio>
-            <ng-container *ngIf="deliveryAddress?.direccion; else sinDireccion">
-              Envío a {{ deliveryAddress.direccion }}
-            </ng-container>
-            <ng-template #sinDireccion>
-              Ingresa dirección de entrega
+              <ng-container *ngIf="deliveryAddress?.direccion; else sinDireccion">
+                Envío a {{ deliveryAddress.direccion }}
+              </ng-container>
+              <ng-template #sinDireccion>
+                Ingresa dirección de entrega
+              </ng-template>
             </ng-template>
-          </ng-template>
+
         </span>
         <i class="bi bi-chevron-down position-absolute end-0 me-3"></i>
       </button>
-      <a routerLink="/login" class="btn btn-link text-white me-3 d-flex align-items-center login-btn">
-        <i class="bi bi-person me-1"></i> Ingresar
-      </a>
+      <a *ngIf="!user; else loggedIn" routerLink="/login" class="btn btn-link text-white me-3 d-flex align-items-center login-btn">
+  <i class="bi bi-person me-1"></i> Ingresar
+</a>
+<ng-template #loggedIn>
+  <span
+    class="text-white me-3 d-flex align-items-center login-btn"
+    style="cursor:pointer"
+    (click)="toggleUserSidebar()"
+  >
+    <i class="bi bi-person me-1"></i> {{ user.nombre || user.name || user.email }}
+  </span>
+</ng-template>
     </div>
   </div>
 </nav>
@@ -56,3 +67,9 @@
   (storeChange)="onStoreChange($event)"
   (addressChange)="onAddressChange($event)">
 </app-delivery-type-sidebar>
+
+<app-user-sidebar
+  [show]="showUserSidebar"
+  [user]="user"
+  (closeSidebar)="showUserSidebar = false"
+></app-user-sidebar>

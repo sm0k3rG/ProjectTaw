@@ -16,7 +16,7 @@ export interface LoginResponse {
 }
 
 export interface DecodedToken {
-  id: number;
+  userId: number;
   email: string;
   role: 'Administrator' | 'Client';
   name: string;

@@ -5,8 +5,8 @@ import { AuthService } from '../core/services/auth.service';
 
 
 export interface DeliveryAddress {
-  id?: number;
-  direccion: string;
+  id: number;
+  calle: string;
   numero: string;
   depto?: string;
   region: string;
@@ -26,7 +26,7 @@ export interface DeliveryType {
   providedIn: 'root'
 })
 export class DeliveryService {
-  private apiUrl = 'http://localhost:3000/api';
+  private apiUrl = 'http://localhost:3000';
   private currentAddressSubject = new BehaviorSubject<DeliveryAddress | null>(null);
   private userAddressesSubject = new BehaviorSubject<DeliveryAddress[]>([]);
 
@@ -53,40 +53,49 @@ export class DeliveryService {
 
   // Cargar direcciones del usuario
   loadUserAddresses(): void {
-    const userId = this.authService.getCurrentUser()?.id;
-    if (userId) {
-      this.getUserDeliveryAddresses(userId).subscribe({
-        next: (addresses) => {
-          this.userAddressesSubject.next(addresses);
-        },
-        error: (error) => {
-          console.error('Error al cargar direcciones del usuario:', error);
-        }
-      });
-    }
+  const user = this.authService.getCurrentUser();
+  console.log('Usuario actual:', user);
+  const userId = user?.userId;
+  console.log('User ID usado para cargar direcciones:', userId);
+
+  if (userId) {
+    this.getUserDeliveryAddresses(userId).subscribe({
+      next: (addresses) => {
+        console.log('Direcciones obtenidas del backend:', addresses);
+        this.userAddressesSubject.next(addresses);
+      },
+      error: (error) => {
+        console.error('Error al cargar direcciones del usuario:', error);
+      }
+    });
   }
+}
+
 
   saveDeliveryAddress(address: DeliveryAddress): Observable<DeliveryAddress> {
-    const operation = address.id
-      ? this.updateDeliveryAddress(address.id, address)
-      : this.http.post<DeliveryAddress>(`${this.apiUrl}/delivery-addresses`, address);
+    console.log(address)
+  const operation = address.id
+    ? this.updateDeliveryAddress(address.id, address)
+    : this.http.post<DeliveryAddress>(`${this.apiUrl}/direcciones`, address);
 
-    return operation.pipe(
-      tap(savedAddress => {
-        this.currentAddressSubject.next(savedAddress);
-        localStorage.setItem('currentDeliveryAddress', JSON.stringify(savedAddress));
+  return operation.pipe(
+    tap(savedAddress => {
+      this.currentAddressSubject.next(savedAddress);
+      localStorage.setItem('currentDeliveryAddress', JSON.stringify(savedAddress));
 
-        if (this.authService.isAuthenticated()) {
-          this.loadUserAddresses();
-        }
-      })
-    );
-  }
+      if (this.authService.isAuthenticated()) {
+        this.loadUserAddresses();
+      }
+    })
+  );
+}
+
 
   // Obtener direcciones del usuario
   getUserDeliveryAddresses(userId: number): Observable<DeliveryAddress[]> {
-    return this.http.get<DeliveryAddress[]>(`${this.apiUrl}/delivery-addresses/user/${userId}`);
-  }
+  return this.http.get<DeliveryAddress[]>(`${this.apiUrl}/direcciones/usuario/${userId}`);
+}
+
 
   // Actualizar dirección
   updateDeliveryAddress(id: number, address: DeliveryAddress): Observable<DeliveryAddress> {
