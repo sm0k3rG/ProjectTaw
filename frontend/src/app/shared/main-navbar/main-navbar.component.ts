@@ -3,20 +3,24 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { AppStateService, AppState } from '../../services/app-state.service';
 import { DeliveryTypeSidebarComponent } from '../../pages/user/delivery-type-sidebar/delivery-type-sidebar.component';
-
+import { AuthService } from '../../core/services/auth.service';
+import { UserSidebarComponent } from '../user-sidebar/user-sidebar.component';
 @Component({
   selector: 'app-main-navbar',
   standalone: true,
-  imports: [CommonModule, RouterLink, DeliveryTypeSidebarComponent],
+  imports: [CommonModule, RouterLink, DeliveryTypeSidebarComponent, UserSidebarComponent ],
   templateUrl: './main-navbar.component.html',
   styleUrls: ['./main-navbar.component.css']
 })
 export class MainNavbarComponent implements OnInit {
   appState: AppState;
   showDeliverySidebar = false;
+  showUserSidebar = false;
+  user: any = null;
 
-  constructor(private appStateService: AppStateService) {
+  constructor(private appStateService: AppStateService, private authService: AuthService) {
     this.appState = this.appStateService.getCurrentState();
+    this.user = this.authService.getCurrentUser();
   }
 
   ngOnInit(): void {
@@ -50,5 +54,9 @@ export class MainNavbarComponent implements OnInit {
   onAddressChange(address: any) {
     this.appStateService.updateDeliveryAddress(address);
     this.showDeliverySidebar = false;
+  }
+
+  toggleUserSidebar() {
+    this.showUserSidebar = !this.showUserSidebar;
   }
 }
