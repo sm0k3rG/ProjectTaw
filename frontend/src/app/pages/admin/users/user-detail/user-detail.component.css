@@ -1,0 +1,51 @@
+.detail-container {
+  padding: 40px 20px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.detail-card {
+  background: #fff;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.card-header {
+  background: linear-gradient(90deg, #ffc220 0%, #ffb000 100%);
+  padding: 16px;
+  color: #004c91;
+}
+
+.card-body {
+  padding: 24px;
+}
+
+.detail-row {
+  display: flex;
+  margin-bottom: 12px;
+}
+
+.detail-row .label {
+  flex: 0 0 120px;
+  font-weight: 600;
+  color: #333;
+}
+
+.detail-row span:last-child {
+  color: #555;
+}
+
+button[routerLink] {
+  background: #f0f0f0;
+  border: none;
+  color: #004c91;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+button[routerLink]:hover {
+  background: #e0e0e0;
+}

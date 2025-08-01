@@ -1,0 +1,268 @@
+<!-- Modal de pago -->
+<div class="modal-overlay" *ngIf="isOpen" (click)="cerrarModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h5 class="modal-title">
+        <i class="fas fa-credit-card me-2"></i>
+        Procesar Pago
+      </h5>
+      <button type="button" class="btn-close" (click)="cerrarModal()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      @if (pasoActual === 'initial') {
+      <div class="text-center">
+        <div class="mb-4">
+          <i class="fas fa-credit-card text-primary" style="font-size: 3rem; color: #1976d2 !important;"></i>
+        </div>
+        <h4 class="mb-4" style="color: #1565c0;">Procesar Pago</h4>
+
+        <!-- Información del pedido -->
+        @if (pedido) {
+          <div class="alert alert-info mb-4">
+            <div class="row align-items-center">
+              <div class="col-md-6 text-md-start">
+                <strong>Pedido #{{ pedido.id }}</strong><br>
+                <small class="text-muted">{{ pedido.fecha | date:'dd/MM/yyyy' }}</small>
+              </div>
+              <div class="col-md-6 text-md-end">
+                <strong class="text-success fs-4">Total: ${{ totalPedido.toLocaleString() }}</strong>
+              </div>
+            </div>
+          </div>
+        }
+
+        <!-- Mensaje dinámico según si hay tarjeta guardada -->
+        @if (tieneTarjetaGuardada) {
+          <p class="text-muted mb-4">
+            Elija su método de pago preferido para finalizar la compra
+          </p>
+        } @else {
+          <p class="text-muted mb-4">
+            Ingrese los datos de su tarjeta para finalizar la compra
+          </p>
+        }
+
+        <!-- Botón para pagar con tarjeta guardada -->
+        @if (tieneTarjetaGuardada) {
+          <button class="btn btn-success btn-lg px-4 py-2 mb-3 w-100"
+                  (click)="pagarConTarjetaGuardada()"
+                  style="background: linear-gradient(135deg, #28a745 0%, #218838 100%); border: none; box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);">
+            <i class="fas fa-wallet me-2"></i>
+            Pagar con Tarjeta Guardada
+          </button>
+        }
+
+        <button class="btn btn-primary btn-lg px-4 py-2"
+                (click)="mostrarFormularioPago()"
+                style="background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%); border: none; box-shadow: 0 4px 15px rgba(25, 118, 210, 0.3);">
+          <i class="fas fa-credit-card me-2"></i>
+          @if (tieneTarjetaGuardada) {
+            Ingresar Nueva Tarjeta
+          } @else {
+            Continuar con el Pago
+          }
+        </button>
+      </div>
+      }
+
+      @if (pasoActual === 'payment-form') {
+      <div>
+        <div class="text-center mb-4">
+          <h4 class="mb-0" style="color: #1565c0;">
+            <i class="fas fa-credit-card me-2"></i>
+            Datos de Pago
+          </h4>
+        </div>
+        
+        <form (ngSubmit)="procesarPago()">
+
+          <!-- Número de tarjeta -->
+          <div class="mb-3">
+            <label for="cardNumber" class="form-label fw-bold" style="color: #1565c0;">
+              <i class="fas fa-credit-card me-2"></i>
+              Número de Tarjeta
+            </label>
+            <input type="text"
+                   id="cardNumber"
+                   class="form-control"
+                   [class.is-invalid]="errores.numeroTarjeta"
+                   placeholder="0000 0000 0000 0000"
+                   [(ngModel)]="datosTarjeta.numeroTarjeta"
+                   name="cardNumber"
+                   (input)="formatearNumeroTarjeta($event)"
+                   (keypress)="prevenirNoNumericoTarjeta($event)"
+                   maxlength="19">
+            @if (errores.numeroTarjeta) {
+            <div class="invalid-feedback">
+              {{ errores.numeroTarjeta }}
+            </div>
+            }
+          </div>
+
+          <!-- CVV -->
+          <div class="mb-3">
+            <label for="cvv" class="form-label fw-bold" style="color: #1565c0;">
+              <i class="fas fa-lock me-2"></i>
+              CVV
+            </label>
+            <input type="text"
+                   id="cvv"
+                   class="form-control"
+                   [class.is-invalid]="errores.cvv"
+                   placeholder="123"
+                   [(ngModel)]="datosTarjeta.cvv"
+                   name="cvv"
+                   (input)="formatearCvv($event)"
+                   (keypress)="prevenirNoNumericoCvv($event)"
+                   maxlength="3">
+            @if (errores.cvv) {
+            <div class="invalid-feedback">
+              {{ errores.cvv }}
+            </div>
+            }
+          </div>
+
+          <!-- Nombre del titular -->
+          <div class="mb-4">
+            <label for="cardholderName" class="form-label fw-bold" style="color: #1565c0;">
+              <i class="fas fa-user me-2"></i>
+              Nombre del Titular
+            </label>
+            <input type="text"
+                   id="cardholderName"
+                   class="form-control"
+                   [class.is-invalid]="errores.nombreTitular"
+                   placeholder="Juan Pérez"
+                   [(ngModel)]="datosTarjeta.nombreTitular"
+                   name="cardholderName"
+                   (input)="formatearNombreTitular($event)"
+                   (keypress)="prevenirNoAlfabetico($event)">
+            @if (errores.nombreTitular) {
+            <div class="invalid-feedback">
+              {{ errores.nombreTitular }}
+            </div>
+            }
+          </div>
+
+          <!-- Botones -->
+          <div class="d-grid gap-2">
+            <button type="submit"
+                    class="btn btn-primary btn-lg py-2"
+                    style="background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%); border: none; box-shadow: 0 4px 15px rgba(25, 118, 210, 0.3);">
+              <i class="fas fa-check me-2"></i>
+              Confirmar Pago
+            </button>
+            <button type="button"
+                    class="btn btn-outline-secondary btn-lg py-2"
+                    (click)="volverInicial()">
+              <i class="fas fa-arrow-left me-2"></i>
+              Volver
+            </button>
+          </div>
+        </form>
+      </div>
+      }
+
+      @if (pasoActual === 'success') {
+      <div class="text-center">
+        <div class="mb-4">
+          <i class="fas fa-check-circle text-success" style="font-size: 3rem; color: #4caf50 !important;"></i>
+        </div>
+        <h4 class="text-success mb-4">¡Pago Exitoso!</h4>
+
+        <!-- Boleta -->
+        <div class="receipt-container mb-4 p-3 border rounded" style="background: #f8f9fa; border-color: #dee2e6 !important;">
+          <div class="text-center mb-3">
+            <h5 class="text-success mb-2">
+              <i class="fas fa-receipt me-2"></i>
+              Comprobante de Pago
+            </h5>
+            <div class="text-muted small">{{ datosComprobante.idTransaccion }}</div>
+          </div>
+
+          <div class="row">
+            <div class="col-6">
+              <strong>Comercio:</strong><br>
+              <span class="text-muted">{{ datosComprobante.comercio }}</span>
+            </div>
+            <div class="col-6 text-end">
+              <strong>Fecha:</strong><br>
+              <span class="text-muted">{{ datosComprobante.fecha | date:'dd/MM/yyyy' }}</span>
+            </div>
+          </div>
+
+          <hr class="my-3">
+
+          <div class="row mb-2">
+            <div class="col-8">
+              <strong>Descripción:</strong>
+            </div>
+            <div class="col-4 text-end">
+              <strong>Monto:</strong>
+            </div>
+          </div>
+
+          <div class="row mb-3">
+            <div class="col-8">
+              <span class="text-muted">{{ datosComprobante.descripcion }}</span>
+            </div>
+            <div class="col-4 text-end">
+              <span class="fw-bold text-success">${{ datosComprobante.monto.toLocaleString() }}</span>
+            </div>
+          </div>
+
+          <hr class="my-3">
+
+          <div class="row">
+            <div class="col-6">
+              <strong>Tarjeta:</strong><br>
+              <span class="text-muted">**** **** **** {{ datosComprobante.ultimosDigitosTarjeta }}</span>
+            </div>
+            <div class="col-6 text-end">
+              <strong>Estado:</strong><br>
+              <span class="badge bg-success">APROBADO</span>
+            </div>
+          </div>
+
+          <div class="text-center mt-3">
+            <small class="text-muted">
+              <i class="fas fa-shield-alt me-1"></i>
+              Transacción procesada de forma segura
+            </small>
+          </div>
+        </div>
+
+        <p class="text-muted mb-4">{{ mensajeExito }}</p>
+
+        <div class="d-grid">
+          <button class="btn btn-success btn-lg px-4 py-2"
+                  (click)="irAVistaOrdenes()"
+                  style="background: linear-gradient(135deg, #4caf50 0%, #388e3c 100%); border: none; box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);">
+            <i class="fas fa-check me-2"></i>
+            Ver Mi Pedido
+          </button>
+        </div>
+      </div>
+      }
+
+      @if (pasoActual === 'error') {
+      <div class="text-center">
+        <div class="mb-4">
+          <i class="fas fa-exclamation-triangle text-danger" style="font-size: 3rem; color: #f44336 !important;"></i>
+        </div>
+        <h4 class="text-danger mb-4">Error en el Pago</h4>
+        <p class="text-muted mb-4">{{ mensajeError }}</p>
+        <button class="btn btn-danger btn-lg px-4 py-2"
+                (click)="volverInicial()"
+                style="background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%); border: none; box-shadow: 0 4px 15px rgba(244, 67, 54, 0.3);">
+          <i class="fas fa-arrow-left me-2"></i>
+          Intentar Nuevamente
+        </button>
+      </div>
+      }
+    </div>
+  </div>
+</div> 

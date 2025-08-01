@@ -1,0 +1,94 @@
+<div class="create-container">
+  <div class="create-card">
+    <h2 class="card-title">Agregar Usuario</h2>
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <!-- Nombre -->
+      <div class="mb-3">
+        <label class="form-label">Nombre</label>
+        <input type="text" class="form-control" formControlName="name" />
+        <div
+          *ngIf="form.get('name')?.invalid && form.get('name')?.touched"
+          class="text-danger small"
+        >
+          El nombre es obligatorio.
+        </div>
+      </div>
+
+      <!-- Email -->
+      <div class="mb-3">
+        <label class="form-label">Correo electrónico</label>
+        <input type="email" class="form-control" formControlName="email" />
+        <div
+          *ngIf="
+            form.get('email')?.hasError('required') &&
+            form.get('email')?.touched
+          "
+          class="text-danger small"
+        >
+          El correo es obligatorio.
+        </div>
+        <div
+          *ngIf="
+            form.get('email')?.hasError('email') && form.get('email')?.touched
+          "
+          class="text-danger small"
+        >
+          Formato de correo no válido.
+        </div>
+      </div>
+
+      <!-- Contraseña -->
+      <div class="mb-3">
+        <label class="form-label">Contraseña</label>
+        <input
+          type="password"
+          class="form-control"
+          formControlName="password"
+        />
+        <div
+          *ngIf="form.get('password')?.invalid && form.get('password')?.touched"
+          class="text-danger small"
+        >
+          La contraseña es obligatoria.
+        </div>
+      </div>
+
+      <!-- Rol -->
+      <div class="mb-4">
+        <label class="form-label">Rol</label>
+        <select class="form-select" formControlName="role">
+          <option value="">– Selecciona –</option>
+          <option *ngFor="let r of roles" [value]="r">{{ r }}</option>
+        </select>
+        <div
+          *ngIf="form.get('role')?.invalid && form.get('role')?.touched"
+          class="text-danger small"
+        >
+          El rol es obligatorio.
+        </div>
+      </div>
+
+      <button
+        type="submit"
+        class="btn submit-button w-100"
+        [disabled]="form.invalid || loading"
+      >
+        <ng-container *ngIf="!loading; else spinner">
+          Guardar usuario
+        </ng-container>
+        <ng-template #spinner>
+          <span class="spinner-border spinner-border-sm"></span>
+          Guardando…
+        </ng-template>
+      </button>
+    </form>
+
+    <div *ngIf="success" class="alert alert-success mt-3 text-center">
+      Usuario creado correctamente. Redirigiendo…
+    </div>
+    <div *ngIf="error" class="alert alert-danger mt-3 text-center">
+      Error al crear usuario. Intenta nuevamente.
+    </div>
+  </div>
+</div>

@@ -1,0 +1,39 @@
+<div class="deactivate-container">
+  <!-- Cargando perfil -->
+  <div *ngIf="loading" class="text-center py-5">
+    <div class="spinner-border"></div>
+    <p class="mt-3 text-muted">Cargando tu perfil…</p>
+  </div>
+
+  <!-- Error al cargar -->
+  <div *ngIf="error && !loading" class="text-center text-danger py-5">
+    <p>Error al cargar tu información. Intenta de nuevo.</p>
+    <button class="btn btn-primary" (click)="loadProfile()">Reintentar</button>
+  </div>
+
+  <!-- Confirmación de éxito -->
+  <div *ngIf="success" class="alert alert-success text-center">
+    Tu cuenta ha sido desactivada. Redirigiendo a inicio de sesión…
+  </div>
+
+  <!-- Botón de desactivación -->
+  <div
+    *ngIf="profile && !loading && !success"
+    class="card mx-auto deactivate-card"
+  >
+    <div class="card-body text-center">
+      <h4>Desactivar mi cuenta</h4>
+      <p>
+        Hola <strong>{{ profile.name }}</strong
+        >, si desactivas tu cuenta ya no podrás acceder.
+      </p>
+      <button
+        class="btn deactivate-button"
+        (click)="onDeactivate()"
+        [disabled]="processing"
+      >
+        {{ processing ? "Desactivando…" : "Desactivar cuenta" }}
+      </button>
+    </div>
+  </div>
+</div>

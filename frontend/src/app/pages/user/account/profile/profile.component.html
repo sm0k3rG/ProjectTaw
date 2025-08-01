@@ -1,0 +1,67 @@
+<app-main-navbar type="user"></app-main-navbar>
+
+<div *ngIf="profile && !loading && !error" class="profile-container">
+  <div class="profile-card shadow-sm">
+    <h2>Mi Perfil</h2>
+    <dl>
+      <dt>Nombre</dt>
+      <dd>{{ profile.name }}</dd>
+      <dt>Email</dt>
+      <dd>{{ profile.email }}</dd>
+      <dt>Teléfono</dt>
+      <dd>{{ profile.phone }}</dd>
+      <dt>Rol</dt>
+      <dd>{{ profile.role }}</dd>
+      <dt>Registrado</dt>
+      <dd>{{ profile.registeredAt }}</dd>
+      <dt>Último login</dt>
+      <dd>{{ profile.lastLogin }}</dd>
+      <dt>Órdenes realizadas</dt>
+      <dd>{{ profile.ordersCount }}</dd>
+      <dt>Puntos acumulados</dt>
+      <dd>{{ profile.points }}</dd>
+    </dl>
+
+    <button
+      class="btn btn-outline-primary"
+      (click)="editAdditional = !editAdditional"
+    >
+      {{ editAdditional ? "Cancelar" : "Añadir información adicional" }}
+    </button>
+
+    <form
+      *ngIf="editAdditional"
+      [formGroup]="form"
+      (ngSubmit)="saveAdditional()"
+    >
+      <div class="mb-3">
+        <label class="form-label">Teléfono alternativo</label>
+        <input formControlName="altPhone" class="form-control" />
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Dirección secundaria</label>
+        <input formControlName="secondaryAddress" class="form-control" />
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Preferencias de entrega</label>
+        <input formControlName="deliveryPrefs" class="form-control" />
+      </div>
+      <button type="submit" class="btn btn-primary" [disabled]="loading">
+        Guardar información adicional
+      </button>
+      
+    </form>
+
+    <button
+      class="btn btn-danger ml-1"
+      [routerLink]="['/account/deactivate']">
+      Desactivar cuenta
+    </button>
+  </div>
+  
+</div>
+
+<div *ngIf="loading" class="text-center py-5">
+  <div class="spinner-border"></div>
+</div>
+<div *ngIf="error" class="text-center text-danger">Error al cargar perfil.</div>

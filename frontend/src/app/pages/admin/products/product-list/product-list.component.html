@@ -1,0 +1,226 @@
+<app-main-navbar type="admin"></app-main-navbar>
+
+<div class="container-fluid px-2 px-md-4 py-3">
+  @if (mostrarMensaje) {
+  <div
+    class="alert alert-{{
+      tipoMensaje === 'success' ? 'success' : 'danger'
+    }} alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3"
+    role="alert"
+    style="z-index: 1050; min-width: 300px"
+  >
+    <i
+      class="bi bi-{{
+        tipoMensaje === 'success' ? 'check-circle' : 'exclamation-triangle'
+      }} me-2"
+    ></i>
+    {{ mensaje }}
+    <button
+      type="button"
+      class="btn-close"
+      (click)="mostrarMensaje = false"
+    ></button>
+  </div>
+  }
+
+  <div class="card shadow-sm rounded-4 p-4" style="background: #fafbfc">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <div>
+        <h2 class="fw-bold mb-0" style="font-size: 2rem">
+          Gestión de Productos
+        </h2>
+      </div>
+      <div class="d-flex gap-2">
+        <button
+          class="btn btn-secondary rounded-3 px-4 fw-semibold d-flex align-items-center"
+          style="font-size: 1.1rem"
+          data-bs-toggle="modal"
+          data-bs-target="#modalCategorias"
+        >
+          <i class="bi bi-tags me-2"></i> Gestionar Categorías
+        </button>
+        <button
+          class="btn btn-dark rounded-3 px-4 fw-semibold"
+          style="font-size: 1.1rem"
+          data-bs-toggle="modal"
+          data-bs-target="#modalAgregarProducto"
+        >
+          <i class="bi bi-plus me-2"></i> Agregar Producto
+        </button>
+      </div>
+    </div>
+
+    <div class="d-flex align-items-center gap-3 mb-3 justify-content-start">
+      <select
+        class="form-select rounded-3 w-auto"
+        [(ngModel)]="categoriaSeleccionada"
+        (change)="onCambiarCategoria($event)"
+      >
+        <option value="">Todas las categorías</option>
+        @for (cat of categorias; track cat.id) { @if (cat.estado === 'ACTIVA') {
+        <option [value]="cat.id">{{ cat.nombre }}</option>
+        } }
+      </select>
+      <select
+        class="form-select rounded-3 w-auto"
+        [(ngModel)]="ofertaSeleccionada"
+        (change)="onCambiarOferta($event)"
+      >
+        <option value="">Todas las ofertas</option>
+        @for (oferta of ofertas; track oferta.id) { @if (oferta.estado ===
+        'ACTIVA') {
+        <option [value]="oferta.id">{{ oferta.porcentaje }}%</option>
+        } }
+      </select>
+      <select
+        class="form-select rounded-3 w-auto"
+        [(ngModel)]="ordenSeleccionado"
+        (change)="onCambiarOrden($event)"
+      >
+        <option value="">Ordenar por</option>
+        <option value="asc">Nombre: A-Z</option>
+        <option value="desc">Nombre: Z-A</option>
+        <option value="precioAsc">Precio: menor a mayor</option>
+        <option value="precioDesc">Precio: mayor a menor</option>
+      </select>
+      <button
+        class="btn btn-outline-secondary rounded-3"
+        (click)="limpiarFiltros()"
+      >
+        Limpiar
+      </button>
+    </div>
+
+    <div class="table-responsive">
+      <table class="table align-middle mb-0">
+        <thead>
+          <tr>
+            <th>Imagen</th>
+            <th>Producto</th>
+            <th>Categoría</th>
+            <th>Precio</th>
+            <th>Oferta</th>
+            <th>Stock</th>
+            <th>Sucursal</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @if (cargando) {
+          <tr>
+            <td colspan="9" class="text-center py-4">
+              <div class="spinner-border text-primary" role="status"></div>
+              <p class="mt-2">Cargando...</p>
+            </td>
+          </tr>
+          } @else if (productos.length === 0) {
+          <tr>
+            <td colspan="9" class="text-center py-4">
+              <p>No hay productos registrados.</p>
+            </td>
+          </tr>
+          } @else { @for (producto of productos; track producto.id) {
+          <tr>
+            <td>
+              <img
+                *ngIf="producto.imagenUrl; else noImage"
+                [src]="producto.imagenUrl"
+                alt="Imagen producto"
+                style="
+                  width: 48px;
+                  height: 48px;
+                  object-fit: cover;
+                  border-radius: 0.5rem;
+                "
+              />
+              <ng-template #noImage>
+                <div
+                  class="bg-light d-flex align-items-center justify-content-center"
+                  style="width: 48px; height: 48px; border-radius: 0.5rem"
+                >
+                  <i class="bi bi-image text-muted"></i>
+                </div>
+              </ng-template>
+            </td>
+            <td>
+              <span class="fw-bold">{{ producto.nombre }}</span
+              ><br />
+              <span class="text-muted small">{{ producto.descripcion }}</span>
+            </td>
+            <td>{{ producto.categoria.nombre }}</td>
+            <td class="fw-bold text-success">
+              ${{ producto.precio | number : "1.0-0" }}
+            </td>
+            <td>
+              @if (producto.oferta) {
+              <span
+                class="badge text-bg-danger fs-6"
+                title="{{ producto.oferta.descripcion }}"
+                >{{ producto.oferta.porcentaje }}%</span
+              >
+              }
+            </td>
+            <td class="fw-semibold">
+              @for (productoSucursal of producto.sucursales; track
+              productoSucursal) {
+              <div>{{ productoSucursal.stock }}</div>
+              }
+            </td>
+            <td>
+              @for (productoSucursal of producto.sucursales; track
+              productoSucursal) {
+              <div>{{ productoSucursal.sucursal.nombre }}</div>
+              }
+            </td>
+            <td>
+              <span class="badge" [ngClass]="getEstadoColor(producto.estado)">{{
+                producto.estado
+              }}</span>
+            </td>
+            <td>
+              @if (producto.estado !== 'ELIMINADO') {
+              <button
+                class="btn btn-outline-dark btn-sm rounded-2 me-1"
+                title="Editar"
+                (click)="onEditarProducto(producto)"
+                data-bs-toggle="modal"
+                data-bs-target="#modalEditarProducto"
+              >
+                <i class="bi bi-pencil"></i>
+              </button>
+              <button
+                class="btn btn-outline-danger btn-sm rounded-2"
+                title="Eliminar"
+                (click)="eliminarProducto(producto)"
+              >
+                <i class="bi bi-trash"></i>
+              </button>
+              }
+            </td>
+          </tr>
+          } }
+        </tbody>
+      </table>
+      <div class="d-flex justify-content-center mt-4">
+        <ngb-pagination
+          [collectionSize]="totalItems"
+          [(page)]="page"
+          [pageSize]="pageSize"
+          [maxSize]="5"
+          [rotate]="true"
+          [ellipses]="false"
+          [boundaryLinks]="true"
+          (pageChange)="onCambiarPagina($event)"
+        />
+      </div>
+    </div>
+  </div>
+
+  <app-product-add (productoAgregado)="onProductoAgregado()"></app-product-add>
+  <app-product-edit
+    [producto]="productoSeleccionado"
+    (productoActualizado)="onProductoActualizado()"
+  ></app-product-edit>
+  <app-category></app-category>
+</div>

@@ -1,0 +1,316 @@
+.delivery-sidebar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
+
+.delivery-sidebar {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  max-width: 400px;
+  background: white;
+  z-index: 1001;
+  transform: translateX(100%);
+  transition: transform 0.3s ease;
+}
+
+.delivery-sidebar.open {
+  transform: translateX(0);
+}
+
+.sidebar-header {
+  background: #fff;
+  border-bottom: 1px solid #eee;
+}
+
+.sidebar-tabs {
+  background: #fff;
+}
+
+.tab-btn {
+  border: none;
+  background: #f5f5f5;
+  padding: 0.7rem 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  color: #222;
+  font-size: 1rem;
+  transition: background 0.2s, color 0.2s;
+}
+
+.tab-btn.active {
+  background: #ff8200;
+  color: #fff;
+}
+
+.sidebar-content {
+  flex: 1;
+  padding: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Ajustar espaciado para que quepa todo */
+.sidebar-content h6 {
+  margin-bottom: 0.25rem;
+  font-size: 0.85rem;
+}
+
+.sidebar-content .form-label {
+  font-size: 0.75rem;
+  margin-bottom: 0.125rem;
+}
+
+.sidebar-content .form-control {
+  padding: 0.25rem 0.375rem;
+  font-size: 0.8rem;
+  margin-bottom: 0.25rem;
+}
+
+.sidebar-content .mb-1 {
+  margin-bottom: 0.25rem !important;
+}
+
+.sidebar-content .mb-2 {
+  margin-bottom: 0.5rem !important;
+}
+
+.sidebar-content .mb-3 {
+  margin-bottom: 0.75rem !important;
+}
+
+/* Ajustar la lista de sucursales para que quepa */
+.stores-list {
+  flex: 1;
+  overflow-y: auto;
+  max-height: none;
+}
+
+/* Ajustar elementos de la lista */
+.store-item {
+  padding: 0.375rem !important;
+  margin-bottom: 0.375rem !important;
+}
+
+.store-item h6 {
+  font-size: 0.8rem;
+  margin-bottom: 0.125rem;
+}
+
+.store-item p {
+  font-size: 0.7rem;
+  margin-bottom: 0.125rem;
+}
+
+/* Ajustar el input de búsqueda */
+.input-group {
+  margin-bottom: 0.375rem !important;
+}
+
+.input-group .form-control {
+  padding: 0.25rem 0.375rem;
+  font-size: 0.8rem;
+}
+
+/* Ajustar el botón de confirmar */
+.btn-success {
+  padding: 0.375rem 0.75rem;
+  font-size: 0.8rem;
+  margin-top: 0.25rem !important;
+  margin-bottom: 0.25rem !important;
+}
+
+/* Ajustar los tabs */
+.sidebar-tabs {
+  padding: 0.375rem 0.5rem 0 0.5rem !important;
+}
+
+.tab-btn {
+  padding: 0.375rem 0.5rem;
+  font-size: 0.8rem;
+}
+
+/* Ajustar el header */
+.sidebar-header {
+  padding: 0.5rem !important;
+}
+
+.sidebar-header h5 {
+  font-size: 0.9rem !important;
+}
+
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[name="numero"] {
+  font-family: 'Courier New', monospace;
+  text-align: left;
+}
+
+input[name="numero"]:focus {
+  border-color: #28a745;
+  box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+}
+
+.input-group-text {
+  background: #fff;
+  border-right: 0;
+}
+
+.form-control {
+  border-left: 0;
+}
+
+/* Estilos para la lista de sucursales */
+.stores-list {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.store-item {
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 1px solid #dee2e6 !important;
+  position: relative;
+}
+
+.store-item:hover {
+  background-color: #f8f9fa;
+  border-color: #ff8200 !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.store-item.selected {
+  background-color: #fff3e0;
+  border-color: #ff8200 !important;
+  box-shadow: 0 4px 8px rgba(255, 130, 0, 0.2);
+  position: relative;
+}
+
+.store-item.selected::before {
+  content: "✓";
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: #ff8200;
+  color: white;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+/* Estilos para los badges de distancia */
+.badge {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+}
+
+/* Estilos para los botones de acción */
+.btn-sm {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+}
+
+/* Estilos para el scrollbar personalizado */
+.stores-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.stores-list::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.stores-list::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+.stores-list::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* Animaciones */
+.store-item {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Estilos para dispositivos móviles */
+@media (max-width: 768px) {
+  .delivery-sidebar {
+    width: 100vw;
+    border-radius: 0;
+  }
+
+  .stores-list {
+    max-height: 300px;
+  }
+}
+
+/* Estilos para el botón de confirmar */
+.btn-success {
+  background-color: #28a745;
+  border-color: #28a745;
+  color: white;
+  font-weight: 600;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.btn-success:hover {
+  background-color: #218838;
+  border-color: #1e7e34;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
+}
+
+.btn-success:active {
+  transform: translateY(0);
+}
+
+.btn-success:disabled {
+  background-color: #6c757d;
+  border-color: #6c757d;
+  color: #fff;
+  opacity: 0.65;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.btn-success:disabled:hover {
+  background-color: #6c757d;
+  border-color: #6c757d;
+  transform: none;
+  box-shadow: none;
+}

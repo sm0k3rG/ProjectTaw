@@ -1,0 +1,41 @@
+.deactivate-container {
+  max-width: 500px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+.deactivate-card {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.deactivate-card .card-body {
+  padding: 24px;
+}
+
+.deactivate-card h4 {
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.deactivate-button {
+  background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%);
+  color: #fff;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.deactivate-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(229, 62, 62, 0.3);
+}
+
+.deactivate-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}

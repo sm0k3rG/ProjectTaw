@@ -1,0 +1,138 @@
+import { CommonModule } from "@angular/common";
+import { Component, OnInit } from "@angular/core"
+import { FormBuilder, FormGroup, Validators } from "@angular/forms"
+import { ReactiveFormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
+import Swal from 'sweetalert2';
+import { AuthService } from '../../../core/services/auth.service';
+import { validateEmail, validatePassword } from '../../../core/validators/auth.validators';
+import { RouterLink } from '@angular/router';
+
+
+@Component({
+  selector: "app-login",
+  standalone: true,
+  templateUrl: "./login.component.html",
+  styleUrls: ["./login.component.css"],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    RouterLink,
+  ]
+})
+export class LoginComponent implements OnInit {
+  loginForm: FormGroup = new FormGroup({});
+  isLoading = false;
+  showPassword = false;
+
+  constructor(
+    private formBuilder: FormBuilder,
+    private authService: AuthService,
+    private router: Router
+  ) {}
+
+  ngOnInit(): void {
+    if (this.authService.isAuthenticated()) {
+      this.authService.redirectUserByRole(this.router);
+      return;
+    }
+
+    this.loginForm = this.formBuilder.group({
+      email: ["", [Validators.required, validateEmail]],
+      password: ["", [Validators.required, validatePassword]],
+    });
+  }
+
+
+
+    enviarFormulario() {
+    if (this.loginForm.valid) {
+      this.isLoading = true;
+      const { email, password } = this.loginForm.value;
+
+      this.authService.login(email, password).subscribe({
+        next: (response) => {
+          this.isLoading = false;
+
+          const decodedToken = this.authService.getCurrentUser();
+
+          if (decodedToken) {
+            const routesByRole: { [key: string]: string } = {
+              'Administrator': '/admin/dashboard',
+              'Client': '/client/dashboard'
+            };
+
+            const route = routesByRole[decodedToken.role] || '/dashboard';
+
+            Swal.fire({
+              icon: 'success',
+              title: `¡Bienvenido ${decodedToken.name}!`,
+              text: `Has iniciado sesión como ${decodedToken.role === 'Administrator' ? 'Administrador' : 'Cliente'}`,
+              confirmButtonText: 'Continuar',
+              confirmButtonColor: '#0071ce',
+              timer: 1500,
+              showConfirmButton: false
+            }).then(() => {
+              const routesByRole: { [key: string]: string } = {
+                'Administrator': '/admin/products',
+                'Client': '/user/products',
+              };
+
+
+              const route = routesByRole[decodedToken.role] || '/user/products';
+
+              this.router.navigate([route]);
+            });
+
+          }
+        },
+        error: (error) => {
+          this.isLoading = false;
+
+          let errorMessage = 'Error al iniciar sesión';
+          if (error.status === 401) {
+            errorMessage = 'Credenciales incorrectas';
+          } else if (error.status === 404) {
+            errorMessage = 'Usuario no encontrado';
+          }
+
+          Swal.fire({
+            icon: 'error',
+            title: 'Error de autenticación',
+            text: errorMessage,
+            confirmButtonText: 'Entendido',
+            confirmButtonColor: '#dc3545'
+          });
+        }
+      });
+    } else {
+      this.marcarFormularioComoTocado();
+
+      Swal.fire({
+        icon: 'error',
+        title: 'Error de validación',
+        text: 'Por favor, completa todos los campos correctamente',
+        confirmButtonText: 'Entendido',
+        confirmButtonColor: '#dc3545'
+      });
+    }
+  }
+
+  alternarVisibilidadContrasena() {
+    this.showPassword = !this.showPassword
+  }
+
+  private marcarFormularioComoTocado() {
+    Object.keys(this.loginForm.controls).forEach((key) => {
+      const control = this.loginForm.get(key)
+      control?.markAsTouched()
+    })
+  }
+
+  get email() {
+    return this.loginForm.get("email")
+  }
+  get password() {
+    return this.loginForm.get("password")
+  }
+}

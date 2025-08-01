@@ -1,0 +1,102 @@
+<!-- Modal para gestionar categorías -->
+<div class="modal fade" id="modalCategorias" tabindex="-1" aria-labelledby="modalCategoriasLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalCategoriasLabel">Gestionar Categorías</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <!-- Formulario para agregar nueva categoría -->
+        <form [formGroup]="categoriaForm">
+          <div class="mb-3">
+            <label class="form-label fw-bold">Agregar Nueva Categoría</label>
+            <div class="input-group">
+              <input 
+                type="text" 
+                class="form-control" 
+                formControlName="nuevaCategoria"
+                placeholder="Ingresa solo letras y espacios"
+                [ngClass]="{
+                  'is-invalid': hasError('nuevaCategoria', 'pattern') || hasError('nuevaCategoria', 'required'),
+                  'is-valid': nuevaCategoriaField?.valid && nuevaCategoriaField?.touched
+                }"
+              >
+              <button 
+                class="btn btn-secondary" 
+                type="button" 
+                (click)="agregarCategoria()" 
+                [disabled]="loading || categoriaForm.invalid"
+              >
+                <i class="bi bi-plus"></i> Agregar
+              </button>
+            </div>
+            
+            <!-- Mensajes de validación -->
+            @if (hasError('nuevaCategoria', 'required')) {
+              <div class="invalid-feedback d-block">
+                El nombre de la categoría es requerido.
+              </div>
+            }
+            @if (hasError('nuevaCategoria', 'pattern')) {
+              <div class="invalid-feedback d-block">
+                Solo se permiten letras y espacios. No se permiten números ni caracteres especiales.
+              </div>
+            }
+            
+            <!-- Mensajes de éxito y error -->
+            @if (mensajeExito) {
+              <div class="alert alert-success py-2 mt-2 mb-0" role="alert">
+                {{ mensajeExito }}
+              </div>
+            }
+            @if (mensajeError) {
+              <div class="alert alert-danger py-2 mt-2 mb-0" role="alert">
+                {{ mensajeError }}
+              </div>
+            }
+          </div>
+        </form>
+        
+        <!-- Tabla de categorías existentes -->
+        <div class="mb-2 fw-bold">Categorías Existentes</div>
+        <table class="table table-bordered table-hover">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Itera sobre las categorías existentes -->
+            @for (categoria of categorias; track categoria.id) {
+            <tr>
+              <td>{{ categoria.nombre }}</td>
+              <td>
+                <span
+                  class="badge d-inline-flex align-items-center gap-1"
+                  [ngClass]="categoria.estado === 'ACTIVA' ? 'bg-success' : 'bg-danger'"
+                >
+                  {{ categoria.estado ? categoria.estado.toLowerCase() : '' }}
+                </span>
+              </td>
+              <td>
+                <!-- Botón para eliminar la categoría solo si no está eliminada -->
+                @if (categoria.estado !== 'ELIMINADA') {
+                  <button class="btn btn-link text-danger p-0 ms-2" title="Eliminar" (click)="eliminarCategoria(categoria.id)" [disabled]="loading">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                }
+              </td>
+            </tr>
+          }
+          </tbody>
+        </table>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>

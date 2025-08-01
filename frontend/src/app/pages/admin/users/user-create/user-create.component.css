@@ -1,0 +1,75 @@
+.create-container {
+  padding: 40px 20px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.create-card {
+  position: relative;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 20px 40px rgba(0, 76, 145, 0.1);
+  padding: 24px;
+  overflow: hidden;
+}
+
+.create-card::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #ffc220 0%, #ffb000 100%);
+}
+
+.card-title {
+  margin: 0 0 16px;
+  font-size: 1.5rem;
+  color: #004c91;
+}
+
+/* Inputs y selects */
+.form-control,
+.form-select {
+  width: 100%;
+  padding: 12px 15px;
+  margin-top: 4px;
+  margin-bottom: 8px;
+  border: none;
+  border-radius: 4px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.form-control:focus,
+.form-select:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(0,113,206,0.3);
+}
+
+/* Botón de submit */
+.submit-button {
+  background: linear-gradient(135deg, #0071ce 0%, #004c91 100%);
+  color: #fff;
+  border: none;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.submit-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0,113,206,0.3);
+}
+
+.submit-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Alertas */
+.alert {
+  border-radius: 8px;
+  font-size: 0.95rem;
+}

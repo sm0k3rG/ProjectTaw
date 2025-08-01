@@ -1,0 +1,30 @@
+<div class="user-sidebar" [class.show]="show" (click)="$event.stopPropagation()">
+  <button class="close-btn" (click)="closeSidebar.emit()">×</button>
+
+  <div class="user-info">
+    <i class="bi bi-person-circle user-icon"></i>
+
+    <hr class="divider" />
+
+    <div class="user-name">
+      <i class="bi bi-person-fill"></i>
+      {{ user?.nombre || user?.name }}
+    </div>
+    <div class="user-email">{{ user?.email }}</div>
+  </div>
+
+  <nav class="sidebar-actions">
+<a class="sidebar-link" routerLink="/user/purchase-history">
+  🛒 Historial de compras
+</a>
+
+<a class="sidebar-link" routerLink="/account">
+  ✏️ Editar perfil
+</a>
+    <button class="logout" (click)="cerrarSesion()">🚪 Cerrar sesión</button>
+  </nav>
+</div>
+
+@if (show) {
+  <div class="sidebar-backdrop" (click)="closeSidebar.emit()"></div>
+}

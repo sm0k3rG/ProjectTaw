@@ -1,0 +1,23 @@
+<app-main-navbar type="admin"></app-main-navbar>
+
+<div class="user-list-container">
+
+  <table class="user-table">
+    <thead>
+      <tr>
+        <th>nombre</th>
+        <th>correo</th>
+        <th>Telefono</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (u of users; track $index) {
+        <tr>
+          <td>{{ u.nombre }}</td>
+          <td>{{ u.email }}</td>
+          <td>{{ u.telefono }}</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>

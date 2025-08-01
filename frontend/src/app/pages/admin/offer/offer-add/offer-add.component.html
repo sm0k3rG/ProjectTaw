@@ -1,0 +1,75 @@
+<form [formGroup]="offerForm" (ngSubmit)="onSubmit()">
+  <!-- Porcentaje -->
+  <div class="mb-3">
+    <label class="form-label">Porcentaje de descuento</label>
+    <input type="number" class="form-control" formControlName="porcentaje" placeholder="Ingrese el porcentaje de descuento" />
+    @if (offerForm.get('porcentaje')?.invalid && offerForm.get('porcentaje')?.touched) {
+      <div class="text-danger mt-1">
+        El porcentaje debe ser un número entre 1 y 100.
+      </div>
+    }
+  </div>
+  
+  <!-- Descripción -->
+  <div class="mb-3">
+    <label class="form-label">Descripción</label>
+    <textarea class="form-control" formControlName="descripcion" rows="3" placeholder="Ingrese la descripción de la oferta"></textarea>
+    @if (offerForm.get('descripcion')?.invalid && offerForm.get('descripcion')?.touched) {
+      <div class="text-danger mt-1">
+        La descripción es obligatoria.
+      </div>
+    }
+  </div>
+  
+  <!-- Fecha de inicio -->
+  <div class="mb-3">
+    <label class="form-label">Fecha de inicio</label>
+    <input type="date" class="form-control" formControlName="fechaInicio" [min]="hoy" [max]="offerForm.get('fechaFin')?.value || null" />
+    @if (offerForm.get('fechaInicio')?.invalid && offerForm.get('fechaInicio')?.touched) {
+      <div class="text-danger mt-1">
+        La fecha de inicio es obligatoria.
+      </div>
+    }
+  </div>
+  
+  <!-- Fecha de fin -->
+  <div class="mb-3">
+    <label class="form-label">Fecha de fin</label>
+    <input type="date" class="form-control" formControlName="fechaFin" [min]="offerForm.get('fechaInicio')?.value || hoy" />
+    @if (offerForm.get('fechaFin')?.invalid && offerForm.get('fechaFin')?.touched) {
+      <div class="text-danger mt-1">
+        @if (offerForm.get('fechaFin')?.errors?.['fechaFinInvalida']) {
+          La fecha de fin debe ser posterior a la fecha de inicio.
+        } @else {
+          La fecha de fin es obligatoria.
+        }
+      </div>
+    }
+  </div>
+  
+  <!-- Información del estado -->
+  <div class="alert alert-info">
+    <strong>Nota:</strong> 
+    <ul class="mb-0 mt-2">
+      <li>Una vez creada la oferta, podrás asociarla a productos específicos desde la gestión de productos.</li>
+    </ul>
+  </div>
+  
+  <!-- Mensajes -->
+  @if (mensajeError) {
+    <div class="alert alert-danger mt-3">{{ mensajeError }}</div>
+  }
+  @if (mensajeExito) {
+    <div class="alert alert-success mt-3">{{ mensajeExito }}</div>
+  }
+  
+  <!-- Acciones -->
+  <div class="mt-4 d-flex justify-content-between">
+    <button type="button" class="btn btn-secondary" (click)="offerForm.reset()">
+      Limpiar Formulario
+    </button>
+    <button type="submit" class="btn btn-primary" [disabled]="loading || offerForm.invalid">
+      {{ loading ? 'Agregando...' : 'Agregar Oferta' }}
+    </button>
+  </div>
+</form>

@@ -1,0 +1,167 @@
+<div
+  class="modal fade"
+  id="modalEditarProducto"
+  tabindex="-1"
+  aria-labelledby="modalEditarProductoLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2
+          class="modal-title fw-bold"
+          style="font-size: 2.2rem"
+          id="modalEditarProductoLabel"
+        >
+          Editar Producto
+        </h2>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Cerrar"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form
+          *ngIf="productForm"
+          [formGroup]="productForm"
+          (ngSubmit)="onSubmit()"
+        >
+          <div class="mb-3">
+            <label class="form-label">Nombre del producto</label>
+            <input
+              class="form-control"
+              formControlName="nombre"
+              placeholder="Ingrese nombre del producto"
+            />
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Precio del producto</label>
+            <input
+              type="number"
+              class="form-control"
+              formControlName="precio"
+              placeholder="Ingrese precio del producto"
+              min="0"
+            />
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Oferta</label>
+            <select class="form-select" formControlName="ofertaId">
+              <option [value]="null">Sin oferta</option>
+              <ng-container *ngFor="let oferta of ofertas">
+                <option *ngIf="oferta.estado === 'ACTIVA'" [value]="oferta.id">
+                  {{ oferta.porcentaje }}% - {{ oferta.descripcion }}
+                </option>
+              </ng-container>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Categoría</label>
+            <select class="form-select" formControlName="categoriaId">
+              <ng-container *ngFor="let cat of categorias">
+                <option *ngIf="cat.estado === 'ACTIVA'" [value]="cat.id">
+                  {{ cat.nombre }}
+                </option>
+              </ng-container>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Descripción del producto</label>
+            <textarea
+              class="form-control"
+              formControlName="descripcion"
+              rows="3"
+              placeholder="Ingrese descripcion del producto"
+            ></textarea>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Imagen del producto</label>
+            <input
+              class="form-control"
+              formControlName="imagenUrl"
+              placeholder="Ingrese URL de la imagen del producto"
+            />
+            @if (productForm.get('imagenUrl')?.hasError('urlInvalida')) {
+            <div class="text-danger mt-1">Debe ingresar una URL válida.</div>
+            }
+          </div>
+          <div class="card mt-4">
+            <div
+              class="card-header d-flex justify-content-between align-items-center"
+            >
+              <strong>Sucursales y Stock</strong>
+              <button
+                type="button"
+                class="btn btn-primary btn-sm"
+                (click)="agregarSucursal()"
+                [disabled]="sucursalesSeleccionadas.length >= sucursales.length"
+              >
+                + Agregar Sucursal
+              </button>
+            </div>
+            <div class="card-body" formArrayName="sucursalesSeleccionadas">
+              <div
+                *ngFor="
+                  let sucursalForm of sucursalesSeleccionadas.controls;
+                  let i = index
+                "
+                [formGroupName]="i"
+                class="mb-3 row"
+              >
+                <div class="col-md-6">
+                  <label class="form-label">Sucursal</label>
+                  <select class="form-select" formControlName="id" required>
+                    <option
+                      *ngFor="
+                        let sucursal of obtenerSucursalesDisponiblesParaSelect(
+                          i
+                        )
+                      "
+                      [value]="sucursal.id"
+                    >
+                      {{ sucursal.nombre }} - {{ sucursal.ciudad }}
+                    </option>
+                  </select>
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">Stock</label>
+                  <input
+                    type="number"
+                    class="form-control"
+                    formControlName="stock"
+                    min="1"
+                  />
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                  <button
+                    type="button"
+                    class="btn btn-danger w-100"
+                    (click)="removerSucursal(i)"
+                  >
+                    Eliminar
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          @if (mensajeError) {
+          <div class="alert alert-danger mt-3">{{ mensajeError }}</div>
+          } @if (mensajeExito) {
+          <div class="alert alert-success mt-3">{{ mensajeExito }}</div>
+          }
+          <div class="mt-4 d-flex justify-content-end">
+            <button
+              type="submit"
+              class="btn btn-primary"
+              [disabled]="loading || productForm.invalid"
+            >
+              {{ loading ? "Guardando..." : "Guardar Cambios" }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

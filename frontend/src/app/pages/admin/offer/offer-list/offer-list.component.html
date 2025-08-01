@@ -1,0 +1,163 @@
+<app-main-navbar type="admin"></app-main-navbar>
+
+<!-- Contenedor principal con espaciado -->
+<div class="container-fluid px-2 px-md-4 py-3">
+  <!-- Tarjeta visual para la gestión de ofertas -->
+          <!-- Mensaje de éxito al agregar oferta -->
+      @if (mostrarMensajeExito) {
+        <div class="alert alert-success alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3"
+             role="alert"
+             style="z-index: 1050; min-width: 300px; background-color: #d4edda; border-color: #c3e6cb; color: #155724;">
+          <i class="bi bi-check-circle me-2"></i>
+          Oferta agregada exitosamente
+          <button type="button" class="btn-close" (click)="mostrarMensajeExito = false"></button>
+        </div>
+      }
+  <div class="card shadow-sm rounded-4 p-4 w-100" style="background: #fff; min-width: 1000px;">
+    <!-- Encabezado con título y botones -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <div>
+        <h2 class="fw-bold mb-0" style="font-size: 2rem;">Gestión de Ofertas</h2>
+      </div>
+      <div class="d-flex gap-2">
+        <!-- Botón que abre el modal para agregar una nueva oferta -->
+        <button class="btn btn-dark rounded-3 px-4 fw-semibold" style="font-size: 1.1rem;" data-bs-toggle="modal" data-bs-target="#modalAgregarOferta">
+          <i class="bi bi-plus me-2"></i> Agregar Oferta
+        </button>
+      </div>
+    </div>
+
+    <!-- Filtros de búsqueda -->
+    <div class="d-flex align-items-center gap-3 mb-3 justify-content-start">
+      <select class="form-select rounded-3 w-auto" [(ngModel)]="estadoSeleccionado" (change)="onCambiarEstado($event)">
+        <option value="">Todos los estados</option>
+        <option value="ACTIVA">Activas</option>
+        <option value="INACTIVA">Inactivas</option>
+        <option value="EXPIRADA">Expiradas</option>
+      </select>
+      <button class="btn btn-outline-secondary rounded-3" (click)="limpiarFiltros()">Limpiar</button>
+    </div>
+
+    <!-- Tabla responsiva que muestra la información de cada oferta -->
+    <div class="table-responsive">
+      <table class="table align-middle mb-0">
+        <thead>
+          <tr>
+            <th>Descuento</th>
+            <th>Descripción</th>
+            <th>Fecha de Inicio</th>
+            <th>Fecha de Término</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @if (cargando) {
+            <tr>
+              <td colspan="6" class="text-center py-4">
+                <div class="text-muted">
+                  <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Cargando...</span>
+                  </div>
+                  <p class="mt-2 mb-0">Cargando ofertas...</p>
+                </div>
+              </td>
+            </tr>
+          }
+          <!-- Estado vacío: no hay ofertas registradas o filtradas -->
+          @else if (ofertasFiltradas.length === 0) {
+            <tr>
+              <td colspan="6" class="text-center py-4">
+                <div class="text-muted">
+                  <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+                  @if (ofertas.length === 0) {
+                    <p class="mb-0">No hay ofertas registradas</p>
+                    <small>Las ofertas aparecerán aquí una vez que sean agregadas</small>
+                  } @else {
+                    <p class="mb-0">No hay ofertas que coincidan con el filtro</p>
+                    <small>Intenta cambiar los filtros o limpiarlos</small>
+                  }
+                </div>
+              </td>
+            </tr>
+          }
+                    <!-- Itera sobre el arreglo de ofertas filtradas de la página actual -->
+          @else {
+            @for (oferta of ofertasFiltradas.slice((page - 1) * pageSize, page * pageSize); track oferta.id) {
+              <tr>
+                <td>{{ oferta.porcentaje }}%</td>
+                <td>{{ oferta.descripcion }}</td>
+                <td>{{ formatearFecha(oferta.fechaInicio) }}</td>
+                <td>{{ formatearFecha(oferta.fechaFin) }}</td>
+                <!-- <td>{{ oferta.estado }}</td> -->
+                 <td class="align-middle">
+                    <span class="badge" [ngClass]="getEstadoColor(oferta.estado)">{{ oferta.estado }}</span>
+                  </td>
+                <!-- Acciones: editar y eliminar oferta -->
+                  <td class="align-middle">
+                    @if (oferta.estado !== OfertaEstado.EXPIRADA) {
+                      <button class="btn btn-outline-dark btn-sm rounded-2 me-1" title="Editar" (click)="editarOferta(oferta)"><i class="bi bi-pencil"></i></button>
+                      <button
+                        class="btn btn-outline-danger btn-sm rounded-2"
+                        title="Eliminar"
+                        (click)="eliminarOferta(oferta)">
+                        <i class="bi bi-trash"></i>
+                      </button>
+                    }
+                  </td>
+              </tr>
+            }
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Paginación -->
+    <div class="d-flex justify-content-center mt-4">
+      <ngb-pagination
+        [collectionSize]="totalItems"
+        [(page)]="page"
+        [pageSize]="pageSize"
+        [boundaryLinks]="true"
+        [maxSize]="5"
+        (pageChange)="onCambiarPagina($event)"
+        class="d-flex justify-content-center">
+      </ngb-pagination>
+    </div>
+  </div>
+
+  <!-- Modal para agregar oferta -->
+  <div class="modal fade" id="modalAgregarOferta" tabindex="-1" aria-labelledby="modalAgregarOfertaLabel" aria-hidden="true" (hidden.bs.modal)="onModalHidden()">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title fw-bold mb-0" id="modalAgregarOfertaLabel" style="font-size: 2rem;">Agregar Nueva Oferta</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <!-- Formulario para agregar una nueva oferta -->
+          <app-offer-add (ofertaAgregada)="onOfertaAgregada()"></app-offer-add>
+        </div>
+      </div>
+    </div>
+  </div>
+
+           <!-- Modal para editar oferta -->
+         <div class="modal fade" id="modalEditarOferta" tabindex="-1" aria-labelledby="modalEditarOfertaLabel" aria-hidden="true">
+           <div class="modal-dialog modal-lg">
+             <div class="modal-content">
+               <div class="modal-header">
+                 <h5 class="modal-title fw-bold mb-0" id="modalEditarOfertaLabel" style="font-size: 2rem;">Editar Oferta</h5>
+                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+               </div>
+               <div class="modal-body">
+                 <!-- Formulario para editar una oferta -->
+                 <app-offer-edit 
+                   [ofertaParaEditar]="ofertaSeleccionada"
+                   (ofertaEditada)="onOfertaEditada()">
+                 </app-offer-edit>
+               </div>
+             </div>
+           </div>
+         </div>
+</div>
